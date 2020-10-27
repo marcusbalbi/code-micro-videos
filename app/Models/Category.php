@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Category extends Model
 {
-    use SoftDeletes, Traits\uuid;
+    use SoftDeletes, Traits\Uuid;
 
     protected $fillable = [
         'name',
