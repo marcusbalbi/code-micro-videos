@@ -4,15 +4,20 @@ namespace Tests\Unit;
 
 use Tests\TestCase;
 use \App\Models\Category;
+use \App\Models\Genre;
 use App\Models\Traits\Uuid;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
 class CategoryTest extends TestCase
 {
+    use DatabaseMigrations;
+
     public function testFillable()
     {
+        Genre::create(['name' => 'test']);
         $fillable = ['name', 'description', 'is_active'];
         $category = new Category();
         $this->assertEquals($fillable, $category->getFillable());
