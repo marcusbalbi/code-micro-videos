@@ -49,6 +49,7 @@ class CategoryTest extends TestCase
         $this->assertEquals('test', $category->name);
         $this->assertNull($category->description);
         $this->assertTrue($category->is_active);
+        $this->assertUuid($category->id);
 
         $category = Category::create([
             'name' => 'test',
@@ -96,10 +97,19 @@ class CategoryTest extends TestCase
 
         $category->update($data);
 
-        foreach($data as $key => $value) {
+        foreach ($data as $key => $value) {
             $this->assertEquals($value, $category->{$key});
         }
+    }
 
+    public function testRemove()
+    {
+        $categories = factory(Category::class, 5)->create();
 
+        $categories[0]->delete();
+
+        $total = Category::count();
+
+        $this->assertEquals(4, $total);
     }
 }
