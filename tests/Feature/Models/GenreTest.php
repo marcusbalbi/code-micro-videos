@@ -93,5 +93,9 @@ class GenreTest extends TestCase
         $total = Genre::count();
 
         $this->assertEquals(1, $total);
+        $this->assertNull(Genre::find($genres[0]->id));
+
+        $genres[0]->restore();
+        $this->assertNotEmpty(Genre::find($genres[0]->id));
     }
 }
