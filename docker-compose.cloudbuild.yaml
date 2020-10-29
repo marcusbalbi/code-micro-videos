@@ -34,7 +34,7 @@ services:
     expose:
       - 6379
     networks:
-      - code_education_app_networks
+      - app-network
   db:
     build: .docker/mysql
     command: --innodb-use-native-aio=0
