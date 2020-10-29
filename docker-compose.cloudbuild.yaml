@@ -1,0 +1,57 @@
+version: "3.7"
+
+services:
+  app:
+    build: .
+    container_name: app
+    volumes:
+      - ./:/var/www
+    networks:
+      - app-network
+    depends_on:
+      - db
+      - redis
+  nginx:
+    build:
+      context: .docker/nginx
+      args:
+      - HOST=app
+      - PORT=9000
+    container_name: nginx
+    restart: always
+    tty: true
+    ports:
+      - "8000:80"
+    volumes:
+      - ./:/var/www
+    networks:
+      - app-network
+    depends_on:
+      - app
+
+  redis:
+    image: redis:alpine
+    expose:
+      - 6379
+    networks:
+      - code_education_app_networks
+  db:
+    build: .docker/mysql
+    command: --innodb-use-native-aio=0
+    container_name: db
+    restart: always
+    tty: true
+    ports:
+      - "33006:3306"
+    volumes:
+      - ./.docker/mysql/dbdata:/var/lib/mysq
+      - ./.docker/mysql:/docker-entrypoint-initdb.d
+    environment:
+      - MYSQL_ROOT_PASSWORD=root
+      - MYSQL_USER=root
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
