@@ -8,6 +8,10 @@ steps:
   name: 'docker'
   args: ['exec','-u','root','-t','app','chown','-R','www-data:www-data','/var/www']
 
+- id: "composer version"
+  name: 'docker'
+  args: ['exec', '-t', 'app' ,'composer', '--version']
+
 - id: "Rodando composer"
   name: 'docker'
   args: ['exec', '-t', 'app' ,'composer', 'install']
