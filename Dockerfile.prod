@@ -2,7 +2,7 @@ FROM php:7.3.6-fpm-alpine3.9 as builder
 RUN apk add --no-cache openssl  shadow bash mysql-client curl nodejs npm libpng-dev
 RUN docker-php-ext-install pdo pdo_mysql
 
-RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --version=1.10.15 --filename=composer
 
 
 WORKDIR /var/www
