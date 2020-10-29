@@ -6,28 +6,28 @@ steps:
 
 - id: "Chown in /var/www"
   name: 'docker'
-  args: ['exec','-u','root','-t','app_laravel_code_education','chown','-R','www-data:www-data','/var/www']
+  args: ['exec','-u','root','-t','app','chown','-R','www-data:www-data','/var/www']
 
 - id: "Rodando composer"
   name: 'docker'
-  args: ['exec', '-t', 'app_laravel_code_education' ,'composer', 'install']
+  args: ['exec', '-t', 'app' ,'composer', 'install']
 
 - id: "Copiando .env"
   name: 'docker'
-  args: ['exec', '-t', 'app_laravel_code_education', 'cp', '.env.example', '.env']
+  args: ['exec', '-t', 'app', 'cp', '.env.example', '.env']
 
 - id: "Copiando .env.testing"
   name: 'docker'
-  args: ['exec', '-t', 'app_laravel_code_education', 'cp', '.env.testing.example', '.env.testing']
+  args: ['exec', '-t', 'app', 'cp', '.env.testing.example', '.env.testing']
 
 - id: "rodando key:generate"
   name: 'docker'
-  args: ['exec', '-t', 'app_laravel_code_education', 'php', '/var/www/artisan', 'key:generate']
+  args: ['exec', '-t', 'app', 'php', '/var/www/artisan', 'key:generate']
 
 - id: "rodando migrations"
   name: 'docker'
-  args: ['exec', '-t', 'app_laravel_code_education', 'php', '/var/www/artisan', 'migrate']
+  args: ['exec', '-t', 'app', 'php', '/var/www/artisan', 'migrate']
 
 - id: "rodando phpunit"
   name: 'docker'
-  args: ['exec', '-t', 'app_laravel_code_education', 'php', '/var/www/vendor/bin/phpunit', '-c', '/var/www/phpunit.xml']
+  args: ['exec', '-t', 'app', 'php', '/var/www/vendor/bin/phpunit', '-c', '/var/www/phpunit.xml']
