@@ -69,33 +69,31 @@ class CategoryControllerTest extends TestCase
 
     public function testUpdate()
     {
-        $category = factory(Category::class)->create([
+        $this->category = factory(Category::class)->create([
             'is_active' => false,
             'description' => 'test3'
         ]);
 
-        $response = $this->json('PUT', route('categories.update', ['category' => $category->id]), [
+        $data = [
             'name' => 'test',
             'description' => 'test4',
             'is_active' => true
-        ]);
+        ];
+        $response = $this->assertUpdate($data, $data = ['deleted_at' => null]);
+        $response->assertJsonStructure(['created_at', 'updated_at']);
 
 
-        $response->assertStatus(200)
-            ->assertJsonFragment([
-                'is_active' => true
-            ]);
-
-        $response = $this->json('PUT', route('categories.update', ['category' => $category->id]), [
+        $data = [
             'name' => 'test',
             'description' => ''
-        ]);
+        ];
+        $this->assertUpdate($data, array_merge($data, ['description' => null]));
 
+        $data['description'] = 'test';
+        $this->assertUpdate($data, array_merge($data, ['description' => 'test']));
 
-        $response->assertStatus(200)
-            ->assertJsonFragment([
-                'description' => null
-            ]);
+        $data['description'] = null;
+        $this->assertUpdate($data, array_merge($data, ['description' => null]));
     }
     public function testRemove()
     {
