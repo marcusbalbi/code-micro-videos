@@ -131,9 +131,7 @@ class GenreControllerTest extends TestCase
     }
     public function testRemove()
     {
-        $genre = factory(Genre::class)->create([
-            'is_active' => true
-        ]);
+        $genre = factory(Genre::class)->create();
 
         $response = $this->json('DELETE', route('genres.destroy', ['genre' => $genre->id]));
         $response->assertStatus(204);
