@@ -9,10 +9,11 @@ use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\TestResponse;
 use Illuminate\Support\Facades\Lang;
+use Tests\Traits\TestValidations;
 
 class CategoryControllerTest extends TestCase
 {
-    use DatabaseMigrations;
+    use DatabaseMigrations, TestValidations;
 
     public function testIndex()
     {
@@ -63,29 +64,18 @@ class CategoryControllerTest extends TestCase
 
     private function assertInvalidationMax(TestResponse $response)
     {
-        $response->assertStatus(422)
-            ->assertJsonValidationErrors(['name'])
-            ->assertJsonFragment([
-                Lang::get('validation.max.string', ['attribute' => 'name', 'max' => 255])
-            ]);
+        $this->assertInvalidationFields($response, ['name'], 'max.string', ['max' => 255]);
     }
     private function assertInvalidationBoolean(TestResponse $response)
     {
-        $response->assertStatus(422)
-            ->assertJsonValidationErrors(['is_active'])
-            ->assertJsonFragment([
-                Lang::get('validation.boolean', ['attribute' => 'is active'])
-            ]);
+        $this->assertInvalidationFields($response, ['is_active'], 'boolean');
     }
 
     private function assertInvalidationRequired(TestResponse $response)
     {
-        $response->assertStatus(422)
-            ->assertJsonValidationErrors(['name'])
-            ->assertJsonMissingValidationErrors(['is_valid'])
-            ->assertJsonFragment([
-                Lang::get('validation.required', ['attribute' => 'name'])
-            ]);
+        $this->assertInvalidationFields($response, ['name'], 'required');
+
+        $response->assertJsonMissingValidationErrors(['is_valid']);
     }
 
     public function testStore()
@@ -121,7 +111,7 @@ class CategoryControllerTest extends TestCase
     {
         $category = factory(Category::class)->create([
             'is_active' => false,
-            'description' =>'test3'
+            'description' => 'test3'
         ]);
 
         $response = $this->json('PUT', route('categories.update', ['category' => $category->id]), [
@@ -146,8 +136,6 @@ class CategoryControllerTest extends TestCase
             ->assertJsonFragment([
                 'description' => null
             ]);
-
-
     }
     public function testRemove()
     {
