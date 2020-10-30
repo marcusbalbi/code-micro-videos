@@ -149,4 +149,16 @@ class CategoryControllerTest extends TestCase
 
 
     }
+    public function testRemove()
+    {
+        $category = factory(Category::class)->create([
+            'is_active' => false,
+            'description' =>'test3'
+        ]);
+
+        $response = $this->json('DELETE', route('categories.destroy', ['category' => $category->id]));
+        $response->assertStatus(204);
+
+        $this->assertNull(Category::find($category->id));
+    }
 }
