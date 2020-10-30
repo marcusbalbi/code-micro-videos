@@ -15,6 +15,13 @@ trait TestValidations
         $fields = array_keys($data);
         $this->assertInvalidationFields($response, $fields, $rules, $ruleParams);
     }
+    protected function assertInvalidationInUpdateAction(array $data, string $rules, $ruleParams = [])
+    {
+        $response = $this->json('PUT', $this->routeUpdate(), $data);
+        $fields = array_keys($data);
+        $this->assertInvalidationFields($response, $fields, $rules, $ruleParams);
+    }
+
     protected function assertInvalidationFields(TestResponse $response, array $fields, string $rule, array $ruleParams = [])
     {
         $response->assertStatus(422)

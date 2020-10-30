@@ -5,8 +5,6 @@ namespace Tests\Feature\Http\Controllers\Api;
 use Tests\TestCase;
 use App\Models\Genre;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
-use Illuminate\Foundation\Testing\WithFaker;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\TestResponse;
 use Illuminate\Support\Facades\Lang;
 
