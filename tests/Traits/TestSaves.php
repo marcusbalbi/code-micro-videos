@@ -10,6 +10,10 @@ use Exception;
 
 trait TestSaves
 {
+    protected abstract function model();
+    protected abstract function routeStore();
+    protected abstract function routeUpdate();
+
     protected function assertStore(array $sendData, array $testDatabase, array  $testJsonData = null): TestResponse
     {
         $response = $this->json('POST', $this->routeStore(), $sendData);
