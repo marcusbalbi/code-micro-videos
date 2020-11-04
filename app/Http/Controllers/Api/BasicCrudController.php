@@ -4,15 +4,12 @@ namespace App\Http\Controllers\Api;
 
 use App\Models\Category;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\CategoryRequest;
+use Illuminate\Http\Request;
 
 abstract class BasicCrudController extends Controller
 {
     protected abstract function model();
-
-    function __construct() {
-
-    }
+    protected abstract function rulesStore();
     /**
      * Display a listing of the resource.
      *
@@ -29,12 +26,13 @@ abstract class BasicCrudController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    // public function store(CategoryRequest $request)
-    // {
-    //     $category = Category::create($request->all());
-    //     $category->refresh();
-    //     return $category;
-    // }
+    public function store(Request $request)
+    {
+        $this->validate($request, $this->rulesStore());
+        $category = $this->model()::create($request->all());
+        $category->refresh();
+        return $category;
+    }
 
     /**
      * Display the specified resource.
