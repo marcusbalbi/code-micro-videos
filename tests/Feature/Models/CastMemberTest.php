@@ -39,20 +39,20 @@ class CastMemberTest extends TestCase
     {
         $castMember = CastMember::create([
             'name' => 'test',
-            'type' => 1
+            'type' => CastMember::TYPE_ACTOR
         ]);
 
         $castMember->refresh();
 
         $this->assertEquals('test', $castMember->name);
-        $this->assertEquals(1, $castMember->type);
+        $this->assertEquals(CastMember::TYPE_ACTOR, $castMember->type);
         $this->assertUuidV4($castMember->id);
     }
 
     public function testUpdate()
     {
         $castMember = factory(CastMember::class)->create([
-            'type' => 1,
+            'type' => CastMember::TYPE_ACTOR,
         ])->first();
 
         $data = [
