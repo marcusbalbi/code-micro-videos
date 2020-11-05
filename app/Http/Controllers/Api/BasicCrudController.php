@@ -20,6 +20,14 @@ abstract class BasicCrudController extends Controller
         return $this->model()::all();
     }
 
+    protected function findOrFail($id)
+    {
+        $model = $this->model();
+        $keyName = (new $model)->getRouteKeyName();
+
+        return $this->model()::where($keyName, $id)->firstOrFail();
+    }
+
     /**
      * Store a newly created resource in storage.
      *
