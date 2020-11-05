@@ -3,67 +3,25 @@
 namespace App\Http\Controllers\Api;
 
 use App\Models\Category;
-use App\Http\Controllers\Controller;
+use App\Http\Controllers\Api\BasicCrudController;
 use App\Http\Requests\CategoryRequest;
 
-class CategoryController extends Controller
+class CategoryController extends BasicCrudController
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function index()
+    protected function model()
     {
-        return Category::all();
+        return Category::class;
     }
-
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(CategoryRequest $request)
+    protected function rulesStore()
     {
-        $category = Category::create($request->all());
-        $category->refresh();
-        return $category;
+        return [
+            "name" => 'required|max:255',
+            "description" => 'nullable',
+            "is_active" => "boolean"
+        ];
     }
-
-    /**
-     * Display the specified resource.
-     *
-     * @param  \App\Models\Category  $category
-     * @return \Illuminate\Http\Response
-     */
-    public function show(Category $category)
+    protected function rulesUpdate()
     {
-        return $category;
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Category  $category
-     * @return \Illuminate\Http\Response
-     */
-    public function update(CategoryRequest $request, Category $category)
-    {
-        $category->update($request->all());
-        return $category;
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\Models\Category  $category
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy(Category $category)
-    {
-        $category->delete();
-        return response()->noContent();
+        return $this->rulesStore();
     }
 }
