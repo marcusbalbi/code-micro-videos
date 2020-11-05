@@ -44,4 +44,17 @@ class BasicCrudControllerTest extends TestCase
         $this->expectException(\Illuminate\Validation\ValidationException::class);
         $this->controller->store($request);
     }
+
+    public function testStore()
+    {
+        $request = $this->mock(Request::class);
+        $request->shouldReceive('all')->once()->andReturn(['name' => 'test', 'description' => 'test_desc']);
+
+        $obj = $this->controller->store($request);
+
+        $this->assertEquals(
+            CategoryStub::find(1)->toArray(),
+            $obj->toArray()
+        );
+    }
 }
