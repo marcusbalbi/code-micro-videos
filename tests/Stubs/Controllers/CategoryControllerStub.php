@@ -19,4 +19,9 @@ class CategoryControllerStub extends BasicCrudController
             'description' => 'nullable'
         ];
     }
+
+    protected function rulesUpdate()
+    {
+        return $this->rulesStore();
+    }
 }
