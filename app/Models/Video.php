@@ -10,6 +10,8 @@ class Video extends Model
 {
     use SoftDeletes, Uuid;
 
+    const RATING_LIST = ['L', '10', '12', '14', '16', '18'];
+
     protected $fillable = [
         'title',
         'description',
