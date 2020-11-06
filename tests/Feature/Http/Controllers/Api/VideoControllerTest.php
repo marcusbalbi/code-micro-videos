@@ -13,10 +13,17 @@ class VideoControllerTest extends TestCase
     use DatabaseMigrations, TestValidations, TestSaves;
 
     private $video;
-
+    private $sendData;
     protected function setUp(): void
     {
         parent::setUp();
+        $this->sendData = [
+            'title' => 'some Title',
+            'description' => 'short description',
+            'year_launched' => 1983,
+            'rating' => Video::RATING_LIST[0],
+            'duration' => 30,
+        ];
         $this->video = factory(Video::class)->create();
     }
 
@@ -96,39 +103,34 @@ class VideoControllerTest extends TestCase
         $this->assertInvalidationInUpdateAction($data, 'in');
     }
 
-    /* public function testInvalidationData()
+    public function testSave()
     {
-        $data = ['name' => '', 'type' => ''];
-        $this->assertInvalidationInStoreAction($data, 'required');
-        $this->assertInvalidationInUpdateAction($data, 'required');
 
-        $data = ['type' => 'a'];
-        $this->assertInvalidationInStoreAction($data, 'in');
-        $this->assertInvalidationInUpdateAction($data, 'in');
-    }
-
-    public function testStore()
-    {
         $data = [
             [
-                'name' => 'test',
-                'type' => Video::TYPE_ACTOR
+                'send_data' => $this->sendData,
+                'test_data' => $this->sendData + ['opened' => false],
             ],
             [
-                'name' => 'test',
-                'type' => Video::TYPE_DIRECTOR
+                'send_data' => $this->sendData + ['opened' => true],
+                'test_data' => $this->sendData + ['opened' => true],
+            ],
+            [
+                'send_data' => $this->sendData + ['rating' => Video::RATING_LIST[1]],
+                'test_data' => $this->sendData + ['rating' => Video::RATING_LIST[1]],
             ]
         ];
 
         foreach ($data as $key => $value) {
-            $response = $this->assertStore($value, $value + ['deleted_at' => null]);
-            $response->assertJsonStructure([
-                'created_at', 'updated_at'
-            ]);
+            $response = $this->assertStore($value['send_data'], $value['test_data'] + ['deleted_at' => null]);
+            $response->assertJsonStructure(['created_at', 'updated_at']);
+
+            $response = $this->assertUpdate($value['send_data'], $value['test_data'] + ['deleted_at' => null]);
+            $response->assertJsonStructure(['created_at', 'updated_at']);
         }
     }
 
-    public function testUpdate()
+    /*public function testUpdate()
     {
 
         $data = [
