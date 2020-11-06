@@ -130,17 +130,6 @@ class VideoControllerTest extends TestCase
         }
     }
 
-    /*public function testUpdate()
-    {
-
-        $data = [
-            'name' => 'test',
-            'type' => Video::TYPE_ACTOR
-        ];
-        $response = $this->assertUpdate($data, $data = ['deleted_at' => null]);
-        $response->assertJsonStructure(['created_at', 'updated_at']);
-    }*/
-
     public function testRemove()
     {
         $video = factory(Video::class)->create();
