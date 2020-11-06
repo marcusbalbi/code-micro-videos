@@ -26,7 +26,7 @@ class Video extends Model
     protected $casts = [
         'id' => 'string',
         'opened' => 'boolean',
-        'year_launched' => 'boolean',
+        'year_launched' => 'integer',
         'duration' => 'integer',
     ];
 
