@@ -170,11 +170,19 @@ class VideoControllerTest extends TestCase
         foreach ($data as $key => $value) {
             $response = $this->assertStore($value['send_data'], $value['test_data'] + ['deleted_at' => null]);
             $response->assertJsonStructure(['created_at', 'updated_at']);
+            $video = Video::find($response->json('id'));
+            $video->load('categories');
+            $video->load('genres');
+            $this->assertEqualsCanonicalizing($video->categories->pluck("id")->toArray(), $extra['categories_id']);
+            $this->assertEqualsCanonicalizing($video->genres->pluck("id")->toArray(), $extra['genres_id']);
 
             $response = $this->assertUpdate($value['send_data'], $value['test_data'] + ['deleted_at' => null]);
             $response->assertJsonStructure(['created_at', 'updated_at']);
+            $video->load('categories');
+            $video->load('genres');
+            $this->assertEqualsCanonicalizing($video->categories->pluck("id")->toArray(), $extra['categories_id']);
+            $this->assertEqualsCanonicalizing($video->genres->pluck("id")->toArray(), $extra['genres_id']);
 
-            //validate if video has the categories and genres
         }
     }
 
