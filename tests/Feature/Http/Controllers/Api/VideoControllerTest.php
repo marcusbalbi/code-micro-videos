@@ -2,6 +2,7 @@
 
 namespace Tests\Feature\Http\Controllers\Api;
 
+use App\Http\Controllers\Api\VideoController;
 use App\Models\Category;
 use App\Models\Genre;
 use Tests\TestCase;
@@ -9,6 +10,8 @@ use App\Models\Video;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Tests\Traits\TestSaves;
 use Tests\Traits\TestValidations;
+use Illuminate\Http\Request;
+use \Tests\Exceptions\TestException;
 
 class VideoControllerTest extends TestCase
 {
@@ -82,7 +85,6 @@ class VideoControllerTest extends TestCase
         ];
         $this->assertInvalidationInStoreAction($data, 'exists');
         $this->assertInvalidationInUpdateAction($data, 'exists');
-
     }
 
     public function testInvalidationGenresId()
@@ -171,12 +173,28 @@ class VideoControllerTest extends TestCase
 
             $response = $this->assertUpdate($value['send_data'], $value['test_data'] + ['deleted_at' => null]);
             $response->assertJsonStructure(['created_at', 'updated_at']);
+
+            //validate if video has the categories and genres
         }
     }
 
     public function testRollbackStore()
     {
+        $controller = \Mockery::mock(VideoController::class)
+            ->makePartial()
+            ->shouldAllowMockingProtectedMethods();
+        $controller->shouldReceive('validate')->WithAnyArgs()->andReturn($this->sendData);
+        $controller->shouldReceive('rulesStore')->WithAnyArgs()->andReturn([]);
+        $controller->shouldReceive("handleRelations")->once()->andThrow(new TestException());
 
+        $request = \Mockery::mock(Request::class);
+
+
+        try {
+            $controller->store($request);
+        } catch (TestException $e) {
+            $this->assertCount(1, Video::all());
+        }
     }
 
     public function testRemove()
