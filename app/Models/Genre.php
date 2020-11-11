@@ -22,4 +22,9 @@ class Genre extends Model
     protected $dates = ['deleted_at'];
 
     public $incrementing = false;
+
+    public function categories()
+    {
+        return $this->belongsToMany(Category::class);
+    }
 }
