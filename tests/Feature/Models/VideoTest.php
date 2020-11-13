@@ -173,6 +173,85 @@ class VideoTest extends TestCase
         $this->assertCount(1, $video->genres);
     }
 
+
+    public function testSyncGenres()
+    {
+        $genres = factory(Genre::class, 3)->create();
+        $genres_id = $genres->pluck('id')->toArray();
+        $category_id = factory(Category::class)->create()->id;
+        $genres->each(function ($genre) use ($category_id) {
+            $genre->categories()->sync($category_id);
+        });
+
+        $extra = [
+            'categories_id' => [$category_id],
+            'genres_id' => [$genres_id[0]]
+        ];
+
+        $video = Video::create($this->data + $extra);
+        $this->assertDatabaseHas('genre_video', [
+            'video_id' => $video->id,
+            'genre_id' => $genres_id[0]
+        ]);
+
+        $extra = [
+            'categories_id' => [$category_id],
+            'genres_id' => [$genres_id[1], $genres_id[2]]
+        ];
+        $video->update($extra);
+
+        $this->assertDatabaseMissing('genre_video', [
+            'video_id' => $video->id,
+            'genre_id' => $genres_id[0]
+        ]);
+        $this->assertDatabaseHas('genre_video', [
+            'video_id' => $video->id,
+            'genre_id' => $genres_id[1]
+        ]);
+        $this->assertDatabaseHas('genre_video', [
+            'video_id' => $video->id,
+            'genre_id' => $genres_id[2]
+        ]);
+    }
+
+    public function testSyncCategories()
+    {
+        $categories_id = factory(Category::class, 3)->create()->pluck('id')->toArray();
+        $genre = factory(Genre::class)->create();
+        $genre->categories()->sync($categories_id);
+
+        $extra = [
+            'categories_id' => [$categories_id[0]],
+            'genres_id' => [$genre->id]
+        ];
+
+        $video = Video::create($this->data + $extra);
+        $this->assertDatabaseHas('category_video', [
+            'video_id' => $video->id,
+            'category_id' => $categories_id[0]
+        ]);
+
+        $extra = [
+            'categories_id' => [$categories_id[1], $categories_id[2]],
+            'genres_id' => [$genre->id]
+        ];
+
+        $video->update($extra);
+
+        $this->assertDatabaseMissing('category_video', [
+            'video_id' => $video->id,
+            'category_id' => $categories_id[0]
+        ]);
+        $this->assertDatabaseHas('category_video', [
+            'video_id' => $video->id,
+            'category_id' => $categories_id[1]
+        ]);
+        $this->assertDatabaseHas('category_video', [
+            'video_id' => $video->id,
+            'category_id' => $categories_id[2]
+        ]);
+    }
+
     public function testRemove()
     {
         $videos = factory(Video::class, 2)->create();
