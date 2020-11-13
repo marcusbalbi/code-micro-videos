@@ -206,55 +206,55 @@ class VideoControllerTest extends TestCase
         }
     }
 
-    public function testRollbackStore()
-    {
-        $controller = \Mockery::mock(VideoController::class)
-            ->makePartial()
-            ->shouldAllowMockingProtectedMethods();
-        $controller->shouldReceive('validate')->WithAnyArgs()->andReturn($this->sendData);
-        $controller->shouldReceive('rulesStore')->WithAnyArgs()->andReturn([]);
-        $controller->shouldReceive("handleRelations")->once()->andThrow(new TestException());
+    // public function testRollbackStore()
+    // {
+    //     $controller = \Mockery::mock(VideoController::class)
+    //         ->makePartial()
+    //         ->shouldAllowMockingProtectedMethods();
+    //     $controller->shouldReceive('validate')->WithAnyArgs()->andReturn($this->sendData);
+    //     $controller->shouldReceive('rulesStore')->WithAnyArgs()->andReturn([]);
+    //     $controller->shouldReceive("handleRelations")->once()->andThrow(new TestException());
 
-        $request = \Mockery::mock(Request::class);
+    //     $request = \Mockery::mock(Request::class);
 
-        $request->shouldReceive('get')->WithAnyArgs()->andReturnNull();
+    //     $request->shouldReceive('get')->WithAnyArgs()->andReturnNull();
 
-        $hasErrors = false;
-        try {
-            $controller->store($request);
-        } catch (TestException $e) {
-            $this->assertCount(1, Video::all());
-            $hasErrors = true;
-        }
-        $this->assertTrue($hasErrors);
-    }
+    //     $hasErrors = false;
+    //     try {
+    //         $controller->store($request);
+    //     } catch (TestException $e) {
+    //         $this->assertCount(1, Video::all());
+    //         $hasErrors = true;
+    //     }
+    //     $this->assertTrue($hasErrors);
+    // }
 
-    public function testRollbackUpdate()
-    {
-        $controller = \Mockery::mock(VideoController::class)
-            ->makePartial()
-            ->shouldAllowMockingProtectedMethods();
+    // public function testRollbackUpdate()
+    // {
+    //     $controller = \Mockery::mock(VideoController::class)
+    //         ->makePartial()
+    //         ->shouldAllowMockingProtectedMethods();
 
-        $controller->shouldReceive('findOrFail')->WithAnyArgs()->andReturn($this->video);
+    //     $controller->shouldReceive('findOrFail')->WithAnyArgs()->andReturn($this->video);
 
-        $controller->shouldReceive('validate')->WithAnyArgs()->andReturn(['name' => 'test']);
-        $controller->shouldReceive('rulesUpdate')->WithAnyArgs()->andReturn([]);
-        $controller->shouldReceive("handleRelations")->once()->andThrow(new TestException());
+    //     $controller->shouldReceive('validate')->WithAnyArgs()->andReturn(['name' => 'test']);
+    //     $controller->shouldReceive('rulesUpdate')->WithAnyArgs()->andReturn([]);
+    //     $controller->shouldReceive("handleRelations")->once()->andThrow(new TestException());
 
-        $request = \Mockery::mock(Request::class);
+    //     $request = \Mockery::mock(Request::class);
 
-        $request->shouldReceive('get')->WithAnyArgs()->andReturnNull();
+    //     $request->shouldReceive('get')->WithAnyArgs()->andReturnNull();
 
-        $hasErrors = false;
-        try {
-            $controller->update($request, 1);
-        } catch (TestException $e) {
-            $this->assertCount(1, Video::all());
-            $hasErrors = true;
-        }
+    //     $hasErrors = false;
+    //     try {
+    //         $controller->update($request, 1);
+    //     } catch (TestException $e) {
+    //         $this->assertCount(1, Video::all());
+    //         $hasErrors = true;
+    //     }
 
-        $this->assertTrue($hasErrors);
-    }
+    //     $this->assertTrue($hasErrors);
+    // }
 
     public function testSyncGenres()
     {
