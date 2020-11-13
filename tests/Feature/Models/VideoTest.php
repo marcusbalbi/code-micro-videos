@@ -289,7 +289,7 @@ class VideoTest extends TestCase
     public function testRollbackUpdate()
     {
         $video =  factory(Video::class)->create();
-        $title = $video->title();
+        $oldVideo = $video->toArray();
         $hasErrors = false;
         try {
             $video->update([
@@ -301,8 +301,7 @@ class VideoTest extends TestCase
                 'categories_id' => [0, 1, 2, 3]
             ]);
         } catch (QueryException $e) {
-            $videoAfter = Video::find($video->id);
-            $this->assertEquals($title, $videoAfter->title);
+            $this->assertDatabaseHas('videos', $oldVideo);
             $hasErrors = true;
         }
         $this->assertTrue($hasErrors);

@@ -65,8 +65,8 @@ class Video extends Model
             return $saved;
         } catch (\Exception $e) {
             // excluir arquivos de upload
-            throw $e;
             \DB::rollback();
+            throw $e;
         }
     }
 
