@@ -14,7 +14,7 @@ class UploadFilesStub extends Model
 
     // protected $fillable = ['name', 'file1', 'file2'];
 
-    // protected $fileFields = ['file1', 'file2'];
+    public static $fileFields = ['file1', 'file2'];
 
     protected function uploadDir()
     {
