@@ -49,6 +49,7 @@ class VideoTest extends TestCase
                 'year_launched',
                 'opened',
                 'rating',
+                'video_file',
                 'duration',
                 'deleted_at',
                 'updated_at',

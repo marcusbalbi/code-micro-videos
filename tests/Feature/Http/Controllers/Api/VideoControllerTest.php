@@ -28,6 +28,7 @@ class VideoControllerTest extends TestCase
             'description' => 'short description',
             'year_launched' => 1983,
             'rating' => Video::RATING_LIST[0],
+            'video_file' => null,
             'duration' => 30
         ];
         $this->video = factory(Video::class)->create();
