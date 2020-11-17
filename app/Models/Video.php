@@ -71,6 +71,7 @@ class Video extends Model
             if ($saved) {
                 // upload de arquivos novos
                 $this->uploadFiles($files);
+                // $this->deleteOldFiles($files);
                 if ($oldFileName) {
                     $this->deleteFile($oldFileName);
                 }
