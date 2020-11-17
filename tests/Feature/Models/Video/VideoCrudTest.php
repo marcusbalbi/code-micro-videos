@@ -10,6 +10,16 @@ use Tests\Feature\Models\Video\BaseVideoTestCase;
 
 class VideoCrudTest extends BaseVideoTestCase
 {
+
+    private $fileFieldsData;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+        foreach (Video::$fileFields as $field) {
+            $this->fileFieldsData[$field] = "$field.test";
+        }
+    }
     public function testList()
     {
         factory(Video::class, 1)->create();
@@ -30,7 +40,8 @@ class VideoCrudTest extends BaseVideoTestCase
                 'duration',
                 'deleted_at',
                 'updated_at',
-                'created_at'
+                'created_at',
+                'thumb_file'
             ],
             $keys
         );
@@ -38,7 +49,9 @@ class VideoCrudTest extends BaseVideoTestCase
 
     public function testCreateWithBasicFields()
     {
-        $video = Video::create($this->data);
+        $fileFields = [];
+
+        $video = Video::create($this->data + $this->fileFieldsData);
         $video->refresh();
 
         $this->assertUuidV4($video->id);
@@ -70,14 +83,14 @@ class VideoCrudTest extends BaseVideoTestCase
         $video = factory(Video::class)
             ->create(['opened' => false]);
 
-        $video->update($this->data);
+        $video->update($this->data + $this->fileFieldsData);
         $this->assertFalse($video->opened);
         $this->assertDatabaseHas('videos', $this->data + ['opened' => false]);
 
         $video = factory(Video::class)
             ->create(['opened' => false]);
 
-        $video->update($this->data + ['opened' => true]);
+        $video->update($this->data + $this->fileFieldsData + ['opened' => true]);
         $this->assertTrue($video->opened);
         $this->assertDatabaseHas('videos', $this->data + ['opened' => true]);
     }
