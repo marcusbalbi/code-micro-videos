@@ -5,34 +5,11 @@ namespace Tests\Feature\Models;
 use App\Models\Category;
 use App\Models\Genre;
 use App\Models\Video;
-use Exception;
 use Illuminate\Database\QueryException;
-use Illuminate\Foundation\Testing\DatabaseMigrations;
-use Tests\TestCase;
+use Tests\Feature\Models\Video\BaseVideoTestCase;
 
-class VideoTest extends TestCase
+class VideoCrudTest extends BaseVideoTestCase
 {
-    use DatabaseMigrations;
-
-    private $data;
-
-    protected function setUp(): void
-    {
-        parent::setUp();
-
-        $this->data = [
-            'title' => 'some Title',
-            'description' => 'short description',
-            'year_launched' => 1983,
-            'rating' => Video::RATING_LIST[0],
-            'duration' => 30
-        ];
-    }
-    /**
-     * A basic feature test example.
-     *
-     * @return void
-     */
     public function testList()
     {
         factory(Video::class, 1)->create();
