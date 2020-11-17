@@ -63,7 +63,6 @@ class Video extends Model
     public function update(array $attributes = [], array $options = [])
     {
         $files = self::extractFiles($attributes);
-        $oldFileName = $this->video_file;
         try {
             \DB::beginTransaction();
             $saved = parent::update($attributes, $options);
@@ -71,10 +70,7 @@ class Video extends Model
             if ($saved) {
                 // upload de arquivos novos
                 $this->uploadFiles($files);
-                // $this->deleteOldFiles($files);
-                if ($oldFileName) {
-                    $this->deleteFile($oldFileName);
-                }
+                $this->deleteOldFiles();
             }
             \DB::commit();
             return $saved;
