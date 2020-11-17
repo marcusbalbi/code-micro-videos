@@ -33,7 +33,7 @@ class Video extends Model
 
     public $incrementing = false;
 
-    public static $fileFields = ['video_file', 'banner', 'trailer'];
+    public static $fileFields = ['video_file'];
 
     public static function create(array $attributes = [])
     {
@@ -60,13 +60,18 @@ class Video extends Model
 
     public function update(array $attributes = [], array $options = [])
     {
+        $files = self::extractFiles($attributes);
+        $oldFileName = $this->video_file;
         try {
             \DB::beginTransaction();
             $saved = parent::update($attributes, $options);
             static::handleRelations($this, $attributes);
             if ($saved) {
                 // upload de arquivos novos
-                // excluir antigos
+                $this->uploadFiles($files);
+                if ($oldFileName) {
+                    $this->deleteFile($oldFileName);
+                }
             }
             \DB::commit();
             return $saved;

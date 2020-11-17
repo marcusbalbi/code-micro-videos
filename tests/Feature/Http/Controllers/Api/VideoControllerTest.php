@@ -11,11 +11,13 @@ use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Tests\Traits\TestSaves;
 use Tests\Traits\TestValidations;
 use Illuminate\Http\Request;
+use Illuminate\Http\UploadedFile;
 use \Tests\Exceptions\TestException;
+use Tests\Traits\TestUploads;
 
 class VideoControllerTest extends TestCase
 {
-    use DatabaseMigrations, TestValidations, TestSaves;
+    use DatabaseMigrations, TestValidations, TestSaves, TestUploads;
 
     private $video;
     private $sendData;
@@ -28,7 +30,6 @@ class VideoControllerTest extends TestCase
             'description' => 'short description',
             'year_launched' => 1983,
             'rating' => Video::RATING_LIST[0],
-            'video_file' => null,
             'duration' => 30
         ];
         $this->video = factory(Video::class)->create();
@@ -73,6 +74,17 @@ class VideoControllerTest extends TestCase
         $this->assertInvalidationInUpdateAction($data, 'max.string', ['max' => 255]);
     }
 
+    public function testInvalidationVideoField()
+    {
+        $this->assertInvalidationFile(
+            'video_file',
+            'mp4',
+            12,
+            "mimetypes",
+            ['values' => 'video/mp4']
+        );
+    }
+
     public function testInvalidationCategoriesId()
     {
         $data = [
@@ -94,7 +106,6 @@ class VideoControllerTest extends TestCase
         ];
         $this->assertInvalidationInStoreAction($data, 'exists');
         $this->assertInvalidationInUpdateAction($data, 'exists');
-
     }
 
     public function testInvalidationGenresId()
@@ -159,7 +170,7 @@ class VideoControllerTest extends TestCase
         $this->assertInvalidationInUpdateAction($data, 'in');
     }
 
-    public function testSave()
+    public function testSaveWithoutFile()
     {
 
         $categories = factory(Category::class, 3)->create();
@@ -203,8 +214,55 @@ class VideoControllerTest extends TestCase
             $video->load('genres');
             $this->assertEqualsCanonicalizing($video->categories->pluck("id")->toArray(), $extra['categories_id']);
             $this->assertEqualsCanonicalizing($video->genres->pluck("id")->toArray(), $extra['genres_id']);
-
         }
+    }
+
+    public function testStoreWithFiles()
+    {
+        \Storage::fake();
+        $files = $this->getFiles();
+        $categories = factory(Category::class, 3)->create();
+        $genres = factory(Genre::class, 2)->create();
+        $genres[0]->categories()->sync($categories->pluck('id')->toArray());
+        $genres[1]->categories()->sync($categories->pluck('id')->toArray());
+
+        $response = $this->json('POST', $this->routeStore(), $this->sendData + [
+            'categories_id' => $categories->pluck('id')->toArray(),
+            'genres_id' => $genres->pluck('id')->toArray(),
+        ] + $files);
+
+        $response->assertStatus(201);
+        $id = $response->json('id');
+        foreach($files as $file) {
+            \Storage::assertExists("$id/{$file->hashName()}");
+        }
+    }
+
+    public function testUpdateWithFiles()
+    {
+        \Storage::fake();
+        $files = $this->getFiles();
+        $categories = factory(Category::class, 3)->create();
+        $genres = factory(Genre::class, 2)->create();
+        $genres[0]->categories()->sync($categories->pluck('id')->toArray());
+        $genres[1]->categories()->sync($categories->pluck('id')->toArray());
+
+        $response = $this->json('PUT', $this->routeUpdate(), $this->sendData + [
+            'categories_id' => $categories->pluck('id')->toArray(),
+            'genres_id' => $genres->pluck('id')->toArray(),
+        ] + $files);
+
+        $response->assertStatus(200);
+        $id = $response->json('id');
+        foreach ($files as $file) {
+            \Storage::assertExists("$id/{$file->hashName()}");
+        }
+    }
+
+    protected function getFiles () {
+        return [
+            'video_file' => UploadedFile::fake()->create("video_file.mp4")
+        ];
     }
 
     // public function testRollbackStore()
