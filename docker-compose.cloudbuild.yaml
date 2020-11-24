@@ -11,6 +11,12 @@ services:
     depends_on:
       - db
       - redis
+    environment:
+      - GOOGLE_CLOUD_PROJECT_ID=${GOOGLE_CLOUD_PROJECT_ID}
+      - GOOGLE_CLOUD_KEY_FILE=${GOOGLE_CLOUD_KEY_FILE}
+      - GOOGLE_CLOUD_STORAGE_BUCKET=${GOOGLE_CLOUD_STORAGE_BUCKET}
+      - GOOGLE_CLOUD_STORAGE_API_URI=${GOOGLE_CLOUD_STORAGE_API_URI}
+      - TESTING_PROD=${TESTING_PROD}
   nginx:
     build:
       context: .docker/nginx

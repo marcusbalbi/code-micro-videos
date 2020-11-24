@@ -2,38 +2,15 @@
 
 namespace Tests\Feature\Http\Controllers\Api;
 
-use App\Http\Controllers\Api\VideoController;
 use App\Models\Category;
 use App\Models\Genre;
-use Tests\TestCase;
 use App\Models\Video;
-use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Tests\Traits\TestSaves;
-use Tests\Traits\TestValidations;
-use Illuminate\Http\Request;
-use Illuminate\Http\UploadedFile;
-use \Tests\Exceptions\TestException;
-use Tests\Traits\TestUploads;
+use Tests\Feature\Http\Controllers\Api\VideoController\BaseVideoControllerTestCase;
 
-class VideoControllerTest extends TestCase
+class VideoControllerCrudTest extends BaseVideoControllerTestCase
 {
-    use DatabaseMigrations, TestValidations, TestSaves, TestUploads;
-
-    private $video;
-    private $sendData;
-    protected function setUp(): void
-    {
-        parent::setUp();
-
-        $this->sendData = [
-            'title' => 'some Title',
-            'description' => 'short description',
-            'year_launched' => 1983,
-            'rating' => Video::RATING_LIST[0],
-            'duration' => 30
-        ];
-        $this->video = factory(Video::class)->create();
-    }
+    use TestSaves;
 
     public function testIndex()
     {
@@ -72,17 +49,6 @@ class VideoControllerTest extends TestCase
         ];
         $this->assertInvalidationInStoreAction($data, 'max.string', ['max' => 255]);
         $this->assertInvalidationInUpdateAction($data, 'max.string', ['max' => 255]);
-    }
-
-    public function testInvalidationVideoField()
-    {
-        $this->assertInvalidationFile(
-            'video_file',
-            'mp4',
-            12,
-            "mimetypes",
-            ['values' => 'video/mp4']
-        );
     }
 
     public function testInvalidationCategoriesId()
@@ -215,54 +181,6 @@ class VideoControllerTest extends TestCase
             $this->assertEqualsCanonicalizing($video->categories->pluck("id")->toArray(), $extra['categories_id']);
             $this->assertEqualsCanonicalizing($video->genres->pluck("id")->toArray(), $extra['genres_id']);
         }
-    }
-
-    public function testStoreWithFiles()
-    {
-        \Storage::fake();
-        $files = $this->getFiles();
-        $categories = factory(Category::class, 3)->create();
-        $genres = factory(Genre::class, 2)->create();
-        $genres[0]->categories()->sync($categories->pluck('id')->toArray());
-        $genres[1]->categories()->sync($categories->pluck('id')->toArray());
-
-        $response = $this->json('POST', $this->routeStore(), $this->sendData + [
-            'categories_id' => $categories->pluck('id')->toArray(),
-            'genres_id' => $genres->pluck('id')->toArray(),
-        ] + $files);
-
-        $response->assertStatus(201);
-        $id = $response->json('id');
-        foreach($files as $file) {
-            \Storage::assertExists("$id/{$file->hashName()}");
-        }
-    }
-
-    public function testUpdateWithFiles()
-    {
-        \Storage::fake();
-        $files = $this->getFiles();
-        $categories = factory(Category::class, 3)->create();
-        $genres = factory(Genre::class, 2)->create();
-        $genres[0]->categories()->sync($categories->pluck('id')->toArray());
-        $genres[1]->categories()->sync($categories->pluck('id')->toArray());
-
-        $response = $this->json('PUT', $this->routeUpdate(), $this->sendData + [
-            'categories_id' => $categories->pluck('id')->toArray(),
-            'genres_id' => $genres->pluck('id')->toArray(),
-        ] + $files);
-
-        $response->assertStatus(200);
-        $id = $response->json('id');
-        foreach ($files as $file) {
-            \Storage::assertExists("$id/{$file->hashName()}");
-        }
-    }
-
-    protected function getFiles () {
-        return [
-            'video_file' => UploadedFile::fake()->create("video_file.mp4")
-        ];
     }
 
     // public function testRollbackStore()
@@ -399,20 +317,5 @@ class VideoControllerTest extends TestCase
         $response->assertStatus(204);
 
         $this->assertNull(Video::find($video->id));
-    }
-
-    protected function routeStore()
-    {
-        return route('videos.store');
-    }
-
-    protected function routeUpdate()
-    {
-        return route('videos.update', ['video' => $this->video->id]);
-    }
-
-    protected function model()
-    {
-        return Video::class;
     }
 }
