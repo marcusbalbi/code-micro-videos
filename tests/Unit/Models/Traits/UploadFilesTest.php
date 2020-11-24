@@ -22,6 +22,11 @@ class UploadFilesTest extends TestCase
         $this->obj = new UploadFilesStub();
     }
 
+    public function testRelativeFilePath()
+    {
+        $this->assertEquals("1/video.mp4", $this->obj->relativeFilePath('video.mp4'));
+    }
+
     public function testUploadFile()
     {
         \Storage::fake();
@@ -115,8 +120,7 @@ class UploadFilesTest extends TestCase
         $attributes = ['file1' => $file1, 'file2' => $file2, 'other' => 'test'];
         $files = UploadFilesStub::extractFiles($attributes);
         $this->assertCount(3, $attributes);
-        $this->assertEquals(['file1' => $file1->hashName(),'file2' => $file2->hashName(), 'other' => 'test'], $attributes);
+        $this->assertEquals(['file1' => $file1->hashName(), 'file2' => $file2->hashName(), 'other' => 'test'], $attributes);
         $this->assertEquals([$file1, $file2], $files);
-
     }
 }

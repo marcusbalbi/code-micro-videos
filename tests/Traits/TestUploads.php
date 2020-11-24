@@ -22,9 +22,9 @@ trait TestUploads
                 'method' => 'PUT',
                 'route' => $this->routeUpdate()
             ]
-            ];
+        ];
 
-        foreach($routes as $route) {
+        foreach ($routes as $route) {
             $file = UploadedFile::fake()->create("$field.1$extension");
             $response = $this->json($route['method'], $route['route'], [
                 $field => $file
@@ -37,7 +37,14 @@ trait TestUploads
                 $field => $file
             ]);
 
-            $this->assertInvalidationFields($response, [$field], 'max.file', [ 'max' => $maxSize ]);
+            $this->assertInvalidationFields($response, [$field], 'max.file', ['max' => $maxSize]);
+        }
+    }
+
+    protected function assertFilesExistsInStorage($model, array $files)
+    {
+        foreach($files as $file) {
+            \Storage::assertExists($model->relativeFilePath($file->hashName()));
         }
     }
 }
