@@ -2,6 +2,7 @@
 
 use App\Models\Genre;
 use App\Models\Video;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Seeder;
 use Illuminate\Http\UploadedFile;
 
@@ -42,8 +43,8 @@ class VideosTableSeeder extends Seeder
                         $this->relations
                     )
                 );
-                Model::unguard();
             });
+        Model::unguard();
     }
 
     public function fetchRelations()
