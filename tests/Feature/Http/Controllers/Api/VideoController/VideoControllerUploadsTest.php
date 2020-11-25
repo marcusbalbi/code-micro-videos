@@ -11,7 +11,7 @@ use Illuminate\Support\Arr;
 use Tests\Feature\Http\Controllers\Api\VideoController\BaseVideoControllerTestCase;
 use Tests\Traits\TestUploads;
 
-class VideoControllerTest extends BaseVideoControllerTestCase
+class VideoControllerUploadsTest extends BaseVideoControllerTestCase
 {
     use TestUploads;
 
@@ -51,7 +51,7 @@ class VideoControllerTest extends BaseVideoControllerTestCase
         $this->assertInvalidationFile(
             'video_file',
             'mp4',
-            12,
+            Video::VIDEO_FILE_MAX_FILE,
             "mimetypes",
             ['values' => 'video/mp4']
         );
@@ -70,7 +70,6 @@ class VideoControllerTest extends BaseVideoControllerTestCase
             'categories_id' => $categories->pluck('id')->toArray(),
             'genres_id' => $genres->pluck('id')->toArray(),
         ] + $files);
-
         $response->assertStatus(201);
         $this->assertFilesOnPersist($response, $files);
     }

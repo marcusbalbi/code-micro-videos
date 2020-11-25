@@ -17,7 +17,7 @@ steps:
     - GOOGLE_CLOUD_PROJECT_ID=$PROJECT_ID
     - GOOGLE_CLOUD_KEY_FILE=service-account-storage.json
     - GOOGLE_CLOUD_STORAGE_BUCKET=balbi-code-micro-videos
-    - GOOGLE_CLOUD_STORAGE_API_URI=https://storage.cloud.google.com/balbi-code-micro-videos/
+    - GOOGLE_CLOUD_STORAGE_API_URI=https://storage.cloud.google.com/balbi-code-micro-videos
     - TESTING_PROD=true
 
 - id: "Chown in /var/www"
