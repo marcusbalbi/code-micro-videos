@@ -14,6 +14,16 @@ class CategoryControllerTest extends TestCase
 
     private $category;
 
+    private $serializedFields = [
+        'id',
+        'name',
+        'description',
+        'is_active',
+        'created_at',
+        'updated_at',
+        'deleted_at'
+    ];
+
     protected function setUp(): void
     {
         parent::setUp();
@@ -23,7 +33,6 @@ class CategoryControllerTest extends TestCase
     public function testIndex()
     {
         $response = $this->get(route('categories.index'));
-
         $response->assertStatus(200)
             ->assertJson([$this->category->toArray()]);
     }
@@ -31,7 +40,6 @@ class CategoryControllerTest extends TestCase
     public function testShow()
     {
         $response = $this->get(route('categories.show', ['category' => $this->category->id]));
-
         $response->assertStatus(200)
             ->assertJson($this->category->toArray());
     }
@@ -55,7 +63,9 @@ class CategoryControllerTest extends TestCase
     {
         $data = ['name' => 'test'];
         $response = $this->assertStore($data, $data + ['description' => null, 'is_active' => true, 'deleted_at' => null]);
-        $response->assertJsonStructure(['created_at', 'updated_at']);
+        $response->assertJsonStructure([
+            'data' => $this->serializedFields
+        ]);
 
 
         $data = [
