@@ -36,13 +36,22 @@ class CategoryControllerTest extends TestCase
     {
         $response = $this->get(route('categories.index'));
         $response->assertStatus(200)
-            ->assertJson([$this->category->toArray()]);
+        ->assertJsonStructure([
+            'data' => [
+                '*' => $this->serializedFields
+            ],
+            'links' => [],
+            'meta' => []
+        ]);
+
+        $resource = CategoryResource::collection(collect([$this->category]));
+        $this->assertResource($response, $resource);
     }
 
     public function testShow()
     {
         $response = $this->get(route('categories.show', ['category' => $this->category->id]));
-        // dd($response->getContent());
+
         $response->assertStatus(200)
             ->assertJsonStructure([
                 'data' => $this->serializedFields
