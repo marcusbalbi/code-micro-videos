@@ -20,8 +20,8 @@ abstract class BasicCrudController extends Controller
     public function index()
     {
         $data = !$this->paginationSize ?
-            $this->models()::all() :
-            $$this->model()::paginate($this->paginationSize);
+            $this->model()::all() :
+            $this->model()::paginate($this->paginationSize);
 
         $resourceCollectionClass = $this->resourceCollection();
         $refClass = new ReflectionClass($resourceCollectionClass);
