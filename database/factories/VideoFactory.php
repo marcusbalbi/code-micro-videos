@@ -4,6 +4,7 @@
 
 use App\Models\Video;
 use Faker\Generator as Faker;
+use Illuminate\Http\UploadedFile;
 
 $factory->define(Video::class, function (Faker $faker) {
     $rating = array_rand(Video::RATING_LIST);
@@ -14,10 +15,6 @@ $factory->define(Video::class, function (Faker $faker) {
         'opened' => rand(0, 1),
         'rating' => Video::RATING_LIST[$rating],
         'duration' => rand(1, 30),
-        /*'thumb_file' => null,
-        'banner_file' => null,
-        'trailer_file' => null,
-        'video_file' => null,
-        'published' => rand(0, 1),*/
+        /*'published' => rand(0, 1)*/
     ];
 });
