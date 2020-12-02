@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Models\Genre;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Api\BasicCrudController;
+use App\Http\Resources\GenreResource;
 
 class GenreController extends BasicCrudController
 {
@@ -36,7 +37,8 @@ class GenreController extends BasicCrudController
             return $obj;
         });
         $obj->refresh();
-        return $obj;
+        $resource = $this->resource();
+        return new $resource($obj);
     }
 
     public function update(Request $request, $id)
@@ -49,11 +51,22 @@ class GenreController extends BasicCrudController
             $self->handleRelations($obj, $request);
             return $obj;
         });
-        return $obj;
+        $resource = $this->resource();
+        return new $resource($obj);
     }
 
     protected function handleRelations($video, Request $request)
     {
         $video->categories()->sync($request->get('categories_id'));
+    }
+
+    protected function resource()
+    {
+        return GenreResource::class;
+    }
+
+    protected function resourceCollection()
+    {
+        return $this->resource();
     }
 }
