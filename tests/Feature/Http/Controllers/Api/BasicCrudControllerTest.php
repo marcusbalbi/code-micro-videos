@@ -35,8 +35,13 @@ class BasicCrudControllerTest extends TestCase
             'name' => 'testname',
             'description' => 'testdescription',
         ]);
-        // dd($contoller->index()->toArray());
-        $this->assertEquals([$category->toArray()], $this->controller->index()->toArray());
+        $resource = $this->controller->index();
+        $serialized = $resource->response()->getData(true);
+
+        $this->assertEquals([$category->toArray()], $serialized['data']);
+
+        $this->assertArrayHasKey('meta', $serialized);
+        $this->assertArrayHasKey('links', $serialized);
     }
 
     public function testInvalidationDataInStore()
@@ -52,11 +57,13 @@ class BasicCrudControllerTest extends TestCase
         $request = $this->mock(Request::class);
         $request->shouldReceive('all')->once()->andReturn(['name' => 'test', 'description' => 'test_desc']);
 
-        $obj = $this->controller->store($request);
+        $resource = $this->controller->store($request);
+
+        $serialized = $resource->response()->getData(true);
 
         $this->assertEquals(
             CategoryStub::find(1)->toArray(),
-            $obj->toArray()
+            $serialized['data']
         );
     }
 
@@ -73,9 +80,9 @@ class BasicCrudControllerTest extends TestCase
 
         $reflectionMethod->setAccessible(true);
 
-        $result = $reflectionMethod->invokeArgs($this->controller, [$category->id]);
+        $resource = $reflectionMethod->invokeArgs($this->controller, [$category->id]);
 
-        $this->assertInstanceOf(CategoryStub::class, $result);
+        $this->assertInstanceOf(CategoryStub::class, $resource);
     }
 
     public function testIfFindOrFailThrowExceptionWhenIdInvalid()
@@ -97,11 +104,11 @@ class BasicCrudControllerTest extends TestCase
             'name' => 'testname',
             'description' => 'testdescription',
         ]);
-        $result = $this->controller->show($category->id);
-
+        $resource = $this->controller->show($category->id);
+        $serialized = $resource->response()->getData(true);
         $this->assertEquals(
             $category->toArray(),
-            $result->toArray()
+            $serialized['data']
         );
     }
 
@@ -114,10 +121,10 @@ class BasicCrudControllerTest extends TestCase
         $request = $this->mock(Request::class);
         $request->shouldReceive('all')->once()->andReturn(['name' => 'test_changed', 'description' => 'new_desc']);
 
-        $obj = $this->controller->update($request, $category->id);
-
+        $resource = $this->controller->update($request, $category->id);
+        $serialized = $resource->response()->getData(true);
         $this->assertEquals(
-            $obj->toArray(),
+            $serialized['data'],
             CategoryStub::find(1)->toArray()
         );
     }
