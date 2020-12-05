@@ -30,7 +30,7 @@ steps:
 
 - id: "Rodando composer"
   name: 'docker'
-  args: ['exec', '-t', 'app' ,'composer', 'install']
+  args: ['exec', '-t', 'app' ,'composer', 'install', '-d', '/var/www/backend']
 
 - id: "Copiando .env"
   name: 'docker'
