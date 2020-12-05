@@ -34,11 +34,11 @@ steps:
 
 - id: "Copiando .env"
   name: 'docker'
-  args: ['exec', '-t', 'app', 'cp', '.env.example', '.env']
+  args: ['exec', '-t', 'app', 'cp', '/var/www/backend/.env.example', '/var/www/backend/.env']
 
 - id: "Copiando .env.testing"
   name: 'docker'
-  args: ['exec', '-t', 'app', 'cp', '.env.example.testing', '.env.testing']
+  args: ['exec', '-t', 'app', 'cp', '/var/www/backend/.env.example.testing', '/var/www/backend/.env.testing']
 
 - id: "rodando key:generate"
   name: 'docker'
