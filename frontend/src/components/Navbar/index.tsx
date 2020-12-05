@@ -1,15 +1,23 @@
 import React from 'react'
-import {AppBar, Button, makeStyles, Toolbar, Typography} from '@material-ui/core'
+import {AppBar, Button, makeStyles, Toolbar, Theme, Typography} from '@material-ui/core'
 import logo from '../../static/img/logo.png'
 
-const useStyles = makeStyles({
-  toolbar: {
-    backgroundColor: '#000000',
-  },
-  title: {
-    flexGrow: 1,
-    textAlign: 'center'
-  }
+const useStyles = makeStyles((theme: Theme) => {
+  return {
+    toolbar: {
+      backgroundColor: "#000000",
+    },
+    title: {
+      flexGrow: 1,
+      textAlign: "center",
+    },
+    logo: {
+      width: 100,
+      [theme.breakpoints.up('sm')]: {
+        width: 170
+      }
+    },
+  };
 })
 
 export const Navbar: React.FC = () => {
@@ -18,7 +26,7 @@ export const Navbar: React.FC = () => {
     <AppBar>
       <Toolbar className={classes.toolbar}>
         <Typography className={classes.title}>
-          <img src={logo} alt="Logo" />
+          <img className={classes.logo} src={logo} alt="Logo" />
         </Typography>
         <Button color="inherit">Login</Button>
       </Toolbar>
