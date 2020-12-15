@@ -6,14 +6,15 @@ import Typography from "@material-ui/core/Typography";
 import MuiBreadcrumbs from "@material-ui/core/Breadcrumbs";
 import { Route } from "react-router";
 import { Link as RouterLink } from "react-router-dom";
+import RouteParser from "route-parser";
 import { Location } from "history";
-import routes from "../routes"
+import routes from "../routes";
 
 const breadcrumbNameMap: { [key: string]: string } = {};
 
-routes.forEach(route => {
-  breadcrumbNameMap[route.path as string] = route.label
-})
+routes.forEach((route) => {
+  breadcrumbNameMap[route.path as string] = route.label;
+});
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -52,14 +53,18 @@ const makeBreadcrumb = (location: Location) => {
           .slice(0, index + 1)
           .join("/")
           .replace("//", "/")}`;
+        const route = Object.keys(breadcrumbNameMap).find(path => new RouteParser(path).match(to))
 
+        if (route === undefined) {
+          return false
+        }
         return last ? (
           <Typography color="textPrimary" key={to}>
-            {breadcrumbNameMap[to]}
+            {breadcrumbNameMap[route]}
           </Typography>
         ) : (
           <LinkRouter color="inherit" to={to} key={to}>
-            {breadcrumbNameMap[to]}
+            {breadcrumbNameMap[route]}
           </LinkRouter>
         );
       })}
