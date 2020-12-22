@@ -1,3 +1,4 @@
+import { Chip } from "@material-ui/core";
 import MUIDataTable, { MUIDataTableColumn } from "mui-datatables";
 import React, { useEffect, useState } from "react";
 import { httpVideo } from "../../util/http";
@@ -10,6 +11,14 @@ const columnsDefinition: MUIDataTableColumn[] = [
   {
     name: "is_active",
     label: "Ativo?",
+    options: {
+      customBodyRender: (value, tableMeta, updateValue) => {
+        if (value === true) {
+          return <Chip color="primary" label="SIM" />;
+        }
+        return <Chip color="secondary" label="NÃO" />;
+      },
+    },
   },
   {
     name: "created_at",
