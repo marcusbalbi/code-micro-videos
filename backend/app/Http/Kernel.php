@@ -38,6 +38,7 @@ class Kernel extends HttpKernel
         ],
 
         'api' => [
+            \Fruitcake\Cors\HandleCors::class,
             'throttle:60,1',
             'bindings',
         ],
