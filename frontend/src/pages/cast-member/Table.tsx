@@ -1,4 +1,3 @@
-import { Chip } from "@material-ui/core";
 import MUIDataTable, { MUIDataTableColumn } from "mui-datatables";
 import React, { useEffect, useState } from "react";
 import { httpVideo } from "../../util/http";
@@ -6,20 +5,22 @@ import { httpVideo } from "../../util/http";
 import format from "date-fns/format";
 import parseISO from "date-fns/parseISO";
 
+const CastMemberTypeMap = {
+  1: "Diretor",
+  2: "Ator",
+};
+
 const columnsDefinition: MUIDataTableColumn[] = [
   {
     name: "name",
     label: "nome",
   },
   {
-    name: "is_active",
-    label: "Ativo?",
+    name: "type",
+    label: "Tipo",
     options: {
       customBodyRender: (value, tableMeta, updateValue) => {
-        if (value === true) {
-          return <Chip color="primary" label="SIM" />;
-        }
-        return <Chip color="secondary" label="NÃO" />;
+        return CastMemberTypeMap[value];
       },
     },
   },
@@ -38,7 +39,7 @@ export const Table = () => {
   const [data, setData] = useState([]);
 
   useEffect(() => {
-    httpVideo.get("categories/").then((response) => {
+    httpVideo.get("cast_members/").then((response) => {
       setData(response.data.data);
     });
   }, []);
