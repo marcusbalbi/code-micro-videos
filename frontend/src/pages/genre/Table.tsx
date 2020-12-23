@@ -4,6 +4,7 @@ import { httpVideo } from "../../util/http";
 
 import format from "date-fns/format";
 import parseISO from "date-fns/parseISO";
+import { Chip } from "@material-ui/core";
 
 const columnsDefinition: MUIDataTableColumn[] = [
   {
@@ -16,6 +17,18 @@ const columnsDefinition: MUIDataTableColumn[] = [
     options: {
       customBodyRender: (value, tableMeta, updateValue) => {
         return value.map((value: any) => value.name).join(", ");
+      },
+    },
+  },
+  {
+    name: "is_active",
+    label: "Ativo?",
+    options: {
+      customBodyRender: (value, tableMeta, updateValue) => {
+        if (value === true) {
+          return <Chip color="primary" label="SIM" />;
+        }
+        return <Chip color="secondary" label="NÃO" />;
       },
     },
   },
