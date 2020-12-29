@@ -5,7 +5,7 @@ import { Link } from 'react-router-dom';
 import AddIcon from "@material-ui/icons/Add";
 import Table from './Table'
 
-export const CategoryList = () => {
+export const CategoryListPage = () => {
   return (
     <Page title="Listagem de Categorias">
       <Box dir={"rtl"}>
@@ -19,3 +19,5 @@ export const CategoryList = () => {
     </Page>
   );
 };
+
+export default CategoryListPage;
