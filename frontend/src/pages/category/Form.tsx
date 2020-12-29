@@ -7,6 +7,7 @@ import {
   makeStyles,
   Theme,
 } from "@material-ui/core";
+import { useForm } from "react-hook-form";
 import React from "react";
 
 const useStyles = makeStyles((theme: Theme) => {
@@ -24,10 +25,18 @@ export const Form = () => {
     size: "medium",
     className: classes.submit,
   };
+  const { register, getValues } = useForm();
   return (
     <form>
-      <TextField name="name" label="Nome" fullWidth variant="outlined" />
       <TextField
+        inputRef={register}
+        name="name"
+        label="Nome"
+        fullWidth
+        variant="outlined"
+      />
+      <TextField
+        inputRef={register}
         name="description"
         label="Descrição"
         margin="normal"
@@ -36,10 +45,17 @@ export const Form = () => {
         multiline
         rows={5}
       />
-      <Checkbox name="is_active" />
+      <Checkbox inputRef={register} name="is_active" />
       Ativo?
       <Box dir={"rtl"}>
-        <Button {...buttonProps}>Salvar</Button>
+        <Button
+          {...buttonProps}
+          onClick={() => {
+            console.log(getValues());
+          }}
+        >
+          Salvar
+        </Button>
         <Button {...buttonProps} type="submit">
           Salvar e continuar editando
         </Button>
