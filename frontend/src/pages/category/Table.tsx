@@ -1,10 +1,10 @@
 import { Chip } from "@material-ui/core";
 import MUIDataTable, { MUIDataTableColumn } from "mui-datatables";
 import React, { useEffect, useState } from "react";
-import { httpVideo } from "../../util/http";
 
 import format from "date-fns/format";
 import parseISO from "date-fns/parseISO";
+import httpCategory from "../../util/http/http-category";
 
 const columnsDefinition: MUIDataTableColumn[] = [
   {
@@ -38,7 +38,7 @@ export const Table = () => {
   const [data, setData] = useState([]);
 
   useEffect(() => {
-    httpVideo.get("categories/").then((response) => {
+    httpCategory.list().then((response) => {
       setData(response.data.data);
     });
   }, []);
