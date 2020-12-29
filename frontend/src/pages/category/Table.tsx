@@ -6,6 +6,12 @@ import format from "date-fns/format";
 import parseISO from "date-fns/parseISO";
 import httpCategory from "../../util/http/http-category";
 
+interface Category {
+  name: string;
+  is_active: boolean;
+  created_at: string;
+}
+
 const columnsDefinition: MUIDataTableColumn[] = [
   {
     name: "name",
@@ -35,10 +41,10 @@ const columnsDefinition: MUIDataTableColumn[] = [
 ];
 
 export const Table = () => {
-  const [data, setData] = useState([]);
+  const [data, setData] = useState<Category[]>([]);
 
   useEffect(() => {
-    httpCategory.list().then((response) => {
+    httpCategory.list<{ data: Category[] }>().then((response) => {
       setData(response.data.data);
     });
   }, []);
