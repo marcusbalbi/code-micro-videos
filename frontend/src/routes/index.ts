@@ -1,7 +1,7 @@
 import { RouteProps } from "react-router-dom";
 import CategoryListPage from "../pages/category/CategoryListPage";
 import CategoryFormPage from "../pages/category/CategoryFormPage";
-import { GenreList } from "../pages/genre/GenreList";
+import GenreListPage from "../pages/genre/GenreListPage";
 import { Dashboard } from "../pages/Dashboard";
 import CastMemberListPage from "../pages/cast-member/CastMemberListPage";
 import CastMemberFormPage from "../pages/cast-member/CastMemberFormPage";
@@ -65,14 +65,14 @@ const routes: Array<MyRouteProps> = [
     name: "genres.list",
     label: "Listar Gêneros",
     path: "/genres",
-    component: GenreList,
+    component: GenreListPage,
     exact: true,
   },
   {
     name: "genres.create",
     label: "Criar Gênero",
     path: "/genres/create",
-    component: CastMemberFormPage,
+    component: GenreListPage,
     exact: true,
   },
   {
