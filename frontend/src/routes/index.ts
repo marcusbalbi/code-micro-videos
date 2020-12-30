@@ -5,6 +5,7 @@ import GenreListPage from "../pages/genre/GenreListPage";
 import { Dashboard } from "../pages/Dashboard";
 import CastMemberListPage from "../pages/cast-member/CastMemberListPage";
 import CastMemberFormPage from "../pages/cast-member/CastMemberFormPage";
+import GenreFormPage from "../pages/genre/GenreFormPage";
 
 export interface MyRouteProps extends RouteProps {
   label: string;
@@ -72,7 +73,7 @@ const routes: Array<MyRouteProps> = [
     name: "genres.create",
     label: "Criar Gênero",
     path: "/genres/create",
-    component: GenreListPage,
+    component: GenreFormPage,
     exact: true,
   },
   {
