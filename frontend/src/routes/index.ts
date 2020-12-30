@@ -1,8 +1,11 @@
 import { RouteProps } from "react-router-dom";
-import { CategoryList } from "../pages/category/CategoryList";
-import { CastMemberList } from "../pages/cast-member/CastMemberList";
-import { GenreList } from "../pages/genre/GenreList";
+import CategoryListPage from "../pages/category/CategoryListPage";
+import CategoryFormPage from "../pages/category/CategoryFormPage";
+import GenreListPage from "../pages/genre/GenreListPage";
 import { Dashboard } from "../pages/Dashboard";
+import CastMemberListPage from "../pages/cast-member/CastMemberListPage";
+import CastMemberFormPage from "../pages/cast-member/CastMemberFormPage";
+import GenreFormPage from "../pages/genre/GenreFormPage";
 
 export interface MyRouteProps extends RouteProps {
   label: string;
@@ -21,63 +24,63 @@ const routes: Array<MyRouteProps> = [
     name: "categories.list",
     label: "Listar Categorias",
     path: "/categories",
-    component: CategoryList,
+    component: CategoryListPage,
     exact: true,
   },
   {
     name: "categories.create",
     label: "Criar Categoria",
     path: "/categories/create",
-    component: CategoryList,
+    component: CategoryFormPage,
     exact: true,
   },
   {
     name: "categories.edit",
     label: "Editar Categoria",
     path: "/categories/:id/edit",
-    component: CategoryList,
+    component: CategoryFormPage,
     exact: true,
   },
   {
     name: "cast_members.list",
     label: "Listar Membros de Elenco",
     path: "/cast-members",
-    component: CastMemberList,
+    component: CastMemberListPage,
     exact: true,
   },
   {
     name: "cast_members.create",
     label: "Criar Membro de Elenco",
     path: "/cast-members/create",
-    component: CastMemberList,
+    component: CastMemberFormPage,
     exact: true,
   },
   {
     name: "cast_members.edit",
     label: "Editar Membro de Elenco",
     path: "/cast-members/:id/edit",
-    component: CastMemberList,
+    component: CastMemberFormPage,
     exact: true,
   },
   {
     name: "genres.list",
     label: "Listar Gêneros",
     path: "/genres",
-    component: GenreList,
+    component: GenreListPage,
     exact: true,
   },
   {
     name: "genres.create",
     label: "Criar Gênero",
     path: "/genres/create",
-    component: CastMemberList,
+    component: GenreFormPage,
     exact: true,
   },
   {
     name: "genres.edit",
     label: "Editar Gênero",
     path: "/genres/:id/edit",
-    component: CastMemberList,
+    component: CastMemberFormPage,
     exact: true,
   },
 ];

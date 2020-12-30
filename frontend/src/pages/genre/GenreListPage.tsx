@@ -5,7 +5,7 @@ import { Link } from "react-router-dom";
 import AddIcon from "@material-ui/icons/Add";
 import Table from "./Table";
 
-export const GenreList = () => {
+export const GenreListPage = () => {
   return (
     <Page title="Listagem de Gêneros">
       <Box dir={"rtl"}>
@@ -24,3 +24,5 @@ export const GenreList = () => {
     </Page>
   );
 };
+
+export default GenreListPage;

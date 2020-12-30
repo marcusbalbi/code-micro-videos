@@ -1,20 +1,15 @@
 import { Box, Fab } from "@material-ui/core";
 import React from "react";
 import { Page } from "../../components/Page";
-import { Link } from "react-router-dom";
+import { Link } from 'react-router-dom';
 import AddIcon from "@material-ui/icons/Add";
-import Table from "./Table";
+import Table from './Table'
 
-export const CastMemberList = () => {
+export const CategoryListPage = () => {
   return (
-    <Page title="Listagem de Membros de Elenco">
+    <Page title="Listagem de Categorias">
       <Box dir={"rtl"}>
-        <Fab
-          title="Adicionar Membro de Elenco"
-          size={"small"}
-          component={Link}
-          to="/cast-members/create"
-        >
+        <Fab title="Adicionar Categoria" size={'small'} component={Link} to="/categories/create"  >
           <AddIcon />
         </Fab>
       </Box>
@@ -24,3 +19,5 @@ export const CastMemberList = () => {
     </Page>
   );
 };
+
+export default CategoryListPage;
