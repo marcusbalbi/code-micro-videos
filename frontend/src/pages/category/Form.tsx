@@ -9,6 +9,7 @@ import {
 } from "@material-ui/core";
 import { useForm } from "react-hook-form";
 import React from "react";
+import httpCategory from "../../util/http/http-category";
 
 const useStyles = makeStyles((theme: Theme) => {
   return {
@@ -25,9 +26,17 @@ export const Form = () => {
     size: "medium",
     className: classes.submit,
   };
-  const { register, getValues } = useForm();
+  const { register, handleSubmit, getValues } = useForm({
+    defaultValues: {
+      is_active: true,
+    },
+  });
+
+  function onSubmit(formData, event) {
+    httpCategory.create(formData).then(console.log);
+  }
   return (
-    <form>
+    <form onSubmit={handleSubmit(onSubmit)}>
       <TextField
         inputRef={register}
         name="name"
@@ -45,13 +54,13 @@ export const Form = () => {
         multiline
         rows={5}
       />
-      <Checkbox inputRef={register} name="is_active" />
+      <Checkbox inputRef={register} name="is_active" defaultChecked={true} />
       Ativo?
       <Box dir={"rtl"}>
         <Button
           {...buttonProps}
           onClick={() => {
-            console.log(getValues());
+            onSubmit(getValues(), null);
           }}
         >
           Salvar
