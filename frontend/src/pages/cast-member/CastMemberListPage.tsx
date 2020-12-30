@@ -5,7 +5,7 @@ import { Link } from "react-router-dom";
 import AddIcon from "@material-ui/icons/Add";
 import Table from "./Table";
 
-export const CastMemberList = () => {
+export const CastMemberListPage = () => {
   return (
     <Page title="Listagem de Membros de Elenco">
       <Box dir={"rtl"}>
@@ -24,3 +24,5 @@ export const CastMemberList = () => {
     </Page>
   );
 };
+
+export default CastMemberListPage;

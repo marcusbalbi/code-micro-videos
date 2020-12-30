@@ -1,9 +1,10 @@
 import { RouteProps } from "react-router-dom";
 import CategoryListPage from "../pages/category/CategoryListPage";
 import CategoryFormPage from "../pages/category/CategoryFormPage";
-import { CastMemberList } from "../pages/cast-member/CastMemberList";
 import { GenreList } from "../pages/genre/GenreList";
 import { Dashboard } from "../pages/Dashboard";
+import CastMemberListPage from "../pages/cast-member/CastMemberListPage";
+import CastMemberFormPage from "../pages/cast-member/CastMemberFormPage";
 
 export interface MyRouteProps extends RouteProps {
   label: string;
@@ -43,21 +44,21 @@ const routes: Array<MyRouteProps> = [
     name: "cast_members.list",
     label: "Listar Membros de Elenco",
     path: "/cast-members",
-    component: CastMemberList,
+    component: CastMemberListPage,
     exact: true,
   },
   {
     name: "cast_members.create",
     label: "Criar Membro de Elenco",
     path: "/cast-members/create",
-    component: CastMemberList,
+    component: CastMemberFormPage,
     exact: true,
   },
   {
     name: "cast_members.edit",
     label: "Editar Membro de Elenco",
     path: "/cast-members/:id/edit",
-    component: CastMemberList,
+    component: CastMemberFormPage,
     exact: true,
   },
   {
@@ -71,14 +72,14 @@ const routes: Array<MyRouteProps> = [
     name: "genres.create",
     label: "Criar Gênero",
     path: "/genres/create",
-    component: CastMemberList,
+    component: CastMemberFormPage,
     exact: true,
   },
   {
     name: "genres.edit",
     label: "Editar Gênero",
     path: "/genres/:id/edit",
-    component: CastMemberList,
+    component: CastMemberFormPage,
     exact: true,
   },
 ];
