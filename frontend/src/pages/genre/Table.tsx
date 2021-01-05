@@ -4,7 +4,7 @@ import httpGenre from "../../util/http/http-genre";
 
 import format from "date-fns/format";
 import parseISO from "date-fns/parseISO";
-import { Chip } from "@material-ui/core";
+import { BadgeNo, BadgeYes } from "../../components/Badge";
 
 const columnsDefinition: MUIDataTableColumn[] = [
   {
@@ -26,9 +26,9 @@ const columnsDefinition: MUIDataTableColumn[] = [
     options: {
       customBodyRender: (value, tableMeta, updateValue) => {
         if (value === true) {
-          return <Chip color="primary" label="SIM" />;
+          return <BadgeYes />;
         }
-        return <Chip color="secondary" label="NÃO" />;
+        return <BadgeNo />;
       },
     },
   },
