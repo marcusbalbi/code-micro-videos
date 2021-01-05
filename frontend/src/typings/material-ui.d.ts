@@ -10,6 +10,6 @@ declare module "@material-ui/core/styles/overrides" {
     MUIDataTableBodyCell: any;
     MUIDataTableToolbarSelect: any;
     MUIDataTableBodyRow: any;
-    MuiDataTablePagination: any;
+    MUIDataTablePagination: any;
   }
 }
