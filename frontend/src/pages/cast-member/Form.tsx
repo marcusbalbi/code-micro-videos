@@ -56,8 +56,16 @@ export const Form = () => {
             setValue("type", parseInt(e.target.value));
           }}
         >
-          <FormControlLabel control={<Radio />} label="Diretor" value="1" />
-          <FormControlLabel control={<Radio />} label="Ator" value="2" />
+          <FormControlLabel
+            control={<Radio color={"primary"} />}
+            label="Diretor"
+            value="1"
+          />
+          <FormControlLabel
+            control={<Radio color={"primary"} />}
+            label="Ator"
+            value="2"
+          />
         </RadioGroup>
       </FormControl>
 

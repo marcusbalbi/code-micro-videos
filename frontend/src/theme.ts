@@ -10,6 +10,17 @@ const theme = createMuiTheme({
       main: "#4db5ab",
       contrastText: "#FFF",
     },
+    background: {
+      default: '#fafafa'
+    },
+    
+  },
+  overrides: {
+    // MuiFormLabel: {
+    //   root: {
+    //     backgroundColor: "red",
+    //   },
+    // },
   },
 });
 

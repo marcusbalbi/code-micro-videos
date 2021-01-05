@@ -54,7 +54,12 @@ export const Form = () => {
         multiline
         rows={5}
       />
-      <Checkbox inputRef={register} name="is_active" defaultChecked={true} />
+      <Checkbox
+        color={"primary"}
+        inputRef={register}
+        name="is_active"
+        defaultChecked={true}
+      />
       Ativo?
       <Box dir={"rtl"}>
         <Button
