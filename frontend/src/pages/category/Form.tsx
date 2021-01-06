@@ -8,8 +8,10 @@ import {
   Theme,
 } from "@material-ui/core";
 import { useForm } from "react-hook-form";
-import React from "react";
+import React, { useMemo } from "react";
 import httpCategory from "../../util/http/http-category";
+import * as yup from "yup";
+import { useYupValidationResolver } from "../../hooks/YupValidation";
 
 const useStyles = makeStyles((theme: Theme) => {
   return {
@@ -21,13 +23,22 @@ const useStyles = makeStyles((theme: Theme) => {
 
 export const Form = () => {
   const classes = useStyles();
+  const validationSchema = useMemo(
+    () =>
+      yup.object({
+        name: yup.string().label("Nome").required(),
+      }),
+    []
+  );
+  const resolver = useYupValidationResolver(validationSchema);
   const buttonProps: ButtonProps = {
     variant: "contained",
     size: "medium",
     className: classes.submit,
     color: "secondary",
   };
-  const { register, handleSubmit, getValues } = useForm({
+  const { register, handleSubmit, getValues, errors } = useForm<any>({
+    resolver,
     defaultValues: {
       is_active: true,
     },
@@ -44,6 +55,8 @@ export const Form = () => {
         label="Nome"
         fullWidth
         variant="outlined"
+        error={errors.name !== undefined}
+        helperText={errors.name && errors.name.message}
       />
       <TextField
         inputRef={register}
