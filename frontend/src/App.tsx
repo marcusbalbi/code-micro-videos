@@ -6,6 +6,7 @@ import Breadcrumbs from "./components/Breadcrumbs";
 import { Navbar } from "./components/Navbar";
 import { AppRouter } from "./routes/AppRouter";
 import theme from "./theme";
+import "./util/vendor/yup";
 function App() {
   return (
     <React.Fragment>
