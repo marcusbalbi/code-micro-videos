@@ -8,10 +8,11 @@ import {
   Theme,
 } from "@material-ui/core";
 import { useForm } from "react-hook-form";
-import React, { useMemo } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import httpCategory from "../../util/http/http-category";
 import * as yup from "yup";
 import { useYupValidationResolver } from "../../hooks/YupValidation";
+import { useParams } from "react-router";
 
 const useStyles = makeStyles((theme: Theme) => {
   return {
@@ -22,6 +23,8 @@ const useStyles = makeStyles((theme: Theme) => {
 });
 
 export const Form = () => {
+  const { id } = useParams<{ id: string }>();
+  const [category, setCategory] = useState(null);
   const classes = useStyles();
   const validationSchema = useMemo(
     () =>
@@ -37,15 +40,29 @@ export const Form = () => {
     className: classes.submit,
     color: "secondary",
   };
-  const { register, handleSubmit, getValues, errors } = useForm<any>({
+  const { register, handleSubmit, getValues, errors, reset } = useForm<any>({
     resolver,
     defaultValues: {
       is_active: true,
     },
   });
 
+  useEffect(() => {
+    if (!id) {
+      return;
+    }
+    httpCategory.get(id).then(({ data }) => {
+      setCategory(data.data);
+      reset(data.data);
+    });
+  }, [id, reset]);
+
   function onSubmit(formData, event) {
-    httpCategory.create(formData).then(console.log);
+    const http = !category
+      ? httpCategory.create(formData)
+      : httpCategory.update(id, formData);
+
+    http.then(console.log);
   }
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
@@ -57,6 +74,7 @@ export const Form = () => {
         variant="outlined"
         error={errors.name !== undefined}
         helperText={errors.name && errors.name.message}
+        InputLabelProps={{ shrink: true }}
       />
       <TextField
         inputRef={register}
@@ -67,6 +85,7 @@ export const Form = () => {
         fullWidth
         multiline
         rows={5}
+        InputLabelProps={{ shrink: true }}
       />
       <Checkbox
         color={"primary"}
