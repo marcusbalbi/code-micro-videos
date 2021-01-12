@@ -26,6 +26,7 @@ const useStyles = makeStyles((theme: Theme) => {
 export const Form = () => {
   const { id } = useParams<{ id: string }>();
   const [category, setCategory] = useState(null);
+  const [loading, setLoading] = useState(false);
   const classes = useStyles();
   const validationSchema = useMemo(
     () =>
@@ -40,6 +41,7 @@ export const Form = () => {
     size: "medium",
     className: classes.submit,
     color: "secondary",
+    disabled: loading,
   };
   const {
     register,
@@ -64,18 +66,27 @@ export const Form = () => {
     if (!id) {
       return;
     }
-    httpCategory.get(id).then(({ data }) => {
-      setCategory(data.data);
-      reset(data.data);
-    });
+    setLoading(true);
+    httpCategory
+      .get(id)
+      .then(({ data }) => {
+        setCategory(data.data);
+        reset(data.data);
+      })
+      .finally(() => {
+        setLoading(false);
+      });
   }, [id, reset]);
 
   function onSubmit(formData, event) {
+    setLoading(true);
     const http = !category
       ? httpCategory.create(formData)
       : httpCategory.update(id, formData);
 
-    http.then(console.log);
+    http.then(console.log).finally(() => {
+      setLoading(true);
+    });
   }
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
@@ -85,9 +96,10 @@ export const Form = () => {
         label="Nome"
         fullWidth
         variant="outlined"
+        disabled={loading}
+        InputLabelProps={{ shrink: true }}
         error={errors.name !== undefined}
         helperText={errors.name && errors.name.message}
-        InputLabelProps={{ shrink: true }}
       />
       <TextField
         inputRef={register}
@@ -99,8 +111,12 @@ export const Form = () => {
         multiline
         rows={5}
         InputLabelProps={{ shrink: true }}
+        disabled={loading}
       />
       <FormControlLabel
+        disabled={loading}
+        label={"Ativo?"}
+        labelPlacement="end"
         control={
           <Checkbox
             color={"primary"}
@@ -109,8 +125,6 @@ export const Form = () => {
             checked={watch("is_active")}
           />
         }
-        label={"Ativo?"}
-        labelPlacement="end"
       />
       <Box dir={"rtl"}>
         <Button
