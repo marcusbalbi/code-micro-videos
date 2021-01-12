@@ -6,6 +6,7 @@ import {
   ButtonProps,
   makeStyles,
   Theme,
+  FormControlLabel,
 } from "@material-ui/core";
 import { useForm } from "react-hook-form";
 import React, { useEffect, useMemo, useState } from "react";
@@ -40,12 +41,24 @@ export const Form = () => {
     className: classes.submit,
     color: "secondary",
   };
-  const { register, handleSubmit, getValues, errors, reset } = useForm<any>({
+  const {
+    register,
+    handleSubmit,
+    getValues,
+    errors,
+    reset,
+    watch,
+    setValue,
+  } = useForm<any>({
     resolver,
     defaultValues: {
       is_active: true,
     },
   });
+
+  useEffect(() => {
+    register("is_active");
+  }, [register]);
 
   useEffect(() => {
     if (!id) {
@@ -87,13 +100,18 @@ export const Form = () => {
         rows={5}
         InputLabelProps={{ shrink: true }}
       />
-      <Checkbox
-        color={"primary"}
-        inputRef={register}
-        name="is_active"
-        defaultChecked={true}
+      <FormControlLabel
+        control={
+          <Checkbox
+            color={"primary"}
+            name="is_active"
+            onChange={() => setValue("is_active", !getValues()["is_active"])}
+            checked={watch("is_active")}
+          />
+        }
+        label={"Ativo?"}
+        labelPlacement="end"
       />
-      Ativo?
       <Box dir={"rtl"}>
         <Button
           {...buttonProps}
