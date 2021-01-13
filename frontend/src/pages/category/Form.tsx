@@ -13,7 +13,7 @@ import React, { useEffect, useMemo, useState } from "react";
 import httpCategory from "../../util/http/http-category";
 import * as yup from "yup";
 import { useYupValidationResolver } from "../../hooks/YupValidation";
-import { useParams } from "react-router";
+import { useHistory, useParams } from "react-router";
 
 const useStyles = makeStyles((theme: Theme) => {
   return {
@@ -25,6 +25,7 @@ const useStyles = makeStyles((theme: Theme) => {
 
 export const Form = () => {
   const { id } = useParams<{ id: string }>();
+  const history = useHistory();
   const [category, setCategory] = useState(null);
   const [loading, setLoading] = useState(false);
   const classes = useStyles();
@@ -84,9 +85,22 @@ export const Form = () => {
       ? httpCategory.create(formData)
       : httpCategory.update(id, formData);
 
-    http.then(console.log).finally(() => {
-      setLoading(true);
-    });
+    http
+      .then(({ data }) => {
+        setTimeout(() => {
+          if (!event) {
+            return history.push("/categories");
+          }
+          if (id) {
+            history.replace(`/categories/${data.data.id}/edit`);
+          } else {
+            history.push(`/categories/${data.data.id}/edit`);
+          }
+        });
+      })
+      .finally(() => {
+        setLoading(false);
+      });
   }
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
