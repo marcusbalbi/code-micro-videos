@@ -14,6 +14,7 @@ import httpCategory from "../../util/http/http-category";
 import * as yup from "yup";
 import { useYupValidationResolver } from "../../hooks/YupValidation";
 import { useHistory, useParams } from "react-router";
+import { useSnackbar } from "notistack";
 
 const useStyles = makeStyles((theme: Theme) => {
   return {
@@ -24,6 +25,7 @@ const useStyles = makeStyles((theme: Theme) => {
 });
 
 export const Form = () => {
+  const snackbar = useSnackbar();
   const { id } = useParams<{ id: string }>();
   const history = useHistory();
   const [category, setCategory] = useState(null);
@@ -87,6 +89,9 @@ export const Form = () => {
 
     http
       .then(({ data }) => {
+        snackbar.enqueueSnackbar("Categoria salva com sucesso!", {
+          variant: "success",
+        });
         setTimeout(() => {
           if (!event) {
             return history.push("/categories");
@@ -96,6 +101,12 @@ export const Form = () => {
           } else {
             history.push(`/categories/${data.data.id}/edit`);
           }
+        });
+      })
+      .catch((pErr) => {
+        console.log(pErr)
+        snackbar.enqueueSnackbar("Falha ao salvar Categoria", {
+          variant: 'error',
         });
       })
       .finally(() => {
