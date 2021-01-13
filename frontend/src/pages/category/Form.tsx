@@ -25,12 +25,6 @@ const useStyles = makeStyles((theme: Theme) => {
 });
 
 export const Form = () => {
-  const snackbar = useSnackbar();
-  const { id } = useParams<{ id: string }>();
-  const history = useHistory();
-  const [category, setCategory] = useState(null);
-  const [loading, setLoading] = useState(false);
-  const classes = useStyles();
   const validationSchema = useMemo(
     () =>
       yup.object({
@@ -39,13 +33,6 @@ export const Form = () => {
     []
   );
   const resolver = useYupValidationResolver(validationSchema);
-  const buttonProps: ButtonProps = {
-    variant: "contained",
-    size: "medium",
-    className: classes.submit,
-    color: "secondary",
-    disabled: loading,
-  };
   const {
     register,
     handleSubmit,
@@ -60,6 +47,19 @@ export const Form = () => {
       is_active: true,
     },
   });
+  const classes = useStyles();
+  const snackbar = useSnackbar();
+  const history = useHistory();
+  const { id } = useParams<{ id: string }>();
+  const [loading, setLoading] = useState(false);
+  const [category, setCategory] = useState(null);
+  const buttonProps: ButtonProps = {
+    variant: "contained",
+    size: "medium",
+    className: classes.submit,
+    color: "secondary",
+    disabled: loading,
+  };
 
   useEffect(() => {
     register("is_active");
@@ -69,49 +69,53 @@ export const Form = () => {
     if (!id) {
       return;
     }
-    setLoading(true);
-    httpCategory
-      .get(id)
-      .then(({ data }) => {
+    async function getCategory() {
+      setLoading(true);
+      try {
+        const { data } = await httpCategory.get(id);
         setCategory(data.data);
         reset(data.data);
-      })
-      .finally(() => {
+      } catch (error) {
+        console.log(error);
+        snackbar.enqueueSnackbar("Não foi possível carregar as informações", {
+          variant: "error",
+        });
+      } finally {
         setLoading(false);
-      });
-  }, [id, reset]);
+      }
+    }
+    getCategory();
+  }, [id, reset, snackbar]);
 
-  function onSubmit(formData, event) {
+  async function onSubmit(formData, event) {
     setLoading(true);
-    const http = !category
-      ? httpCategory.create(formData)
-      : httpCategory.update(id, formData);
+    try {
+      const http = !category
+        ? httpCategory.create(formData)
+        : httpCategory.update(id, formData);
 
-    http
-      .then(({ data }) => {
-        snackbar.enqueueSnackbar("Categoria salva com sucesso!", {
-          variant: "success",
-        });
-        setTimeout(() => {
-          if (!event) {
-            return history.push("/categories");
-          }
-          if (id) {
-            history.replace(`/categories/${data.data.id}/edit`);
-          } else {
-            history.push(`/categories/${data.data.id}/edit`);
-          }
-        });
-      })
-      .catch((pErr) => {
-        console.log(pErr)
-        snackbar.enqueueSnackbar("Falha ao salvar Categoria", {
-          variant: 'error',
-        });
-      })
-      .finally(() => {
-        setLoading(false);
+      const { data } = await http;
+      snackbar.enqueueSnackbar("Categoria salva com sucesso!", {
+        variant: "success",
       });
+      setTimeout(() => {
+        if (!event) {
+          return history.push("/categories");
+        }
+        if (id) {
+          history.replace(`/categories/${data.data.id}/edit`);
+        } else {
+          history.push(`/categories/${data.data.id}/edit`);
+        }
+      });
+    } catch (error) {
+      console.log(error);
+      snackbar.enqueueSnackbar("Falha ao salvar Categoria", {
+        variant: "error",
+      });
+    } finally {
+      setLoading(false);
+    }
   }
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
