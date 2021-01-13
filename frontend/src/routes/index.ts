@@ -80,7 +80,7 @@ const routes: Array<MyRouteProps> = [
     name: "genres.edit",
     label: "Editar Gênero",
     path: "/genres/:id/edit",
-    component: CastMemberFormPage,
+    component: GenreFormPage,
     exact: true,
   },
 ];
