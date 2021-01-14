@@ -44,18 +44,19 @@ const columnsDefinition: MUIDataTableColumn[] = [
 ];
 
 export const Table = () => {
-  const [data, setData] = useState([]);
+  const [genres, setGenres] = useState([]);
 
   useEffect(() => {
-    httpGenre.list().then((response) => {
-      setData(response.data.data);
-    });
+    (async function getGenres() {
+      const { data } = await httpGenre.list<{ data }>();
+      setGenres(data.data);
+    })();
   }, []);
 
   return (
     <MUIDataTable
-      data={data}
-      title={"Listagem de Categorias"}
+      data={genres}
+      title={"Listagem de Generos"}
       columns={columnsDefinition}
     />
   );

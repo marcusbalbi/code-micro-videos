@@ -35,18 +35,19 @@ const columnsDefinition: MUIDataTableColumn[] = [
 ];
 
 export const Table = () => {
-  const [data, setData] = useState([]);
+  const [castMembers, setCastMembers] = useState([]);
 
   useEffect(() => {
-    httpCastMember.list().then((response) => {
-      setData(response.data.data);
-    });
+    (async function getCastMembers() {
+      const { data } = await httpCastMember.list<{ data }>();
+      setCastMembers(data.data);
+    })();
   }, []);
 
   return (
     <MUIDataTable
-      data={data}
-      title={"Listagem de Categorias"}
+      data={castMembers}
+      title={"Listagem de Membros de Elenco"}
       columns={columnsDefinition}
     />
   );

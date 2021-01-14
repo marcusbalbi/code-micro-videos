@@ -41,17 +41,18 @@ const columnsDefinition: MUIDataTableColumn[] = [
 ];
 
 export const Table = () => {
-  const [data, setData] = useState<Category[]>([]);
+  const [categories, setCategories] = useState<Category[]>([]);
 
   useEffect(() => {
-    httpCategory.list<{ data: Category[] }>().then((response) => {
-      setData(response.data.data);
-    });
+    (async function getCagegories() {
+      const { data } = await httpCategory.list<{ data: Category[] }>();
+      setCategories(data.data);
+    })();
   }, []);
 
   return (
     <MUIDataTable
-      data={data}
+      data={categories}
       title={"Listagem de Categorias"}
       columns={columnsDefinition}
     />
