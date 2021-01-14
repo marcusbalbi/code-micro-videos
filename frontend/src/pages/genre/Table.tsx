@@ -47,10 +47,16 @@ export const Table = () => {
   const [genres, setGenres] = useState([]);
 
   useEffect(() => {
+    let canLoad = true;
     (async function getGenres() {
       const { data } = await httpGenre.list<{ data }>();
-      setGenres(data.data);
+      if (canLoad) {
+        setGenres(data.data);
+      }
     })();
+    return () => {
+      canLoad = false;
+    };
   }, []);
 
   return (

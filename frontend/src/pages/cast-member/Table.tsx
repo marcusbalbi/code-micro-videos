@@ -38,10 +38,16 @@ export const Table = () => {
   const [castMembers, setCastMembers] = useState([]);
 
   useEffect(() => {
+    let canLoad = true;
     (async function getCastMembers() {
       const { data } = await httpCastMember.list<{ data }>();
-      setCastMembers(data.data);
+      if (canLoad) {
+        setCastMembers(data.data);
+      }
     })();
+    return () => {
+      canLoad = false;
+    }
   }, []);
 
   return (

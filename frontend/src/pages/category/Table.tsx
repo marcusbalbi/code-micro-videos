@@ -44,10 +44,17 @@ export const Table = () => {
   const [categories, setCategories] = useState<Category[]>([]);
 
   useEffect(() => {
+    let canLoad = true;
     (async function getCagegories() {
       const { data } = await httpCategory.list<{ data: Category[] }>();
-      setCategories(data.data);
+      if (canLoad) {
+        setCategories(data.data);
+      }
     })();
+
+    return () => {
+      canLoad = false;
+    };
   }, []);
 
   return (
