@@ -67,7 +67,11 @@ export const Form = () => {
   }, [register]);
 
   useEffect(() => {
-    async function loadData() {
+    let canLoad = true;
+    (async () => {
+      if (!canLoad) {
+        return;
+      }
       setLoading(true);
       const promises = [httpCategory.list()];
       if (id) {
@@ -77,12 +81,13 @@ export const Form = () => {
         const [categoryResponse, genreResponse] = await Promise.all(promises);
         setCategories(categoryResponse.data.data);
         if (id) {
-          setGenre(genreResponse.data.data)
+          setGenre(genreResponse.data.data);
+          const categories_id = genreResponse.data.data.categories.map(
+            (category) => category.id
+          );
           reset({
             ...genreResponse.data.data,
-            categories_id: genreResponse.data.data.categories.map(
-              (category) => category.id
-            ),
+            categories_id,
           });
         }
       } catch (error) {
@@ -93,8 +98,10 @@ export const Form = () => {
       } finally {
         setLoading(false);
       }
-    }
-    loadData();
+    })();
+    return () => {
+      canLoad = false;
+    };
   }, [id, reset, snackbar]);
 
   async function onSubmit(formData, event) {
