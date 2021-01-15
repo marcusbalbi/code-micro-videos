@@ -15,6 +15,7 @@ import * as yup from "yup";
 import { useYupValidationResolver } from "../../hooks/YupValidation";
 import { useSnackbar } from "notistack";
 import { useHistory, useParams } from "react-router";
+import { Genre } from "../../util/dto";
 
 const useStyles = makeStyles((theme: Theme) => {
   return {
@@ -53,7 +54,7 @@ export const Form = () => {
   const history = useHistory();
   const { id } = useParams<{ id: string }>();
   const [loading, setLoading] = useState(false);
-  const [genre, setGenre] = useState(null);
+  const [genre, setGenre] = useState<Genre | null>(null);
   const buttonProps: ButtonProps = {
     variant: "contained",
     size: "medium",
@@ -164,7 +165,7 @@ export const Form = () => {
         disabled={loading}
         InputLabelProps={{ shrink: true }}
         error={errors.categories_id !== undefined}
-        helperText={errors.categories_id && errors.categories_id.message}
+        helperText={(errors.categories_id && errors.categories_id.message)}
       >
         <MenuItem value="" disabled>
           <em>Selecione categorias</em>

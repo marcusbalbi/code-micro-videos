@@ -5,12 +5,7 @@ import format from "date-fns/format";
 import parseISO from "date-fns/parseISO";
 import httpCategory from "../../util/http/http-category";
 import { BadgeNo, BadgeYes } from "../../components/Badge";
-
-interface Category {
-  name: string;
-  is_active: boolean;
-  created_at: string;
-}
+import { Category, ListResponse } from "../../util/dto";
 
 const columnsDefinition: MUIDataTableColumn[] = [
   {
@@ -46,7 +41,7 @@ export const Table = () => {
   useEffect(() => {
     let canLoad = true;
     (async function getCagegories() {
-      const { data } = await httpCategory.list<{ data: Category[] }>();
+      const { data } = await httpCategory.list<ListResponse<Category>>();
       if (canLoad) {
         setCategories(data.data);
       }

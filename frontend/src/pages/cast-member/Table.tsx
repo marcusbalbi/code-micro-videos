@@ -4,6 +4,7 @@ import React, { useEffect, useState } from "react";
 import format from "date-fns/format";
 import parseISO from "date-fns/parseISO";
 import httpCastMember from "../../util/http/http-cast-member";
+import { CastMember, ListResponse } from "../../util/dto";
 const CastMemberTypeMap = {
   1: "Diretor",
   2: "Ator",
@@ -35,19 +36,19 @@ const columnsDefinition: MUIDataTableColumn[] = [
 ];
 
 export const Table = () => {
-  const [castMembers, setCastMembers] = useState([]);
+  const [castMembers, setCastMembers] = useState<CastMember[]>([]);
 
   useEffect(() => {
     let canLoad = true;
     (async function getCastMembers() {
-      const { data } = await httpCastMember.list<{ data }>();
+      const { data } = await httpCastMember.list<ListResponse<CastMember>>();
       if (canLoad) {
         setCastMembers(data.data);
       }
     })();
     return () => {
       canLoad = false;
-    }
+    };
   }, []);
 
   return (

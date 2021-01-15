@@ -15,6 +15,7 @@ import * as yup from "yup";
 import { useYupValidationResolver } from "../../hooks/YupValidation";
 import { useHistory, useParams } from "react-router";
 import { useSnackbar } from "notistack";
+import { Category } from "../../util/dto";
 
 const useStyles = makeStyles((theme: Theme) => {
   return {
@@ -41,7 +42,7 @@ export const Form = () => {
     reset,
     watch,
     setValue,
-  } = useForm<any>({
+  } = useForm<Category>({
     resolver,
     defaultValues: {
       is_active: true,
@@ -52,7 +53,7 @@ export const Form = () => {
   const history = useHistory();
   const { id } = useParams<{ id: string }>();
   const [loading, setLoading] = useState(false);
-  const [category, setCategory] = useState(null);
+  const [category, setCategory] = useState<Category | null>();
   const buttonProps: ButtonProps = {
     variant: "contained",
     size: "medium",
@@ -72,7 +73,7 @@ export const Form = () => {
     async function getCategory() {
       setLoading(true);
       try {
-        const { data } = await httpCategory.get(id);
+        const { data } = await httpCategory.get<{ data: Category }>(id);
         setCategory(data.data);
         reset(data.data);
       } catch (error) {
@@ -87,7 +88,7 @@ export const Form = () => {
     getCategory();
   }, [id, reset, snackbar]);
 
-  async function onSubmit(formData, event) {
+  async function onSubmit(formData: Category, event) {
     setLoading(true);
     try {
       const http = !category
@@ -150,7 +151,7 @@ export const Form = () => {
           <Checkbox
             color={"primary"}
             name="is_active"
-            onChange={() => setValue("is_active", !getValues()["is_active"])}
+            onChange={() => setValue("is_active", !getValues().is_active)}
             checked={watch("is_active")}
           />
         }

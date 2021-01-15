@@ -19,6 +19,7 @@ import httpCastMember from "../../util/http/http-cast-member";
 import { useYupValidationResolver } from "../../hooks/YupValidation";
 import { useHistory, useParams } from "react-router";
 import { useSnackbar } from "notistack";
+import { CastMember } from "../../util/dto";
 
 const useStyles = makeStyles((theme: Theme) => {
   return {
@@ -46,7 +47,7 @@ export const Form = () => {
     reset,
     watch,
     setValue,
-  } = useForm<any>({
+  } = useForm<CastMember>({
     resolver,
     defaultValues: {},
   });
@@ -55,7 +56,7 @@ export const Form = () => {
   const history = useHistory();
   const { id } = useParams<{ id: string }>();
   const [loading, setLoading] = useState(false);
-  const [castMember, setCastMember] = useState(null);
+  const [castMember, setCastMember] = useState<CastMember | null>(null);
   const buttonProps: ButtonProps = {
     variant: "contained",
     size: "medium",
@@ -75,7 +76,7 @@ export const Form = () => {
     async function getCastMember() {
       setLoading(true);
       try {
-        const { data } = await httpCastMember.get(id);
+        const { data } = await httpCastMember.get<{ data: CastMember }>(id);
         setCastMember(data.data);
         reset(data.data);
       } catch (error) {
@@ -90,7 +91,7 @@ export const Form = () => {
     getCastMember();
   }, [id, reset, snackbar]);
 
-  async function onSubmit(formData, event) {
+  async function onSubmit(formData: CastMember, event) {
     setLoading(true);
     try {
       const http = !castMember
