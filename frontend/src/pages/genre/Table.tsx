@@ -1,4 +1,4 @@
-import MUIDataTable, { MUIDataTableColumn } from "mui-datatables";
+import { MUIDataTableColumn } from "mui-datatables";
 import React, { useEffect, useState } from "react";
 import httpGenre from "../../util/http/http-genre";
 
@@ -6,6 +6,7 @@ import format from "date-fns/format";
 import parseISO from "date-fns/parseISO";
 import { BadgeNo, BadgeYes } from "../../components/Badge";
 import { Genre, ListResponse } from "../../util/dto";
+import DefaultTable from "../../components/Table";
 
 const columnsDefinition: MUIDataTableColumn[] = [
   {
@@ -61,7 +62,7 @@ export const Table = () => {
   }, []);
 
   return (
-    <MUIDataTable
+    <DefaultTable
       data={genres}
       title={"Listagem de Generos"}
       columns={columnsDefinition}

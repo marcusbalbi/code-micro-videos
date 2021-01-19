@@ -1,10 +1,11 @@
-import MUIDataTable, { MUIDataTableColumn } from "mui-datatables";
+import { MUIDataTableColumn } from "mui-datatables";
 import React, { useEffect, useState } from "react";
 
 import format from "date-fns/format";
 import parseISO from "date-fns/parseISO";
 import httpCastMember from "../../util/http/http-cast-member";
 import { CastMember, ListResponse } from "../../util/dto";
+import DefaultTable from "../../components/Table";
 const CastMemberTypeMap = {
   1: "Diretor",
   2: "Ator",
@@ -52,7 +53,7 @@ export const Table = () => {
   }, []);
 
   return (
-    <MUIDataTable
+    <DefaultTable
       data={castMembers}
       title={"Listagem de Membros de Elenco"}
       columns={columnsDefinition}
