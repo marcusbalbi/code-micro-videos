@@ -1,12 +1,4 @@
-import {
-  Box,
-  Button,
-  MenuItem,
-  TextField,
-  ButtonProps,
-  makeStyles,
-  Theme,
-} from "@material-ui/core";
+import { MenuItem, TextField } from "@material-ui/core";
 import { useForm } from "react-hook-form";
 import React, { useEffect, useMemo, useState } from "react";
 import httpCategory from "../../util/http/http-category";
@@ -16,14 +8,7 @@ import { useYupValidationResolver } from "../../hooks/YupValidation";
 import { useSnackbar } from "notistack";
 import { useHistory, useParams } from "react-router";
 import { Genre } from "../../util/dto";
-
-const useStyles = makeStyles((theme: Theme) => {
-  return {
-    submit: {
-      margin: theme.spacing(1),
-    },
-  };
-});
+import SubmitActions from "../../components/SubmitActions";
 
 export const Form = () => {
   const validationSchema = useMemo(
@@ -43,25 +28,19 @@ export const Form = () => {
     reset,
     watch,
     setValue,
+    trigger,
   } = useForm<any>({
     resolver,
     defaultValues: {
       categories_id: [],
     },
   });
-  const classes = useStyles();
   const snackbar = useSnackbar();
   const history = useHistory();
   const { id } = useParams<{ id: string }>();
   const [loading, setLoading] = useState(false);
   const [genre, setGenre] = useState<Genre | null>(null);
-  const buttonProps: ButtonProps = {
-    variant: "contained",
-    size: "medium",
-    className: classes.submit,
-    color: "secondary",
-    disabled: loading,
-  };
+
   const [categories, setCategories] = useState<any[]>([]);
   useEffect(() => {
     register({ name: "categories_id" });
@@ -165,7 +144,7 @@ export const Form = () => {
         disabled={loading}
         InputLabelProps={{ shrink: true }}
         error={errors.categories_id !== undefined}
-        helperText={(errors.categories_id && errors.categories_id.message)}
+        helperText={errors.categories_id && errors.categories_id.message}
       >
         <MenuItem value="" disabled>
           <em>Selecione categorias</em>
@@ -178,19 +157,14 @@ export const Form = () => {
           );
         })}
       </TextField>
-      <Box dir={"rtl"}>
-        <Button
-          {...buttonProps}
-          onClick={() => {
-            onSubmit(getValues(), null);
-          }}
-        >
-          Salvar
-        </Button>
-        <Button {...buttonProps} type="submit">
-          Salvar e continuar editando
-        </Button>
-      </Box>
+      <SubmitActions
+        disableButtons={loading}
+        handleSave={() => {
+          return trigger().then((isValid) => {
+            isValid && onSubmit(getValues(), null);
+          });
+        }}
+      />
     </form>
   );
 };
