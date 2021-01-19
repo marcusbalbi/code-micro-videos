@@ -17,6 +17,7 @@ import { useHistory, useParams } from "react-router";
 import { useSnackbar } from "notistack";
 import { CastMember } from "../../util/dto";
 import SubmitActions from "../../components/SubmitActions";
+import DefaultForm from "../../components/DefaultForm";
 
 export const Form = () => {
   const validationSchema = useMemo(
@@ -104,7 +105,7 @@ export const Form = () => {
     }
   }
   return (
-    <form onSubmit={handleSubmit(onSubmit)}>
+    <DefaultForm onSubmit={handleSubmit(onSubmit)}>
       <TextField
         name="name"
         label="Nome"
@@ -154,7 +155,7 @@ export const Form = () => {
           });
         }}
       />
-    </form>
+    </DefaultForm>
   );
 };
 
