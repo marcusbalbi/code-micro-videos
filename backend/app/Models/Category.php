@@ -2,12 +2,14 @@
 
 namespace App\Models;
 
+use App\ModelFilters\CategoryFilter;
+use EloquentFilter\Filterable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Category extends Model
 {
-    use SoftDeletes, Traits\Uuid;
+    use SoftDeletes, Traits\Uuid, Filterable;
 
     protected $fillable = [
         'name',
@@ -23,4 +25,9 @@ class Category extends Model
     protected $dates = ['deleted_at'];
 
     public $incrementing = false;
+
+    public function modelFilter()
+    {
+        return $this->provideFilter(CategoryFilter::class);
+    }
 }
