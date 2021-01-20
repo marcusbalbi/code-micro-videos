@@ -12,6 +12,7 @@ export interface TableColumns extends MUIDataTableColumn {
 
 interface TableProps extends MUIDataTableProps {
   columns: TableColumns[];
+  loading?: boolean;
 }
 
 const defaultOptions: MUIDataTableOptions = {
@@ -74,16 +75,23 @@ const Table: React.FC<TableProps> = (props) => {
     });
   }
   const theme = cloneDeep<Theme>(useTheme());
-  const newProps: MUIDataTableProps = merge(
-    { options: defaultOptions } as MUIDataTableProps,
-    props,
-    { columns: extranctMuiDataTableColumns(props.columns) }
-  );
+  const newProps = merge({ options: cloneDeep(defaultOptions) }, props, {
+    columns: extranctMuiDataTableColumns(props.columns),
+  });
+  function getOriginalMuiDataTableProps() {
+    return omit(newProps, "loading");
+  }
+  function applyLoading() {
+    const textLabels = (newProps.options as any).textLabels;
+    textLabels.body.noMatch =
+      newProps.loading === true ? "Carregando..." : textLabels.body.noMatch;
+  }
+  applyLoading();
 
-
+  const originalProps = getOriginalMuiDataTableProps();
   return (
     <MuiThemeProvider theme={theme}>
-      <MUIDataTable {...newProps}></MUIDataTable>
+      <MUIDataTable {...originalProps}></MUIDataTable>
     </MuiThemeProvider>
   );
 };

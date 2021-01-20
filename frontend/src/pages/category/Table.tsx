@@ -6,6 +6,7 @@ import httpCategory from "../../util/http/http-category";
 import { BadgeNo, BadgeYes } from "../../components/Badge";
 import { Category, ListResponse } from "../../util/dto";
 import DefaultTable, { TableColumns } from "../../components/Table";
+import { useSnackbar } from "notistack";
 const columnsDefinition: TableColumns[] = [
   {
     name: "id",
@@ -55,24 +56,37 @@ const columnsDefinition: TableColumns[] = [
 
 export const Table = () => {
   const [categories, setCategories] = useState<Category[]>([]);
+  const [loading, setLoading] = useState(false);
+  const snackbar = useSnackbar();
 
   useEffect(() => {
     let canLoad = true;
     (async function getCagegories() {
-      const { data } = await httpCategory.list<ListResponse<Category>>();
-      if (canLoad) {
-        setCategories(data.data);
+      setLoading(true);
+      try {
+        const { data } = await httpCategory.list<ListResponse<Category>>();
+        if (canLoad) {
+          setCategories(data.data);
+        }
+      } catch (error) {
+        console.log(error);
+        snackbar.enqueueSnackbar("Não foi possível carregar as informações", {
+          variant: "error",
+        });
+      } finally {
+        setLoading(false);
       }
     })();
 
     return () => {
       canLoad = false;
     };
-  }, []);
+  }, [snackbar]);
 
   return (
     <DefaultTable
       data={categories}
+      loading={loading}
       title={"Listagem de Categorias"}
       columns={columnsDefinition}
     />

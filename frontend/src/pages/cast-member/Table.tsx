@@ -5,6 +5,7 @@ import parseISO from "date-fns/parseISO";
 import httpCastMember from "../../util/http/http-cast-member";
 import { CastMember, ListResponse } from "../../util/dto";
 import DefaultTable, { TableColumns } from "../../components/Table";
+import { useSnackbar } from "notistack";
 const CastMemberTypeMap = {
   1: "Diretor",
   2: "Ator",
@@ -56,23 +57,35 @@ const columnsDefinition: TableColumns[] = [
 
 export const Table = () => {
   const [castMembers, setCastMembers] = useState<CastMember[]>([]);
-
+  const [loading, setLoading] = useState(false);
+  const snackbar = useSnackbar();
   useEffect(() => {
     let canLoad = true;
     (async function getCastMembers() {
-      const { data } = await httpCastMember.list<ListResponse<CastMember>>();
-      if (canLoad) {
-        setCastMembers(data.data);
+      setLoading(true);
+      try {
+        const { data } = await httpCastMember.list<ListResponse<CastMember>>();
+        if (canLoad) {
+          setCastMembers(data.data);
+        }
+      } catch (error) {
+        console.log(error);
+        snackbar.enqueueSnackbar("Não foi possível carregar as informações", {
+          variant: "error",
+        });
+      } finally {
+        setLoading(false);
       }
     })();
     return () => {
       canLoad = false;
     };
-  }, []);
+  }, [snackbar]);
 
   return (
     <DefaultTable
       data={castMembers}
+      loading={loading}
       title={"Listagem de Membros de Elenco"}
       columns={columnsDefinition}
     />

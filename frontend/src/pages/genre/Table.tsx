@@ -6,6 +6,7 @@ import parseISO from "date-fns/parseISO";
 import { BadgeNo, BadgeYes } from "../../components/Badge";
 import { Genre, ListResponse } from "../../util/dto";
 import DefaultTable, { TableColumns } from "../../components/Table";
+import { useSnackbar } from "notistack";
 
 const columnsDefinition: TableColumns[] = [
   {
@@ -66,24 +67,37 @@ const columnsDefinition: TableColumns[] = [
 
 export const Table = () => {
   const [genres, setGenres] = useState<Genre[]>([]);
+  const [loading, setLoading] = useState(false);
+  const snackbar = useSnackbar();
 
   useEffect(() => {
     let canLoad = true;
     (async function getGenres() {
-      const { data } = await httpGenre.list<ListResponse<Genre>>();
-      if (canLoad) {
-        setGenres(data.data);
+      setLoading(true);
+      try {
+        const { data } = await httpGenre.list<ListResponse<Genre>>();
+        if (canLoad) {
+          setGenres(data.data);
+        }
+      } catch (error) {
+        console.log(error);
+        snackbar.enqueueSnackbar("Não foi possível carregar as informações", {
+          variant: "error",
+        });
+      } finally {
+        setLoading(false);
       }
     })();
     return () => {
       canLoad = false;
     };
-  }, []);
+  }, [snackbar]);
 
   return (
     <DefaultTable
       data={genres}
       title={"Listagem de Generos"}
+      loading={loading}
       columns={columnsDefinition}
     />
   );
