@@ -5,7 +5,12 @@ import MUIDataTable, {
 } from "mui-datatables";
 import React from "react";
 import { merge, omit, cloneDeep } from "lodash";
-import { MuiThemeProvider, Theme, useTheme } from "@material-ui/core";
+import {
+  MuiThemeProvider,
+  Theme,
+  useMediaQuery,
+  useTheme,
+} from "@material-ui/core";
 export interface TableColumns extends MUIDataTableColumn {
   width?: string;
 }
@@ -75,6 +80,7 @@ const Table: React.FC<TableProps> = (props) => {
     });
   }
   const theme = cloneDeep<Theme>(useTheme());
+  const isSmOrDOwn = useMediaQuery(theme.breakpoints.down("sm"));
   const newProps = merge({ options: cloneDeep(defaultOptions) }, props, {
     columns: extranctMuiDataTableColumns(props.columns),
   });
@@ -86,7 +92,11 @@ const Table: React.FC<TableProps> = (props) => {
     textLabels.body.noMatch =
       newProps.loading === true ? "Carregando..." : textLabels.body.noMatch;
   }
+  function applyResponsive() {
+    newProps.options.responsive = isSmOrDOwn ? "standard" : "simple";
+  }
   applyLoading();
+  applyResponsive();
 
   const originalProps = getOriginalMuiDataTableProps();
   return (
