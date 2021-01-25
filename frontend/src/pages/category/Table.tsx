@@ -7,6 +7,10 @@ import { BadgeNo, BadgeYes } from "../../components/Badge";
 import { Category, ListResponse } from "../../util/dto";
 import DefaultTable, { TableColumns } from "../../components/Table";
 import { useSnackbar } from "notistack";
+import { IconButton, Theme, ThemeProvider } from "@material-ui/core";
+import { Link } from "react-router-dom";
+import EditIcon from "@material-ui/icons/Edit";
+import { cloneDeep } from "lodash";
 const columnsDefinition: TableColumns[] = [
   {
     name: "id",
@@ -50,9 +54,35 @@ const columnsDefinition: TableColumns[] = [
     width: `16%`,
     options: {
       sort: false,
+      customBodyRender: (value, tableMeta) => {
+        return (
+          <span>
+            <IconButton
+              color={"secondary"}
+              component={Link}
+              to={`categories/${tableMeta.rowData[0]}/edit`}
+            >
+              <EditIcon fontSize={"inherit"} />
+            </IconButton>
+          </span>
+        );
+      },
     },
   },
 ];
+
+function localTheme(theme: Theme) {
+  const copyTheme = cloneDeep(theme);
+  const selector = `&[data-testid^="MuiDataTableBodyCell-${
+    columnsDefinition.length - 1
+  }"]`;
+  (copyTheme.overrides as any).MUIDataTableBodyCell.root[selector] = {
+    paddingTop: "0px",
+    paddingBottom: "0px",
+  };
+
+  return copyTheme;
+}
 
 export const Table = () => {
   const [categories, setCategories] = useState<Category[]>([]);
@@ -84,12 +114,14 @@ export const Table = () => {
   }, [snackbar]);
 
   return (
-    <DefaultTable
-      data={categories}
-      loading={loading}
-      title={"Listagem de Categorias"}
-      columns={columnsDefinition}
-    />
+    <ThemeProvider theme={localTheme} >
+      <DefaultTable
+        data={categories}
+        loading={loading}
+        title={"Listagem de Categorias"}
+        columns={columnsDefinition}
+      />
+    </ThemeProvider>
   );
 };
 
