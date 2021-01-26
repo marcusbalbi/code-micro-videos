@@ -72,8 +72,14 @@ const columnsDefinition: TableColumns[] = [
   },
 ];
 
+interface Pagination {
+  page: number;
+  total: number;
+  per_page: number;
+}
 interface SearchState {
   search: string;
+  pagination: Pagination;
 }
 
 function localTheme(theme: Theme) {
@@ -94,20 +100,37 @@ export const Table = () => {
   const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(false);
   const [searchState, setSearchState] = useState<SearchState>({
-    search: "BALBI",
+    search: "",
+    pagination: {
+      page: 0,
+      total: 0,
+      per_page: 10,
+    },
   });
   const snackbar = useSnackbar();
 
   const getData = useCallback(async () => {
     setLoading(true);
+    console.log(searchState.pagination.page);
     try {
       const { data } = await httpCategory.list<ListResponse<Category>>({
         queryParams: {
           search: searchState.search,
+          page: searchState.pagination.page + 1,
+          per_page: searchState.pagination.per_page,
         },
       });
       if (canLoad.current) {
         setCategories(data.data);
+        setSearchState((prev) => {
+          return {
+            ...prev,
+            pagination: {
+              ...prev.pagination,
+              total: data.meta.total,
+            },
+          };
+        });
       }
     } catch (error) {
       console.log(error);
@@ -117,7 +140,12 @@ export const Table = () => {
     } finally {
       setLoading(false);
     }
-  }, [snackbar, searchState]);
+  }, [
+    snackbar,
+    searchState.search,
+    searchState.pagination.page,
+    searchState.pagination.per_page,
+  ]);
 
   useEffect(() => {
     canLoad.current = true;
@@ -127,11 +155,6 @@ export const Table = () => {
     };
   }, [getData]);
 
-  useEffect(() => {
-    canLoad.current = true;
-    getData();
-  }, [searchState, getData]);
-
   return (
     <ThemeProvider theme={localTheme}>
       <DefaultTable
@@ -140,9 +163,40 @@ export const Table = () => {
         title={"Listagem de Categorias"}
         columns={columnsDefinition}
         options={{
+          serverSide: true,
           searchText: searchState.search,
+          page: searchState.pagination.page,
+          rowsPerPage: searchState.pagination.per_page,
+          count: searchState.pagination.total,
           onSearchChange: (value) => {
-            setSearchState({ search: value || "" });
+            setSearchState((prev) => {
+              return {
+                ...prev,
+                search: value || "",
+              };
+            });
+          },
+          onChangePage: (page) => {
+            setSearchState((prev) => {
+              return {
+                ...prev,
+                pagination: {
+                  ...prev.pagination,
+                  page,
+                },
+              };
+            });
+          },
+          onChangeRowsPerPage: (perPage) => {
+            setSearchState((prev) => {
+              return {
+                ...prev,
+                pagination: {
+                  ...prev.pagination,
+                  per_page: perPage,
+                },
+              };
+            });
           },
         }}
       />
