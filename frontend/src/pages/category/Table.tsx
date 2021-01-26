@@ -190,6 +190,10 @@ export const Table = () => {
               return {
                 ...prev,
                 search: value || "",
+                pagination: {
+                  ...prev.pagination,
+                  page: 0,
+                },
               };
             });
           },
