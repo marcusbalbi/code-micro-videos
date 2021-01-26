@@ -54,7 +54,7 @@ export const Form = () => {
         return;
       }
       setLoading(true);
-      const promises = [httpCategory.list()];
+      const promises = [httpCategory.list({ queryParams: { all: "" } })];
       if (id) {
         promises.push(httpGenre.get(id));
       }
