@@ -147,6 +147,9 @@ export const Table = () => {
       }
     } catch (error) {
       console.log(error);
+      if (httpCategory.isCancelledRequest(error)) {
+        return;
+      }
       snackbar.enqueueSnackbar("Não foi possível carregar as informações", {
         variant: "error",
       });
