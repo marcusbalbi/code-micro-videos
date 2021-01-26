@@ -11,6 +11,7 @@ import { IconButton, Theme, ThemeProvider } from "@material-ui/core";
 import { Link } from "react-router-dom";
 import EditIcon from "@material-ui/icons/Edit";
 import { cloneDeep } from "lodash";
+import { FilterResetButton } from "../../components/Table/FilterResetButton";
 
 const columnsDefinition: TableColumns[] = [
   {
@@ -103,10 +104,7 @@ function localTheme(theme: Theme) {
 }
 
 export const Table = () => {
-  const canLoad = useRef(true);
-  const [categories, setCategories] = useState<Category[]>([]);
-  const [loading, setLoading] = useState(false);
-  const [searchState, setSearchState] = useState<SearchState>({
+  const initialSearchState = {
     search: "",
     pagination: {
       page: 0,
@@ -117,7 +115,13 @@ export const Table = () => {
       sort: null,
       dir: null,
     },
-  });
+  };
+  const canLoad = useRef(true);
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [searchState, setSearchState] = useState<SearchState>(
+    initialSearchState
+  );
   const snackbar = useSnackbar();
 
   const getData = useCallback(async () => {
@@ -185,6 +189,15 @@ export const Table = () => {
           page: searchState.pagination.page,
           rowsPerPage: searchState.pagination.per_page,
           count: searchState.pagination.total,
+          customToolbar: () => {
+            return (
+              <FilterResetButton
+                handleClick={() => {
+                  setSearchState(initialSearchState);
+                }}
+              />
+            );
+          },
           onSearchChange: (value) => {
             setSearchState((prev) => {
               return {
