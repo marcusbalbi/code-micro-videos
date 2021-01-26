@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 
 import format from "date-fns/format";
 import parseISO from "date-fns/parseISO";
@@ -11,6 +11,7 @@ import { IconButton, Theme, ThemeProvider } from "@material-ui/core";
 import { Link } from "react-router-dom";
 import EditIcon from "@material-ui/icons/Edit";
 import { cloneDeep } from "lodash";
+
 const columnsDefinition: TableColumns[] = [
   {
     name: "id",
@@ -71,6 +72,10 @@ const columnsDefinition: TableColumns[] = [
   },
 ];
 
+interface SearchState {
+  search: string;
+}
+
 function localTheme(theme: Theme) {
   const copyTheme = cloneDeep(theme);
   const selector = `&[data-testid^="MuiDataTableBodyCell-${
@@ -85,41 +90,61 @@ function localTheme(theme: Theme) {
 }
 
 export const Table = () => {
+  const canLoad = useRef(true);
   const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(false);
+  const [searchState, setSearchState] = useState<SearchState>({
+    search: "BALBI",
+  });
   const snackbar = useSnackbar();
 
-  useEffect(() => {
-    let canLoad = true;
-    (async function getCagegories() {
-      setLoading(true);
-      try {
-        const { data } = await httpCategory.list<ListResponse<Category>>();
-        if (canLoad) {
-          setCategories(data.data);
-        }
-      } catch (error) {
-        console.log(error);
-        snackbar.enqueueSnackbar("Não foi possível carregar as informações", {
-          variant: "error",
-        });
-      } finally {
-        setLoading(false);
+  const getData = useCallback(async () => {
+    setLoading(true);
+    try {
+      const { data } = await httpCategory.list<ListResponse<Category>>({
+        queryParams: {
+          search: searchState.search,
+        },
+      });
+      if (canLoad.current) {
+        setCategories(data.data);
       }
-    })();
+    } catch (error) {
+      console.log(error);
+      snackbar.enqueueSnackbar("Não foi possível carregar as informações", {
+        variant: "error",
+      });
+    } finally {
+      setLoading(false);
+    }
+  }, [snackbar, searchState]);
 
+  useEffect(() => {
+    canLoad.current = true;
+    getData();
     return () => {
-      canLoad = false;
+      canLoad.current = false;
     };
-  }, [snackbar]);
+  }, [getData]);
+
+  useEffect(() => {
+    canLoad.current = true;
+    getData();
+  }, [searchState, getData]);
 
   return (
-    <ThemeProvider theme={localTheme} >
+    <ThemeProvider theme={localTheme}>
       <DefaultTable
         data={categories}
         loading={loading}
         title={"Listagem de Categorias"}
         columns={columnsDefinition}
+        options={{
+          searchText: searchState.search,
+          onSearchChange: (value) => {
+            setSearchState({ search: value || "" });
+          },
+        }}
       />
     </ThemeProvider>
   );
