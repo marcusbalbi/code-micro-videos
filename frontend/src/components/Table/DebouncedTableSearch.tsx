@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useRef, useState, useEffect } from "react";
 import Grow from "@material-ui/core/Grow";
 import TextField from "@material-ui/core/TextField";
 import SearchIcon from "@material-ui/icons/Search";
@@ -29,17 +29,31 @@ const useStyles = makeStyles(
   { name: "MUIDataTableSearch" }
 );
 
-let debounced = debounce((text, onSearch) => {
-  onSearch(text)
-}, 500);
-const DebouncedTableSearch = ({ options, searchText, onSearch, onHide }) => {
+const DebouncedTableSearch = ({
+  options,
+  searchText,
+  onSearch,
+  onHide,
+  debounceTime,
+}) => {
   const classes = useStyles();
   const [text, setText] = useState(searchText);
-  
+  const firstValue = useRef(searchText);
+  const debounced = useRef(
+    debounce((text, onSearch) => {
+      onSearch(text);
+    }, debounceTime || 500)
+  );
   const handleTextChange = (event) => {
     setText(event.target.value);
-    debounced(text, onSearch);
+    debounced.current(event.target.value, onSearch);
   };
+
+  useEffect(() => {
+    if (!searchText || searchText === firstValue.current) {
+      setText(searchText);
+    }
+  }, [searchText, onHide]);
 
   const onKeyDown = (event) => {
     if (event.key === "Escape") {

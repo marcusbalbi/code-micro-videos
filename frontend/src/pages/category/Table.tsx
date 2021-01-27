@@ -179,6 +179,7 @@ export const Table = () => {
   return (
     <ThemeProvider theme={localTheme}>
       <DefaultTable
+        debouncedSearchTime={300}
         data={categories}
         loading={loading}
         title={"Listagem de Categorias"}

@@ -19,54 +19,58 @@ export interface TableColumns extends MUIDataTableColumn {
 interface TableProps extends MUIDataTableProps {
   columns: TableColumns[];
   loading?: boolean;
+  debouncedSearchTime?: number;
 }
 
-const defaultOptions: MUIDataTableOptions = {
-  print: false,
-  download: false,
-  textLabels: {
-    body: {
-      noMatch: "Nenhum registro encontrado",
-      toolTip: "Classificar",
+const defaultOptions = (debouncedSearchTime): MUIDataTableOptions => {
+  return {
+    print: false,
+    download: false,
+    textLabels: {
+      body: {
+        noMatch: "Nenhum registro encontrado",
+        toolTip: "Classificar",
+      },
+      pagination: {
+        next: "Próxima página",
+        previous: "Página anterior",
+        rowsPerPage: "Por pagina:",
+        displayRows: "de",
+      },
+      toolbar: {
+        search: "Busca",
+        downloadCsv: "Download CSV",
+        print: "Imprimir",
+        viewColumns: "Ver colunas",
+        filterTable: "Filtrar tabelas",
+      },
+      filter: {
+        all: "Todos",
+        title: "FILTROS",
+        reset: "LIMPAR",
+      },
+      viewColumns: {
+        title: "Ver colunas",
+        titleAria: "Ver/Esconder colunas da tabela",
+      },
+      selectedRows: {
+        text: "registro (s) selecionado (s)",
+        delete: "Excluir",
+        deleteAria: "Excluir registros selecionados",
+      },
     },
-    pagination: {
-      next: "Próxima página",
-      previous: "Página anterior",
-      rowsPerPage: "Por pagina:",
-      displayRows: "de",
+    customSearchRender: (searchText, handleSearch, hideSearch, options) => {
+      return (
+        <DebouncedTableSearch
+          searchText={searchText}
+          onHide={hideSearch}
+          onSearch={handleSearch}
+          options={options}
+          debounceTime={debouncedSearchTime}
+        />
+      );
     },
-    toolbar: {
-      search: "Busca",
-      downloadCsv: "Download CSV",
-      print: "Imprimir",
-      viewColumns: "Ver colunas",
-      filterTable: "Filtrar tabelas",
-    },
-    filter: {
-      all: "Todos",
-      title: "FILTROS",
-      reset: "LIMPAR",
-    },
-    viewColumns: {
-      title: "Ver colunas",
-      titleAria: "Ver/Esconder colunas da tabela",
-    },
-    selectedRows: {
-      text: "registro (s) selecionado (s)",
-      delete: "Excluir",
-      deleteAria: "Excluir registros selecionados",
-    },
-  },
-  customSearchRender: (searchText, handleSearch, hideSearch, options) => {
-    return (
-      <DebouncedTableSearch
-        searchText={searchText}
-        onHide={hideSearch}
-        onSearch={handleSearch}
-        options={options}
-      />
-    );
-  },
+  };
 };
 
 const Table: React.FC<TableProps> = (props) => {
@@ -92,11 +96,15 @@ const Table: React.FC<TableProps> = (props) => {
   }
   const theme = cloneDeep<Theme>(useTheme());
   const isSmOrDOwn = useMediaQuery(theme.breakpoints.down("sm"));
-  const newProps = merge({ options: cloneDeep(defaultOptions) }, props, {
-    columns: extranctMuiDataTableColumns(props.columns),
-  });
+  const newProps = merge(
+    { options: defaultOptions(props.debouncedSearchTime) },
+    props,
+    {
+      columns: extranctMuiDataTableColumns(props.columns),
+    }
+  );
   function getOriginalMuiDataTableProps() {
-    return omit(newProps, "loading");
+    return omit(newProps, "loading", "debouncedSearchTime");
   }
   function applyLoading() {
     const textLabels = (newProps.options as any).textLabels;
