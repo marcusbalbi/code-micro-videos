@@ -11,6 +11,7 @@ import {
   useMediaQuery,
   useTheme,
 } from "@material-ui/core";
+import DebouncedTableSearch from "./DebouncedTableSearch";
 export interface TableColumns extends MUIDataTableColumn {
   width?: string;
 }
@@ -55,6 +56,16 @@ const defaultOptions: MUIDataTableOptions = {
       delete: "Excluir",
       deleteAria: "Excluir registros selecionados",
     },
+  },
+  customSearchRender: (searchText, handleSearch, hideSearch, options) => {
+    return (
+      <DebouncedTableSearch
+        searchText={searchText}
+        onHide={hideSearch}
+        onSearch={handleSearch}
+        options={options}
+      />
+    );
   },
 };
 
