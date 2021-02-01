@@ -1,4 +1,10 @@
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import React, {
+  useCallback,
+  useEffect,
+  useReducer,
+  useRef,
+  useState,
+} from "react";
 
 import format from "date-fns/format";
 import parseISO from "date-fns/parseISO";
@@ -103,25 +109,78 @@ function localTheme(theme: Theme) {
   return copyTheme;
 }
 
+function reducer(state: SearchState, action) {
+  switch (action.type) {
+    case "search": {
+      return {
+        ...state,
+        search: action.search || "",
+        pagination: {
+          ...state.pagination,
+          page: 0,
+        },
+      };
+    }
+    case "total": {
+      return {
+        ...state,
+        pagination: {
+          ...state.pagination,
+          total: action.total,
+        },
+      };
+    }
+    case "page": {
+      return {
+        ...state,
+        pagination: {
+          ...state.pagination,
+          page: action.page,
+        },
+      };
+    }
+    case "per_page": {
+      return {
+        ...state,
+        pagination: {
+          ...state.pagination,
+          per_page: action.per_page,
+        },
+      };
+    }
+    case "order": {
+      return {
+        ...state,
+        order: {
+          sort: action.sort,
+          dir: action.dir,
+        },
+      };
+    }
+    default: {
+      return INITIAL_STATE;
+    }
+  }
+}
+
+const INITIAL_STATE = {
+  search: "",
+  pagination: {
+    page: 0,
+    total: 0,
+    per_page: 10,
+  },
+  order: {
+    sort: null,
+    dir: null,
+  },
+};
+
 export const Table = () => {
-  const initialSearchState = {
-    search: "",
-    pagination: {
-      page: 0,
-      total: 0,
-      per_page: 10,
-    },
-    order: {
-      sort: null,
-      dir: null,
-    },
-  };
   const canLoad = useRef(true);
   const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(false);
-  const [searchState, setSearchState] = useState<SearchState>(
-    initialSearchState
-  );
+  const [searchState, dispatch] = useReducer(reducer, INITIAL_STATE);
   const snackbar = useSnackbar();
 
   const getData = useCallback(async () => {
@@ -139,15 +198,7 @@ export const Table = () => {
       });
       if (canLoad.current) {
         setCategories(data.data);
-        setSearchState((prev) => {
-          return {
-            ...prev,
-            pagination: {
-              ...prev.pagination,
-              total: data.meta.total,
-            },
-          };
-        });
+        dispatch({ type: "total", total: data.meta.total });
       }
     } catch (error) {
       console.log(error);
@@ -194,54 +245,25 @@ export const Table = () => {
             return (
               <FilterResetButton
                 handleClick={() => {
-                  setSearchState(initialSearchState);
+                  dispatch({ type: "clean" });
                 }}
               />
             );
           },
           onSearchChange: (value) => {
-            setSearchState((prev) => {
-              return {
-                ...prev,
-                search: value || "",
-                pagination: {
-                  ...prev.pagination,
-                  page: 0,
-                },
-              };
-            });
+            dispatch({ type: "search", search: value });
           },
           onChangePage: (page) => {
-            setSearchState((prev) => {
-              return {
-                ...prev,
-                pagination: {
-                  ...prev.pagination,
-                  page,
-                },
-              };
-            });
+            dispatch({ type: "page", page });
           },
           onChangeRowsPerPage: (perPage) => {
-            setSearchState((prev) => {
-              return {
-                ...prev,
-                pagination: {
-                  ...prev.pagination,
-                  per_page: perPage,
-                },
-              };
-            });
+            dispatch({ type: "per_page", per_page: perPage });
           },
           onColumnSortChange: (changedColumn, direction) => {
-            setSearchState((prev) => {
-              return {
-                ...prev,
-                order: {
-                  sort: changedColumn,
-                  dir: direction.includes("desc") ? "desc" : "asc",
-                },
-              };
+            dispatch({
+              type: "order",
+              sort: changedColumn,
+              dir: direction.includes("desc") ? "desc" : "asc",
             });
           },
         }}
