@@ -79,23 +79,6 @@ const columnsDefinition: TableColumns[] = [
   },
 ];
 
-interface Pagination {
-  page: number;
-  total: number;
-  per_page: number;
-}
-
-interface Order {
-  sort: string | null;
-  dir: string | null;
-}
-
-interface SearchState {
-  search: string;
-  pagination: Pagination;
-  order: Order;
-}
-
 function localTheme(theme: Theme) {
   const copyTheme = cloneDeep(theme);
   const selector = `&[data-testid^="MuiDataTableBodyCell-${
