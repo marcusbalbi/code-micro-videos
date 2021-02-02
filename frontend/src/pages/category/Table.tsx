@@ -18,7 +18,8 @@ import { Link } from "react-router-dom";
 import EditIcon from "@material-ui/icons/Edit";
 import { cloneDeep } from "lodash";
 import { FilterResetButton } from "../../components/Table/FilterResetButton";
-import reducer, { Creators, INITIAL_STATE } from "../../store/filter";
+import useFilter from "../../hooks/useFilter";
+import { Creators } from "../../store/filter";
 
 const columnsDefinition: TableColumns[] = [
   {
@@ -97,8 +98,7 @@ export const Table = () => {
   const canLoad = useRef(true);
   const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(false);
-  const [totalRecords, setTotalRecords] = useState(0);
-  const [filterState, dispatch] = useReducer(reducer, INITIAL_STATE);
+  const { filterState, dispatch, totalRecords, setTotalRecords } = useFilter();
   const snackbar = useSnackbar();
 
   const getData = useCallback(async () => {
