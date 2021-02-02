@@ -18,7 +18,7 @@ import { Link } from "react-router-dom";
 import EditIcon from "@material-ui/icons/Edit";
 import { cloneDeep } from "lodash";
 import { FilterResetButton } from "../../components/Table/FilterResetButton";
-import reducer, { Creators, INITIAL_STATE } from "../../store/search";
+import reducer, { Creators, INITIAL_STATE } from "../../store/filter";
 
 const columnsDefinition: TableColumns[] = [
   {
@@ -98,7 +98,7 @@ export const Table = () => {
   const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(false);
   const [totalRecords, setTotalRecords] = useState(0);
-  const [searchState, dispatch] = useReducer(reducer, INITIAL_STATE);
+  const [filterState, dispatch] = useReducer(reducer, INITIAL_STATE);
   const snackbar = useSnackbar();
 
   const getData = useCallback(async () => {
@@ -107,11 +107,11 @@ export const Table = () => {
       const { data } = await httpCategory.list<ListResponse<Category>>({
         queryParams: {
           search:
-            typeof searchState.search === "string" ? searchState.search : "",
-          page: searchState.pagination.page + 1,
-          per_page: searchState.pagination.per_page,
-          sort: searchState.order.sort,
-          dir: searchState.order.dir,
+            typeof filterState.search === "string" ? filterState.search : "",
+          page: filterState.pagination.page + 1,
+          per_page: filterState.pagination.per_page,
+          sort: filterState.order.sort,
+          dir: filterState.order.dir,
         },
       });
       if (canLoad.current) {
@@ -131,10 +131,10 @@ export const Table = () => {
     }
   }, [
     snackbar,
-    searchState.search,
-    searchState.pagination.page,
-    searchState.pagination.per_page,
-    searchState.order,
+    filterState.search,
+    filterState.pagination.page,
+    filterState.pagination.per_page,
+    filterState.order,
   ]);
 
   useEffect(() => {
@@ -155,9 +155,9 @@ export const Table = () => {
         columns={columnsDefinition}
         options={{
           serverSide: true,
-          searchText: searchState.search as any,
-          page: searchState.pagination.page,
-          rowsPerPage: searchState.pagination.per_page,
+          searchText: filterState.search as any,
+          page: filterState.pagination.page,
+          rowsPerPage: filterState.pagination.per_page,
           count: totalRecords,
           customToolbar: () => {
             return (
