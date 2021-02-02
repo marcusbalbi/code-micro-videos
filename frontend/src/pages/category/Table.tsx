@@ -18,6 +18,7 @@ import { Link } from "react-router-dom";
 import EditIcon from "@material-ui/icons/Edit";
 import { cloneDeep } from "lodash";
 import { FilterResetButton } from "../../components/Table/FilterResetButton";
+import reducer, { Creators, INITIAL_STATE } from "../../store/search";
 
 const columnsDefinition: TableColumns[] = [
   {
@@ -92,73 +93,6 @@ function localTheme(theme: Theme) {
   return copyTheme;
 }
 
-function reducer(state: SearchState, action) {
-  switch (action.type) {
-    case "search": {
-      return {
-        ...state,
-        search: action.search || "",
-        pagination: {
-          ...state.pagination,
-          page: 0,
-        },
-      };
-    }
-    case "total": {
-      return {
-        ...state,
-        pagination: {
-          ...state.pagination,
-          total: action.total,
-        },
-      };
-    }
-    case "page": {
-      return {
-        ...state,
-        pagination: {
-          ...state.pagination,
-          page: action.page,
-        },
-      };
-    }
-    case "per_page": {
-      return {
-        ...state,
-        pagination: {
-          ...state.pagination,
-          per_page: action.per_page,
-        },
-      };
-    }
-    case "order": {
-      return {
-        ...state,
-        order: {
-          sort: action.sort,
-          dir: action.dir,
-        },
-      };
-    }
-    default: {
-      return INITIAL_STATE;
-    }
-  }
-}
-
-const INITIAL_STATE = {
-  search: "",
-  pagination: {
-    page: 0,
-    total: 0,
-    per_page: 10,
-  },
-  order: {
-    sort: null,
-    dir: null,
-  },
-};
-
 export const Table = () => {
   const canLoad = useRef(true);
   const [categories, setCategories] = useState<Category[]>([]);
@@ -168,7 +102,6 @@ export const Table = () => {
 
   const getData = useCallback(async () => {
     setLoading(true);
-    console.log(searchState.pagination.page);
     try {
       const { data } = await httpCategory.list<ListResponse<Category>>({
         queryParams: {
@@ -220,7 +153,7 @@ export const Table = () => {
         columns={columnsDefinition}
         options={{
           serverSide: true,
-          searchText: searchState.search,
+          searchText: searchState.search as any,
           page: searchState.pagination.page,
           rowsPerPage: searchState.pagination.per_page,
           count: searchState.pagination.total,
@@ -228,26 +161,27 @@ export const Table = () => {
             return (
               <FilterResetButton
                 handleClick={() => {
-                  dispatch({ type: "clean" });
+                  dispatch(Creators.cleanFilter());
                 }}
               />
             );
           },
           onSearchChange: (value) => {
-            dispatch({ type: "search", search: value });
+            dispatch(Creators.setSearch({ search: value || "" }));
           },
           onChangePage: (page) => {
-            dispatch({ type: "page", page });
+            dispatch(Creators.setPage({ page }));
           },
           onChangeRowsPerPage: (perPage) => {
-            dispatch({ type: "per_page", per_page: perPage });
+            dispatch(Creators.setPerPage({ per_page: perPage }));
           },
           onColumnSortChange: (changedColumn, direction) => {
-            dispatch({
-              type: "order",
-              sort: changedColumn,
-              dir: direction.includes("desc") ? "desc" : "asc",
-            });
+            dispatch(
+              Creators.setOrder({
+                sort: changedColumn,
+                dir: direction.includes("desc") ? "desc" : "asc",
+              })
+            );
           },
         }}
       />

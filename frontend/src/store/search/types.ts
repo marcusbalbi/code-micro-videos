@@ -12,7 +12,7 @@ export interface Order {
 }
 
 export interface State {
-  search: string;
+  search: string | { value; [key: string]: any };
   pagination: Pagination;
   order: Order;
 }
@@ -40,4 +40,6 @@ export interface SetOrderAction extends AnyAction {
     sort: string;
     dir: string | null;
   };
+}
+export interface CleanFilterAction extends AnyAction {
 }
