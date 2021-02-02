@@ -90,7 +90,7 @@ const reducer = createReducer(INITIAL_STATE, {
   [Types.CLEAN_FILTER]: (state = INITIAL_STATE) => {
     console.log(INITIAL_STATE.order);
     return {
-      search: null,
+      search: { value: "", update: true },
       pagination: { ...INITIAL_STATE.pagination },
       order: { ...INITIAL_STATE.order },
     };

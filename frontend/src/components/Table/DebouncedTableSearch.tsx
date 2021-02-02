@@ -53,7 +53,7 @@ const DebouncedTableSearch = ({
     if (!searchText || searchText === firstValue.current) {
       setText(searchText);
     }
-    if (searchText === null) {
+    if (searchText && searchText.update) {
       onHide();
     }
   }, [searchText, onHide]);
@@ -67,6 +67,7 @@ const DebouncedTableSearch = ({
   return (
     <Grow appear in={true} timeout={300}>
       <div className={classes.main}>
+        {JSON.stringify(firstValue)}
         <SearchIcon className={classes.searchIcon} />
         <TextField
           className={classes.searchText}
