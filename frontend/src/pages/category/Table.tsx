@@ -106,7 +106,8 @@ export const Table = () => {
     try {
       const { data } = await httpCategory.list<ListResponse<Category>>({
         queryParams: {
-          search: searchState.search,
+          search:
+            typeof searchState.search === "string" ? searchState.search : "",
           page: searchState.pagination.page + 1,
           per_page: searchState.pagination.per_page,
           sort: searchState.order.sort,
