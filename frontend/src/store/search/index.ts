@@ -35,7 +35,6 @@ export const INITIAL_STATE: State = {
   search: "",
   pagination: {
     page: 0,
-    total: 0,
     per_page: 10,
   },
   order: {
@@ -89,7 +88,12 @@ const reducer = createReducer(INITIAL_STATE, {
   [Types.SET_PER_PAGE]: setPerPage,
   [Types.SET_ORDER]: setOrder,
   [Types.CLEAN_FILTER]: (state = INITIAL_STATE) => {
-    return INITIAL_STATE;
+    console.log(INITIAL_STATE.order);
+    return {
+      search: null,
+      pagination: { ...INITIAL_STATE.pagination },
+      order: { ...INITIAL_STATE.order },
+    };
   },
 });
 

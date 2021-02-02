@@ -97,6 +97,7 @@ export const Table = () => {
   const canLoad = useRef(true);
   const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(false);
+  const [totalRecords, setTotalRecords] = useState(0);
   const [searchState, dispatch] = useReducer(reducer, INITIAL_STATE);
   const snackbar = useSnackbar();
 
@@ -114,7 +115,7 @@ export const Table = () => {
       });
       if (canLoad.current) {
         setCategories(data.data);
-        dispatch({ type: "total", total: data.meta.total });
+        setTotalRecords(data.meta.total);
       }
     } catch (error) {
       console.log(error);
@@ -156,7 +157,7 @@ export const Table = () => {
           searchText: searchState.search as any,
           page: searchState.pagination.page,
           rowsPerPage: searchState.pagination.per_page,
-          count: searchState.pagination.total,
+          count: totalRecords,
           customToolbar: () => {
             return (
               <FilterResetButton
@@ -167,7 +168,7 @@ export const Table = () => {
             );
           },
           onSearchChange: (value) => {
-            dispatch(Creators.setSearch({ search: value || "" }));
+            dispatch(Creators.setSearch({ search: value || null }));
           },
           onChangePage: (page) => {
             dispatch(Creators.setPage({ page }));

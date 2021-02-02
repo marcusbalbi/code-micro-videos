@@ -53,6 +53,9 @@ const DebouncedTableSearch = ({
     if (!searchText || searchText === firstValue.current) {
       setText(searchText);
     }
+    if (searchText === null) {
+      onHide();
+    }
   }, [searchText, onHide]);
 
   const onKeyDown = (event) => {
