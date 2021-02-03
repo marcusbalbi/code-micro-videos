@@ -1,10 +1,4 @@
-import React, {
-  useCallback,
-  useEffect,
-  useReducer,
-  useRef,
-  useState,
-} from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 
 import format from "date-fns/format";
 import parseISO from "date-fns/parseISO";
@@ -19,7 +13,6 @@ import EditIcon from "@material-ui/icons/Edit";
 import { cloneDeep } from "lodash";
 import { FilterResetButton } from "../../components/Table/FilterResetButton";
 import useFilter from "../../hooks/useFilter";
-import { Creators } from "../../store/filter";
 
 const columnsDefinition: TableColumns[] = [
   {
@@ -98,7 +91,16 @@ export const Table = () => {
   const canLoad = useRef(true);
   const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(false);
-  const { filterState, dispatch, totalRecords, setTotalRecords } = useFilter();
+  const {
+    filterState,
+    totalRecords,
+    setTotalRecords,
+    filterManager,
+  } = useFilter({
+    debounceTime: 300,
+    rowsPerPage: 10,
+    rowsPerPageOptions: [10, 15, 50],
+  });
   const snackbar = useSnackbar();
 
   const getData = useCallback(async () => {
@@ -135,6 +137,7 @@ export const Table = () => {
     filterState.pagination.page,
     filterState.pagination.per_page,
     filterState.order,
+    setTotalRecords,
   ]);
 
   useEffect(() => {
@@ -159,31 +162,30 @@ export const Table = () => {
           page: filterState.pagination.page,
           rowsPerPage: filterState.pagination.per_page,
           count: totalRecords,
+          sortOrder: {
+            name: filterState.order.sort || "NONE",
+            direction: filterState.order.dir as any || "asc",
+          },
           customToolbar: () => {
             return (
               <FilterResetButton
                 handleClick={() => {
-                  dispatch(Creators.cleanFilter());
+                  filterManager.cleanFilter();
                 }}
               />
             );
           },
           onSearchChange: (value) => {
-            dispatch(Creators.setSearch({ search: value || null }));
+            filterManager.changeSearch(value);
           },
           onChangePage: (page) => {
-            dispatch(Creators.setPage({ page }));
+            filterManager.changePage(page);
           },
           onChangeRowsPerPage: (perPage) => {
-            dispatch(Creators.setPerPage({ per_page: perPage }));
+            filterManager.changeRowsPerPage(perPage);
           },
           onColumnSortChange: (changedColumn, direction) => {
-            dispatch(
-              Creators.setOrder({
-                sort: changedColumn,
-                dir: direction.includes("desc") ? "desc" : "asc",
-              })
-            );
+            filterManager.columnSortChange(changedColumn, direction);
           },
         }}
       />

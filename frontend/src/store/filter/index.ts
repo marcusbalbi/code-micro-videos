@@ -6,6 +6,7 @@ import {
   SetSearchAction,
   CleanFilterAction,
   State,
+  Actions
 } from "./types";
 
 export const { Types, Creators } = createActions<
@@ -82,13 +83,12 @@ const setOrder = (state = INITIAL_STATE, action: SetOrderAction): State => {
     },
   };
 };
-const reducer = createReducer(INITIAL_STATE, {
+const reducer = createReducer<State, Actions>(INITIAL_STATE, {
   [Types.SET_SEARCH]: setSearch,
   [Types.SET_PAGE]: setPage,
   [Types.SET_PER_PAGE]: setPerPage,
   [Types.SET_ORDER]: setOrder,
   [Types.CLEAN_FILTER]: (state = INITIAL_STATE) => {
-    console.log(INITIAL_STATE.order);
     return {
       search: { value: "", update: true },
       pagination: { ...INITIAL_STATE.pagination },

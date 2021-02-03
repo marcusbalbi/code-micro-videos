@@ -40,5 +40,11 @@ export interface SetOrderAction extends AnyAction {
     dir: string | null;
   };
 }
-export interface CleanFilterAction extends AnyAction {
-}
+export interface CleanFilterAction extends AnyAction {}
+
+export type Actions =
+  | SetSearchAction
+  | CleanFilterAction
+  | SetOrderAction
+  | SetPerPageAction
+  | SetPageAction;
