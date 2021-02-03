@@ -14,6 +14,9 @@ import { cloneDeep } from "lodash";
 import { FilterResetButton } from "../../components/Table/FilterResetButton";
 import useFilter from "../../hooks/useFilter";
 
+const debounceTime = 300;
+const debounceTimeSearchText = 300;
+
 const columnsDefinition: TableColumns[] = [
   {
     name: "id",
@@ -93,11 +96,12 @@ export const Table = () => {
   const [loading, setLoading] = useState(false);
   const {
     filterState,
+    debouncedFilterState,
     totalRecords,
     setTotalRecords,
     filterManager,
   } = useFilter({
-    debounceTime: 300,
+    debounceTime: debounceTime,
     rowsPerPage: 10,
     rowsPerPageOptions: [10, 15, 50],
   });
@@ -109,11 +113,11 @@ export const Table = () => {
       const { data } = await httpCategory.list<ListResponse<Category>>({
         queryParams: {
           search:
-            typeof filterState.search === "string" ? filterState.search : "",
-          page: filterState.pagination.page + 1,
-          per_page: filterState.pagination.per_page,
-          sort: filterState.order.sort,
-          dir: filterState.order.dir,
+            typeof debouncedFilterState.search === "string" ? debouncedFilterState.search : "",
+          page: debouncedFilterState.pagination.page + 1,
+          per_page: debouncedFilterState.pagination.per_page,
+          sort: debouncedFilterState.order.sort,
+          dir: debouncedFilterState.order.dir,
         },
       });
       if (canLoad.current) {
@@ -133,10 +137,10 @@ export const Table = () => {
     }
   }, [
     snackbar,
-    filterState.search,
-    filterState.pagination.page,
-    filterState.pagination.per_page,
-    filterState.order,
+    debouncedFilterState.search,
+    debouncedFilterState.pagination.page,
+    debouncedFilterState.pagination.per_page,
+    debouncedFilterState.order,
     setTotalRecords,
   ]);
 
@@ -151,7 +155,7 @@ export const Table = () => {
   return (
     <ThemeProvider theme={localTheme}>
       <DefaultTable
-        debouncedSearchTime={300}
+        debouncedSearchTime={debounceTimeSearchText}
         data={categories}
         loading={loading}
         title={"Listagem de Categorias"}
@@ -164,7 +168,7 @@ export const Table = () => {
           count: totalRecords,
           sortOrder: {
             name: filterState.order.sort || "NONE",
-            direction: filterState.order.dir as any || "asc",
+            direction: (filterState.order.dir as any) || "asc",
           },
           customToolbar: () => {
             return (

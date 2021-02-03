@@ -1,4 +1,5 @@
 import { Dispatch, Reducer, useReducer, useState } from "react";
+import { useDebounce } from "use-debounce";
 import reducer, { Creators, INITIAL_STATE } from "../store/filter/index";
 import {
   State as FilterState,
@@ -57,12 +58,14 @@ const useFilter = (options: FilterManagerOptions) => {
   const [filterState, dispatch] = useReducer<
     Reducer<FilterState, FilterActions>
   >(reducer, INITIAL_STATE);
+  const [debouncedFilterState] = useDebounce(filterState, options.debounceTime);
   filterManager.state = filterState;
   filterManager.dispatch = dispatch as any;
 
   return {
     filterManager,
     filterState,
+    debouncedFilterState,
     dispatch,
     totalRecords,
     setTotalRecords,
