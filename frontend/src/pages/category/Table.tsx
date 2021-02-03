@@ -113,7 +113,9 @@ export const Table = () => {
       const { data } = await httpCategory.list<ListResponse<Category>>({
         queryParams: {
           search:
-            typeof debouncedFilterState.search === "string" ? debouncedFilterState.search : "",
+            typeof debouncedFilterState.search === "string"
+              ? debouncedFilterState.search
+              : "",
           page: debouncedFilterState.pagination.page + 1,
           per_page: debouncedFilterState.pagination.per_page,
           sort: debouncedFilterState.order.sort,
@@ -144,9 +146,14 @@ export const Table = () => {
     setTotalRecords,
   ]);
 
+  const updateHistory = useCallback(() => {
+    filterManager.pushHistory();
+  }, [filterManager]);
+
   useEffect(() => {
     canLoad.current = true;
     getData();
+    updateHistory();
     return () => {
       canLoad.current = false;
     };
