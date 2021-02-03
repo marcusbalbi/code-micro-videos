@@ -146,17 +146,14 @@ export const Table = () => {
     setTotalRecords,
   ]);
 
-  const updateHistory = useCallback(() => {
-    filterManager.pushHistory();
-  }, [filterManager]);
-
   useEffect(() => {
     canLoad.current = true;
     getData();
-    updateHistory();
+    filterManager.pushHistory();
     return () => {
       canLoad.current = false;
     };
+    //eslint-disable-next-line
   }, [getData]);
 
   return (
