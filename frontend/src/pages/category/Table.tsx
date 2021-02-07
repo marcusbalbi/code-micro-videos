@@ -16,7 +16,8 @@ import useFilter from "../../hooks/useFilter";
 
 const debounceTime = 300;
 const debounceTimeSearchText = 300;
-
+const rowsPerPage = 15;
+const rowsPerPageOptions = [15, 25, 50];
 const columnsDefinition: TableColumns[] = [
   {
     name: "id",
@@ -102,8 +103,9 @@ export const Table = () => {
     filterManager,
   } = useFilter({
     debounceTime: debounceTime,
-    rowsPerPage: 10,
-    rowsPerPageOptions: [10, 15, 50],
+    rowsPerPage: rowsPerPage,
+    columns: columnsDefinition,
+    rowsPerPageOptions: rowsPerPageOptions,
   });
   const snackbar = useSnackbar();
 
@@ -116,7 +118,7 @@ export const Table = () => {
             typeof debouncedFilterState.search === "string"
               ? debouncedFilterState.search
               : "",
-          page: debouncedFilterState.pagination.page + 1,
+          page: debouncedFilterState.pagination.page,
           per_page: debouncedFilterState.pagination.per_page,
           sort: debouncedFilterState.order.sort,
           dir: debouncedFilterState.order.dir,
@@ -147,6 +149,11 @@ export const Table = () => {
   ]);
 
   useEffect(() => {
+    filterManager.replaceHistory();
+    //eslint-disable-next-line
+  }, []);
+
+  useEffect(() => {
     canLoad.current = true;
     getData();
     filterManager.pushHistory();
@@ -167,8 +174,9 @@ export const Table = () => {
         options={{
           serverSide: true,
           searchText: filterState.search as any,
-          page: filterState.pagination.page,
+          page: filterManager.getCorrectPage(),
           rowsPerPage: filterState.pagination.per_page,
+          rowsPerPageOptions,
           count: totalRecords,
           sortOrder: {
             name: filterState.order.sort || "NONE",

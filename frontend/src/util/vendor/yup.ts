@@ -1,6 +1,6 @@
-import { setLocale } from "yup";
+import * as yup from "yup";
 
-setLocale({
+yup.setLocale({
   mixed: {
     required: (field) => {
       return `O Campo ${field.label} é Obrigatório`;
@@ -18,3 +18,5 @@ setLocale({
     },
   },
 });
+
+export default yup;
