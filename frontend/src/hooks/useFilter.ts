@@ -7,6 +7,7 @@ import {
   Actions as FilterActions,
 } from "../store/filter/types";
 import { History } from "history";
+import { isEqual } from 'lodash' 
 
 export interface FilterManagerOptions {
   rowsPerPage: number;
@@ -67,7 +68,11 @@ export class FilterManager {
         search: typeof this.state.search === "string" ? this.state.search : "",
       },
     };
-    this.history.push(newLocation);
+    const oldState = this.history.location.state
+    const nextState = this.state;
+    if (!isEqual(oldState, nextState)) {
+      this.history.push(newLocation);
+    }
   }
 
   private formatSearchParams() {
@@ -75,7 +80,7 @@ export class FilterManager {
       typeof this.state.search === "string" ? this.state.search : "";
     return {
       ...(search && search !== "" && { search: search }),
-      ...(this.state.pagination.per_page !== 15 && {
+      ...(this.state.pagination.per_page !== 10 && {
         per_page: this.state.pagination.per_page,
       }),
       ...(this.state.pagination.page > 0 && {
