@@ -16,6 +16,14 @@ export interface FilterManagerOptions {
   debounceTime: number;
   history: History;
   columns: MUIDataTableColumn[];
+  tableRef: React.MutableRefObject<MuiDatatableRefComponent>;
+  extraFilter?: ExtraFilter;
+}
+
+export interface ExtraFilter {
+  getStateFromURL: (queryParams: URLSearchParams) => any;
+  formatSearchParams: (debouncedState: FilterState) => any;
+  createValidationSchema: () => any;
 }
 
 export interface useFilterOptions
@@ -30,6 +38,8 @@ export class FilterManager {
   debounceTime: number;
   history: History;
   columns: MUIDataTableColumn[];
+  tableRef: React.MutableRefObject<MuiDatatableRefComponent>;
+  extraFilter?: ExtraFilter;
   constructor(options: FilterManagerOptions) {
     const {
       rowsPerPage,
@@ -37,12 +47,16 @@ export class FilterManager {
       debounceTime,
       history,
       columns,
+      extraFilter,
+      tableRef,
     } = options;
     this.rowsPerPage = rowsPerPage;
     this.rowsPerPageOptions = rowsPerPageOptions;
     this.debounceTime = debounceTime;
     this.history = history;
     this.columns = columns;
+    this.tableRef = tableRef;
+    this.extraFilter = extraFilter ? extraFilter : undefined;
     this.createValidationSchema();
   }
 
@@ -118,6 +132,7 @@ export class FilterManager {
           sort: this.state.order.sort,
           dir: this.state.order.dir,
         }),
+      ...(this.extraFilter && this.extraFilter.formatSearchParams(this.state)),
     };
   }
 
@@ -135,6 +150,9 @@ export class FilterManager {
         sort: queryParams.get("sort"),
         dir: queryParams.get("dir"),
       },
+      ...(this.extraFilter && {
+        extraFilter: this.extraFilter.getStateFromURL(queryParams),
+      }),
     });
   }
 
@@ -179,6 +197,9 @@ export class FilterManager {
               : undefined;
           })
           .default(null),
+      }),
+      ...(this.extraFilter && {
+        extraFilter: this.extraFilter.createValidationSchema(),
       }),
     });
   }
