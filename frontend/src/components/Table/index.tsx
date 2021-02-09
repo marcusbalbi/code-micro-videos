@@ -104,7 +104,7 @@ const Table: React.FC<TableProps> = (props) => {
     }
   );
   function getOriginalMuiDataTableProps() {
-    return omit(newProps, "loading", "debouncedSearchTime");
+    return omit({ ...newProps }, "loading", "debouncedSearchTime");
   }
   function applyLoading() {
     const textLabels = (newProps.options as any).textLabels;
@@ -123,6 +123,6 @@ const Table: React.FC<TableProps> = (props) => {
       <MUIDataTable {...originalProps}></MUIDataTable>
     </MuiThemeProvider>
   );
-};
+}
 
 export default Table;

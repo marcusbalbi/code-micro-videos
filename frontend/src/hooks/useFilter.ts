@@ -16,7 +16,6 @@ export interface FilterManagerOptions {
   debounceTime: number;
   history: History;
   columns: MUIDataTableColumn[];
-  tableRef: React.MutableRefObject<MuiDatatableRefComponent>;
   extraFilter?: ExtraFilter;
 }
 
@@ -32,13 +31,13 @@ export interface useFilterOptions
 export class FilterManager {
   schema;
   state: FilterState = null as any;
+  debouncedFilterState: FilterState = null as any;
   dispatch: Dispatch<FilterActions> = null as any;
   rowsPerPage: number;
   rowsPerPageOptions: number[];
   debounceTime: number;
   history: History;
   columns: MUIDataTableColumn[];
-  tableRef: React.MutableRefObject<MuiDatatableRefComponent>;
   extraFilter?: ExtraFilter;
   constructor(options: FilterManagerOptions) {
     const {
@@ -48,23 +47,28 @@ export class FilterManager {
       history,
       columns,
       extraFilter,
-      tableRef,
     } = options;
     this.rowsPerPage = rowsPerPage;
     this.rowsPerPageOptions = rowsPerPageOptions;
     this.debounceTime = debounceTime;
     this.history = history;
     this.columns = columns;
-    this.tableRef = tableRef;
     this.extraFilter = extraFilter ? extraFilter : undefined;
     this.createValidationSchema();
   }
 
+  private resetTablePagination() {
+    this.changePage(0);
+    this.changeRowsPerPage(this.rowsPerPage);
+  }
+
   changeSearch(value) {
     this.dispatch(Creators.setSearch({ search: value || null }));
+    this.resetTablePagination();
   }
 
   changePage(page) {
+    console.log('tentaram mudar a pagina!', page)
     // MUIDataTable Count page with 0
     this.dispatch(Creators.setPage({ page: page + 1 }));
   }
@@ -80,22 +84,26 @@ export class FilterManager {
         dir: direction.includes("desc") ? "desc" : "asc",
       })
     );
+    this.resetTablePagination();
   }
 
   cleanFilter() {
     this.dispatch(Creators.cleanFilter());
+    this.resetTablePagination();
   }
 
   getCorrectPage() {
     // MUIDataTable Count page with 0, pass to prop with -1
-    return this.state.pagination.page - 1;
+    const page = this.debouncedFilterState.pagination.page;
+
+    return page <= 0 ? page : page -1;
   }
 
   replaceHistory() {
     this.history.replace({
       pathname: this.history.location.pathname,
       search: "?" + new URLSearchParams(this.formatSearchParams() as any),
-      state: this.state,
+      state: this.debouncedFilterState,
     });
   }
 
@@ -105,11 +113,14 @@ export class FilterManager {
       search: "?" + new URLSearchParams(this.formatSearchParams() as any),
       state: {
         ...this.state,
-        search: typeof this.state.search === "string" ? this.state.search : "",
+        search:
+          typeof this.debouncedFilterState.search === "string"
+            ? this.debouncedFilterState.search
+            : "",
       },
     };
     const oldState = this.history.location.state;
-    const nextState = this.state;
+    const nextState = this.debouncedFilterState;
     if (!isEqual(oldState, nextState)) {
       this.history.push(newLocation);
     }
@@ -117,22 +128,24 @@ export class FilterManager {
 
   private formatSearchParams() {
     const search =
-      typeof this.state.search === "string" ? this.state.search : "";
+      typeof this.debouncedFilterState.search === "string"
+        ? this.debouncedFilterState.search
+        : "";
     return {
       ...(search && search !== "" && { search: search }),
-      ...(this.state.pagination.per_page !== 15 && {
-        per_page: this.state.pagination.per_page,
+      ...(this.debouncedFilterState.pagination.per_page !== 15 && {
+        per_page: this.debouncedFilterState.pagination.per_page,
       }),
-      ...(this.state.pagination.page > 1 && {
-        page: this.state.pagination.page,
+      ...(this.debouncedFilterState.pagination.page > 1 && {
+        page: this.debouncedFilterState.pagination.page,
       }),
-      ...(this.state.order &&
-        this.state.order.sort &&
-        this.state.order.dir && {
-          sort: this.state.order.sort,
-          dir: this.state.order.dir,
+      ...(this.debouncedFilterState.order &&
+        this.debouncedFilterState.order.sort &&
+        this.debouncedFilterState.order.dir && {
+          sort: this.debouncedFilterState.order.sort,
+          dir: this.debouncedFilterState.order.dir,
         }),
-      ...(this.extraFilter && this.extraFilter.formatSearchParams(this.state)),
+      ...(this.extraFilter && this.extraFilter.formatSearchParams(this.debouncedFilterState)),
     };
   }
 
@@ -171,7 +184,6 @@ export class FilterManager {
           .default(1),
         per_page: yup
           .number()
-          .oneOf(this.rowsPerPageOptions)
           .transform((value) => (isNaN(value) ? undefined : value))
           .default(this.rowsPerPage),
       }),
@@ -215,6 +227,7 @@ const useFilter = (options: useFilterOptions) => {
   >(reducer, INITIAL_STATE);
   const [debouncedFilterState] = useDebounce(filterState, options.debounceTime);
   filterManager.state = filterState;
+  filterManager.debouncedFilterState = debouncedFilterState;
   filterManager.dispatch = dispatch as any;
 
   return {

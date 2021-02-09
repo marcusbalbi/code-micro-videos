@@ -42,7 +42,7 @@ export const INITIAL_STATE: State = {
   search: "",
   pagination: {
     page: 0,
-    per_page: 10,
+    per_page: 15,
   },
   order: {
     sort: null,
