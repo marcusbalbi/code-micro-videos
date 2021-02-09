@@ -68,7 +68,6 @@ export class FilterManager {
   }
 
   changePage(page) {
-    console.log('tentaram mudar a pagina!', page)
     // MUIDataTable Count page with 0
     this.dispatch(Creators.setPage({ page: page + 1 }));
   }

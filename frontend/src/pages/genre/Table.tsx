@@ -1,12 +1,23 @@
-import React, { useEffect, useState } from "react";
-import httpGenre from "../../util/http/http-genre";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 
 import format from "date-fns/format";
 import parseISO from "date-fns/parseISO";
+import httpGenre from "../../util/http/http-genre";
 import { BadgeNo, BadgeYes } from "../../components/Badge";
 import { Genre, ListResponse } from "../../util/dto";
 import DefaultTable, { TableColumns } from "../../components/Table";
 import { useSnackbar } from "notistack";
+import { IconButton, Theme, ThemeProvider } from "@material-ui/core";
+import { Link } from "react-router-dom";
+import EditIcon from "@material-ui/icons/Edit";
+import { cloneDeep } from "lodash";
+import { FilterResetButton } from "../../components/Table/FilterResetButton";
+import useFilter from "../../hooks/useFilter";
+
+const debounceTime = 300;
+const debounceTimeSearchText = 300;
+const rowsPerPage = 15;
+const rowsPerPageOptions = [15, 25, 50];
 
 const columnsDefinition: TableColumns[] = [
   {
@@ -20,22 +31,12 @@ const columnsDefinition: TableColumns[] = [
   {
     name: "name",
     label: "nome",
-    width: "20%",
-  },
-  {
-    name: "categories",
-    label: "Categorias",
-    width: "20%",
-    options: {
-      customBodyRender: (value, tableMeta, updateValue) => {
-        return value.map((value: any) => value.name).join(", ");
-      },
-    },
+    width: "40%",
   },
   {
     name: "is_active",
     label: "Ativo?",
-    width: `4%`,
+    width: "4%",
     options: {
       customBodyRender: (value, tableMeta, updateValue) => {
         if (value === true) {
@@ -48,7 +49,7 @@ const columnsDefinition: TableColumns[] = [
   {
     name: "created_at",
     label: "Criado em",
-    width: `10%`,
+    width: "10%",
     options: {
       customBodyRender: (value, tableMeta, updateValue) => {
         return <span>{format(parseISO(value), "dd/MM/yyyy")}</span>;
@@ -61,45 +62,151 @@ const columnsDefinition: TableColumns[] = [
     width: `16%`,
     options: {
       sort: false,
+      customBodyRender: (value, tableMeta) => {
+        return (
+          <span>
+            <IconButton
+              color={"secondary"}
+              component={Link}
+              to={`genres/${tableMeta.rowData[0]}/edit`}
+            >
+              <EditIcon fontSize={"inherit"} />
+            </IconButton>
+          </span>
+        );
+      },
     },
   },
 ];
 
+function localTheme(theme: Theme) {
+  const copyTheme = cloneDeep(theme);
+  const selector = `&[data-testid^="MuiDataTableBodyCell-${
+    columnsDefinition.length - 1
+  }"]`;
+  (copyTheme.overrides as any).MUIDataTableBodyCell.root[selector] = {
+    paddingTop: "0px",
+    paddingBottom: "0px",
+  };
+
+  return copyTheme;
+}
+
 export const Table = () => {
+  const canLoad = useRef(true);
   const [genres, setGenres] = useState<Genre[]>([]);
   const [loading, setLoading] = useState(false);
+  const {
+    filterState,
+    debouncedFilterState,
+    totalRecords,
+    setTotalRecords,
+    filterManager,
+  } = useFilter({
+    debounceTime: debounceTime,
+    rowsPerPage: rowsPerPage,
+    columns: columnsDefinition,
+    rowsPerPageOptions: rowsPerPageOptions,
+  });
   const snackbar = useSnackbar();
 
-  useEffect(() => {
-    let canLoad = true;
-    (async function getGenres() {
-      setLoading(true);
-      try {
-        const { data } = await httpGenre.list<ListResponse<Genre>>();
-        if (canLoad) {
-          setGenres(data.data);
-        }
-      } catch (error) {
-        console.log(error);
-        snackbar.enqueueSnackbar("Não foi possível carregar as informações", {
-          variant: "error",
-        });
-      } finally {
-        setLoading(false);
+  const getData = useCallback(async () => {
+    setLoading(true);
+    try {
+      const { data } = await httpGenre.list<ListResponse<Genre>>({
+        queryParams: {
+          search:
+            typeof debouncedFilterState.search === "string"
+              ? debouncedFilterState.search
+              : "",
+          page: debouncedFilterState.pagination.page,
+          per_page: debouncedFilterState.pagination.per_page,
+          sort: debouncedFilterState.order.sort,
+          dir: debouncedFilterState.order.dir,
+        },
+      });
+      if (canLoad.current) {
+        setGenres(data.data);
+        setTotalRecords(data.meta.total);
       }
-    })();
+    } catch (error) {
+      console.log(error);
+      if (httpGenre.isCancelledRequest(error)) {
+        return;
+      }
+      snackbar.enqueueSnackbar("Não foi possível carregar as informações", {
+        variant: "error",
+      });
+    } finally {
+      setLoading(false);
+    }
+  }, [
+    snackbar,
+    debouncedFilterState.search,
+    debouncedFilterState.pagination.page,
+    debouncedFilterState.pagination.per_page,
+    debouncedFilterState.order,
+    setTotalRecords,
+  ]);
+
+  useEffect(() => {
+    filterManager.replaceHistory();
+    //eslint-disable-next-line
+  }, []);
+
+  useEffect(() => {
+    canLoad.current = true;
+    getData();
+    filterManager.pushHistory();
     return () => {
-      canLoad = false;
+      canLoad.current = false;
     };
-  }, [snackbar]);
+    //eslint-disable-next-line
+  }, [getData]);
 
   return (
-    <DefaultTable
-      data={genres}
-      title={"Listagem de Generos"}
-      loading={loading}
-      columns={columnsDefinition}
-    />
+    <ThemeProvider theme={localTheme}>
+      <DefaultTable
+        debouncedSearchTime={debounceTimeSearchText}
+        data={genres}
+        loading={loading}
+        title={"Listagem de Generos"}
+        columns={columnsDefinition}
+        options={{
+          serverSide: true,
+          searchText: filterState.search as any,
+          page: filterManager.getCorrectPage(),
+          rowsPerPage: filterState.pagination.per_page,
+          rowsPerPageOptions,
+          count: totalRecords,
+          sortOrder: {
+            name: filterState.order.sort || "NONE",
+            direction: (filterState.order.dir as any) || "asc",
+          },
+          customToolbar: () => {
+            return (
+              <FilterResetButton
+                handleClick={() => {
+                  filterManager.cleanFilter();
+                }}
+              />
+            );
+          },
+          onSearchChange: (value) => {
+            filterManager.changeSearch(value);
+          },
+          onChangePage: (page) => {
+            filterManager.changePage(page);
+          },
+          onChangeRowsPerPage: (perPage) => {
+            filterManager.changeRowsPerPage(perPage);
+          },
+          onColumnSortChange: (changedColumn, direction) => {
+            filterManager.columnSortChange(changedColumn, direction);
+          },
+        }}
+      />
+    </ThemeProvider>
   );
 };
 
