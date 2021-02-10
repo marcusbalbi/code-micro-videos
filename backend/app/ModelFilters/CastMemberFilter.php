@@ -3,7 +3,6 @@
 namespace App\ModelFilters;
 
 use App\Models\CastMember;
-use EloquentFilter\ModelFilter;
 
 class CastMemberFilter extends DefaultModelFilter
 {
