@@ -3,7 +3,7 @@ import React, { useCallback, useEffect, useRef, useState } from "react";
 import format from "date-fns/format";
 import parseISO from "date-fns/parseISO";
 import httpCastMember from "../../util/http/http-cast-member";
-import { CastMember, ListResponse } from "../../util/dto";
+import { CastMember, CastMemberTypeMap, ListResponse } from "../../util/dto";
 import DefaultTable, { TableColumns } from "../../components/Table";
 import { useSnackbar } from "notistack";
 import { IconButton, Theme, ThemeProvider } from "@material-ui/core";
@@ -12,12 +12,9 @@ import EditIcon from "@material-ui/icons/Edit";
 import { cloneDeep } from "lodash";
 import { FilterResetButton } from "../../components/Table/FilterResetButton";
 import useFilter from "../../hooks/useFilter";
+import yup from "../../util/vendor/yup";
 
-const CastMemberTypeMap = {
-  1: "Diretor",
-  2: "Ator",
-};
-
+const castMemberNames = Object.values(CastMemberTypeMap);
 
 const debounceTime = 300;
 const debounceTimeSearchText = 300;
@@ -25,7 +22,7 @@ const rowsPerPage = 15;
 const rowsPerPageOptions = [15, 25, 50];
 
 const columnsDefinition: TableColumns[] = [
- {
+  {
     name: "id",
     label: "ID",
     width: "30%",
@@ -109,6 +106,36 @@ export const Table = () => {
     rowsPerPage: rowsPerPage,
     columns: columnsDefinition,
     rowsPerPageOptions: rowsPerPageOptions,
+    extraFilter: {
+      createValidationSchema: () => {
+        return yup.object().shape({
+          type: yup
+            .string()
+            .nullable()
+            .oneOf(castMemberNames)
+            .transform((value) => {
+              return !value || !castMemberNames.includes(value)
+                ? undefined
+                : value;
+            })
+            .default(null),
+        });
+      },
+      formatSearchParams: (debouncedState) => {
+        return debouncedState.extraFilter
+          ? {
+              ...(debouncedState.extraFilter && {
+                type: debouncedState.extraFilter.type,
+              }),
+            }
+          : undefined;
+      },
+      getStateFromURL: (queryParams) => {
+        return {
+          type: queryParams.get("type"),
+        };
+      },
+    },
   });
   const snackbar = useSnackbar();
 

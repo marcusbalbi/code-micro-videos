@@ -13,6 +13,7 @@ import EditIcon from "@material-ui/icons/Edit";
 import { cloneDeep } from "lodash";
 import { FilterResetButton } from "../../components/Table/FilterResetButton";
 import useFilter from "../../hooks/useFilter";
+import yup from "../../util/vendor/yup";
 
 const debounceTime = 300;
 const debounceTimeSearchText = 300;
@@ -107,6 +108,35 @@ export const Table = () => {
     rowsPerPage: rowsPerPage,
     columns: columnsDefinition,
     rowsPerPageOptions: rowsPerPageOptions,
+    extraFilter: {
+      createValidationSchema: () => {
+        return yup.object().shape({
+          categories: yup
+            .mixed()
+            .nullable()
+            .transform((value) => {
+              return !value || value === ""
+                ? undefined
+                : value.split(",");
+            })
+            .default(null),
+        });
+      },
+      formatSearchParams: (debouncedState) => {
+        return debouncedState.extraFilter
+          ? {
+              ...(debouncedState.extraFilter && {
+                categories: debouncedState.extraFilter.categories.join(","),
+              }),
+            }
+          : undefined;
+      },
+      getStateFromURL: (queryParams) => {
+        return {
+          categories: queryParams.get("categories"),
+        };
+      },
+    },
   });
   const snackbar = useSnackbar();
 
