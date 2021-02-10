@@ -94,6 +94,7 @@ const updateExtraFilter = (
   state = INITIAL_STATE,
   action: updateExtraFilterAction
 ): State => {
+  console.log(action.payload);
   return {
     ...state,
     extraFilter: {

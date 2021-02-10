@@ -25,12 +25,16 @@ const columnsDefinition: TableColumns[] = [
     width: "30%",
     options: {
       sort: false,
+      filter: false,
     },
   },
   {
     name: "name",
     label: "nome",
     width: "40%",
+    options: {
+      filter: false,
+    },
   },
   {
     name: "is_active",
@@ -43,13 +47,27 @@ const columnsDefinition: TableColumns[] = [
         }
         return <BadgeNo />;
       },
-    },
+      filterOptions: {
+        names: ["SIM", "NÃO"]
+      },
+      customFilterListOptions: {
+        render: v => {
+          if (v === true) {
+            return ["ativo: SIM"];
+          } else if (v === false) {
+            return ["ativo: NÃO"];
+          }
+          return[]
+        },
+      },
+    }
   },
   {
     name: "created_at",
     label: "Criado em",
     width: "10%",
     options: {
+      filter: false,
       customBodyRender: (value, tableMeta, updateValue) => {
         return <span>{format(parseISO(value), "dd/MM/yyyy")}</span>;
       },
@@ -61,6 +79,7 @@ const columnsDefinition: TableColumns[] = [
     width: `16%`,
     options: {
       sort: false,
+      filter: false,
       customBodyRender: (value, tableMeta) => {
         return (
           <span>

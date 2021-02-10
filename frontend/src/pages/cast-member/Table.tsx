@@ -9,7 +9,7 @@ import { useSnackbar } from "notistack";
 import { IconButton, Theme, ThemeProvider } from "@material-ui/core";
 import { Link } from "react-router-dom";
 import EditIcon from "@material-ui/icons/Edit";
-import { cloneDeep } from "lodash";
+import { cloneDeep, invert } from "lodash";
 import { FilterResetButton } from "../../components/Table/FilterResetButton";
 import useFilter from "../../hooks/useFilter";
 import yup from "../../util/vendor/yup";
@@ -28,18 +28,30 @@ const columnsDefinition: TableColumns[] = [
     width: "30%",
     options: {
       sort: false,
+      filter: false,
     },
   },
   {
     name: "name",
     label: "nome",
     width: "24%",
+    options: {
+      filter: false,
+    },
   },
   {
     name: "type",
     label: "Tipo",
     width: "20%",
     options: {
+      filterOptions: {
+        names: castMemberNames,
+      },
+      customFilterListOptions: {
+        render: (v) => {
+          return ["Tipo: " + v];
+        },
+      },
       customBodyRender: (value, tableMeta, updateValue) => {
         return CastMemberTypeMap[value];
       },
@@ -50,6 +62,7 @@ const columnsDefinition: TableColumns[] = [
     label: "Criado em",
     width: "10%",
     options: {
+      filter: false,
       customBodyRender: (value, tableMeta, updateValue) => {
         return <span>{format(parseISO(value), "dd/MM/yyyy")}</span>;
       },
@@ -61,6 +74,7 @@ const columnsDefinition: TableColumns[] = [
     width: `16%`,
     options: {
       sort: false,
+      filter: false,
       customBodyRender: (value, tableMeta) => {
         return (
           <span>
@@ -124,9 +138,10 @@ export const Table = () => {
       formatSearchParams: (debouncedState) => {
         return debouncedState.extraFilter
           ? {
-              ...(debouncedState.extraFilter && {
-                type: debouncedState.extraFilter.type,
-              }),
+              ...(debouncedState.extraFilter &&
+                debouncedState.extraFilter.type && {
+                  type: debouncedState.extraFilter.type,
+                }),
             }
           : undefined;
       },
@@ -138,6 +153,15 @@ export const Table = () => {
     },
   });
   const snackbar = useSnackbar();
+  if (filterManager.debouncedFilterState.extraFilter) {
+    const column = columnsDefinition.find((c) => c.name === "type");
+    if (column && column.options) {
+      column.options.filterList = filterManager.debouncedFilterState.extraFilter
+        .type
+        ? [filterManager.debouncedFilterState.extraFilter.type]
+        : [];
+    }
+  }
 
   const getData = useCallback(async () => {
     setLoading(true);
@@ -152,6 +176,12 @@ export const Table = () => {
           per_page: debouncedFilterState.pagination.per_page,
           sort: debouncedFilterState.order.sort,
           dir: debouncedFilterState.order.dir,
+          ...(debouncedFilterState.extraFilter &&
+            debouncedFilterState.extraFilter.type && {
+              type: invert(CastMemberTypeMap)[
+                debouncedFilterState.extraFilter.type
+              ],
+            }),
         },
       });
       if (canLoad.current) {
@@ -159,7 +189,6 @@ export const Table = () => {
         setTotalRecords(data.meta.total);
       }
     } catch (error) {
-      console.log(error);
       if (httpCastMember.isCancelledRequest(error)) {
         return;
       }
@@ -175,6 +204,7 @@ export const Table = () => {
     debouncedFilterState.pagination.page,
     debouncedFilterState.pagination.per_page,
     debouncedFilterState.order,
+    debouncedFilterState.extraFilter,
     setTotalRecords,
   ]);
 
@@ -195,6 +225,7 @@ export const Table = () => {
 
   return (
     <ThemeProvider theme={localTheme}>
+      {JSON.stringify(filterState)}
       <DefaultTable
         debouncedSearchTime={debounceTimeSearchText}
         data={castMembers}
@@ -220,6 +251,13 @@ export const Table = () => {
                 }}
               />
             );
+          },
+          onFilterChange: (changedColumn, filterList, type, index) => {
+            filterManager.changeExtraFilter({
+              [changedColumn as string]: filterList[index].length
+                ? filterList[index][0]
+                : null,
+            });
           },
           onSearchChange: (value) => {
             filterManager.changeSearch(value);
