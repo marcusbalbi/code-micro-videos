@@ -14,6 +14,7 @@ import { cloneDeep } from "lodash";
 import { FilterResetButton } from "../../components/Table/FilterResetButton";
 import useFilter from "../../hooks/useFilter";
 import yup from "../../util/vendor/yup";
+import httpCategory from "../../util/http/http-category";
 
 const debounceTime = 300;
 const debounceTimeSearchText = 300;
@@ -27,18 +28,50 @@ const columnsDefinition: TableColumns[] = [
     width: "30%",
     options: {
       sort: false,
+      filter: false,
     },
   },
   {
     name: "name",
     label: "nome",
-    width: "40%",
+    width: "30%",
+    options: {
+      filter: false,
+    },
+  },
+  {
+    name: "categories",
+    label: "Categorias",
+    width: "30%",
+    options: {
+      customBodyRender: (value, tableMeta, updateValue) => {
+        return value.map((value: any) => value.name).join(", ");
+      },
+      filterType: "multiselect",
+      filterOptions: {
+        names: [],
+      },
+    },
   },
   {
     name: "is_active",
     label: "Ativo?",
     width: "4%",
     options: {
+      // filterOptions: {
+      //   names: ["SIM", "NÃO"],
+      // },
+      filter: false,
+      // customFilterListOptions: {
+      //   render: (v) => {
+      //     if (v === true) {
+      //       return ["ativo: SIM"];
+      //     } else if (v === false) {
+      //       return ["ativo: NÃO"];
+      //     }
+      //     return [];
+      //   },
+      // },
       customBodyRender: (value, tableMeta, updateValue) => {
         if (value === true) {
           return <BadgeYes />;
@@ -55,6 +88,7 @@ const columnsDefinition: TableColumns[] = [
       customBodyRender: (value, tableMeta, updateValue) => {
         return <span>{format(parseISO(value), "dd/MM/yyyy")}</span>;
       },
+      filter: false,
     },
   },
   {
@@ -63,6 +97,7 @@ const columnsDefinition: TableColumns[] = [
     width: `16%`,
     options: {
       sort: false,
+      filter: false,
       customBodyRender: (value, tableMeta) => {
         return (
           <span>
@@ -96,6 +131,7 @@ function localTheme(theme: Theme) {
 export const Table = () => {
   const canLoad = useRef(true);
   const [genres, setGenres] = useState<Genre[]>([]);
+  // const [_cat, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(false);
   const {
     filterState,
@@ -115,9 +151,7 @@ export const Table = () => {
             .mixed()
             .nullable()
             .transform((value) => {
-              return !value || value === ""
-                ? undefined
-                : value.split(",");
+              return !value || value === "" ? undefined : value.split(",");
             })
             .default(null),
         });
@@ -125,9 +159,10 @@ export const Table = () => {
       formatSearchParams: (debouncedState) => {
         return debouncedState.extraFilter
           ? {
-              ...(debouncedState.extraFilter && {
-                categories: debouncedState.extraFilter.categories.join(","),
-              }),
+              ...(debouncedState.extraFilter &&
+                debouncedState.extraFilter.categories && {
+                  categories: debouncedState.extraFilter.categories.join(","),
+                }),
             }
           : undefined;
       },
@@ -153,6 +188,10 @@ export const Table = () => {
           per_page: debouncedFilterState.pagination.per_page,
           sort: debouncedFilterState.order.sort,
           dir: debouncedFilterState.order.dir,
+          ...(debouncedFilterState.extraFilter &&
+            debouncedFilterState.extraFilter.categories && {
+              categories: debouncedFilterState.extraFilter.categories.join(","),
+            }),
         },
       });
       if (canLoad.current) {
@@ -177,10 +216,48 @@ export const Table = () => {
     debouncedFilterState.pagination.per_page,
     debouncedFilterState.order,
     setTotalRecords,
+    debouncedFilterState.extraFilter,
   ]);
 
   useEffect(() => {
     filterManager.replaceHistory();
+    //eslint-disable-next-line
+  }, []);
+
+  const columnCategory = columnsDefinition.find((c) => c.name === "categories");
+  const categoriesFilterValue =
+    filterState.extraFilter && filterState.extraFilter.categories;
+  if (columnCategory && columnCategory.options) {
+    columnCategory.options.filterList = categoriesFilterValue
+      ? [...categoriesFilterValue]
+      : [];
+  }
+  useEffect(() => {
+    let canLoad = true;
+    (async () => {
+      try {
+        const { data } = await httpCategory.list({ queryParams: { all: "" } });
+        if (
+          canLoad &&
+          columnCategory &&
+          columnCategory.options &&
+          columnCategory.options.filterOptions
+        ) {
+          // setCategories(data.data);
+          columnCategory.options.filterOptions.names = data.data.map(
+            (category) => category.name
+          );
+        }
+      } catch (error) {
+        console.log(error);
+        snackbar.enqueueSnackbar("Não foi possível carregar as informações", {
+          variant: "error",
+        });
+      }
+    })();
+    return () => {
+      canLoad = false;
+    };
     //eslint-disable-next-line
   }, []);
 
@@ -221,6 +298,13 @@ export const Table = () => {
                 }}
               />
             );
+          },
+          onFilterChange: (changedColumn, filterList, type, index) => {
+            filterManager.changeExtraFilter({
+              [changedColumn as string]: filterList[index].length
+                ? filterList[index]
+                : null,
+            });
           },
           onSearchChange: (value) => {
             filterManager.changeSearch(value);

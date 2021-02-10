@@ -216,7 +216,6 @@ export class FilterManager {
   }
 
   changeExtraFilter (data) {
-    console.log(data)
     this.dispatch(Creators.updateExtraFilter(data))
   }
 }

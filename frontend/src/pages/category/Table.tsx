@@ -47,19 +47,19 @@ const columnsDefinition: TableColumns[] = [
         }
         return <BadgeNo />;
       },
-      filterOptions: {
-        names: ["SIM", "NÃO"]
-      },
-      customFilterListOptions: {
-        render: v => {
-          if (v === true) {
-            return ["ativo: SIM"];
-          } else if (v === false) {
-            return ["ativo: NÃO"];
-          }
-          return[]
-        },
-      },
+      // filterOptions: {
+      //   names: ["SIM", "NÃO"]
+      // },
+      // customFilterListOptions: {
+      //   render: v => {
+      //     if (v === true) {
+      //       return ["ativo: SIM"];
+      //     } else if (v === false) {
+      //       return ["ativo: NÃO"];
+      //     }
+      //     return[]
+      //   },
+      // },
     }
   },
   {

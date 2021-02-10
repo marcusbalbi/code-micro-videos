@@ -225,7 +225,6 @@ export const Table = () => {
 
   return (
     <ThemeProvider theme={localTheme}>
-      {JSON.stringify(filterState)}
       <DefaultTable
         debouncedSearchTime={debounceTimeSearchText}
         data={castMembers}
