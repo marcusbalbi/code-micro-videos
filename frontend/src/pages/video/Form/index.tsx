@@ -1,7 +1,10 @@
 import {
+  Card,
+  CardContent,
   Checkbox,
   FormControlLabel,
   Grid,
+  makeStyles,
   TextField,
   Typography,
   useMediaQuery,
@@ -18,9 +21,20 @@ import { Video } from "../../../util/dto";
 import SubmitActions from "../../../components/SubmitActions";
 import DefaultForm from "../../../components/DefaultForm";
 import { RatingField } from "./RatingField";
-import InputFile from "../../../components/InputFile";
+import { UploadField } from "./UploadField";
+
+const useStyle = makeStyles((theme) => {
+  return {
+    cardUpload: {
+      borderRadius: "4px",
+      backgroundColor: "#F5F5F5",
+      margin: theme.spacing(2, 0),
+    },
+  };
+});
 
 export const Form = () => {
+  const classes = useStyle();
   const validationSchema = useMemo(
     () =>
       yup.object({
@@ -195,8 +209,40 @@ export const Form = () => {
               margin: isGreaterMd ? "none" : "normal",
             }}
           />
-          <br />
-          <InputFile />
+          <Card className={classes.cardUpload}>
+            <CardContent>
+              <Typography color="primary" variant={"h6"}>
+                Imagens
+              </Typography>
+              <UploadField
+                accept="images/*"
+                label="Thumb"
+                setValue={(value) => setValue("thumb_file", value)}
+              />
+              <UploadField
+                accept="images/*"
+                label="Banner"
+                setValue={(value) => setValue("banner_file", value)}
+              />
+            </CardContent>
+          </Card>
+          <Card className={classes.cardUpload}>
+            <CardContent>
+              <Typography color="primary" variant={"h6"}>
+                Videos
+              </Typography>
+              <UploadField
+                accept="video/mp4"
+                label="Trailer"
+                setValue={(value) => setValue("trailer_file", value)}
+              />
+              <UploadField
+                accept="video/mp4"
+                label="Principal"
+                setValue={(value) => setValue("video_file", value)}
+              />
+            </CardContent>
+          </Card>
           <br />
           <FormControlLabel
             control={

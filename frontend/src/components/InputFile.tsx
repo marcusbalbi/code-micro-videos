@@ -1,13 +1,8 @@
-import {
-  Button,
-  InputAdornment,
-  TextField,
-  TextFieldProps,
-} from "@material-ui/core";
+import { InputAdornment, TextField, TextFieldProps } from "@material-ui/core";
 import React, { useRef, MutableRefObject, useState } from "react";
-import CloudUploadIcon from "@material-ui/icons/CloudUpload";
 
 interface InputFileProps {
+  ButtonFile: React.ReactNode;
   InputFileProps?: React.DetailedHTMLProps<
     React.InputHTMLAttributes<HTMLInputElement>,
     HTMLInputElement
@@ -21,24 +16,14 @@ const InputFile: React.FC<InputFileProps> = (props) => {
 
   const textFieldProps: TextFieldProps = {
     variant: "outlined",
+    ...props.TextFieldProps,
     InputProps: {
+      ...props.TextFieldProps?.InputProps,
       readOnly: true,
       endAdornment: (
-        <InputAdornment position={"end"}>
-          <Button
-            endIcon={<CloudUploadIcon />}
-            variant="contained"
-            color="primary"
-            onClick={() => {
-              fileRef.current.click();
-            }}
-          >
-            Adicionar
-          </Button>
-        </InputAdornment>
+        <InputAdornment position={"end"}>{props.ButtonFile}</InputAdornment>
       ),
     },
-    ...props.TextFieldProps,
     value: filename,
   };
 
@@ -52,7 +37,11 @@ const InputFile: React.FC<InputFileProps> = (props) => {
     onChange: (event) => {
       const files = event.target.files;
       if (files && files.length) {
-        setFilename(Array.from(files).map((file) => file.name).join(", "));
+        setFilename(
+          Array.from(files)
+            .map((file) => file.name)
+            .join(", ")
+        );
       }
       if (props.InputFileProps && props.InputFileProps.onChange) {
         props.InputFileProps.onChange(event);
