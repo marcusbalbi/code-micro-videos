@@ -17,7 +17,7 @@ import * as yup from "yup";
 import { useYupValidationResolver } from "../../../hooks/YupValidation";
 import { useHistory, useParams } from "react-router";
 import { useSnackbar } from "notistack";
-import { Video } from "../../../util/dto";
+import { Video, VideoFileFieldsMap } from "../../../util/dto";
 import SubmitActions from "../../../components/SubmitActions";
 import DefaultForm from "../../../components/DefaultForm";
 import { RatingField } from "./RatingField";
@@ -32,6 +32,8 @@ const useStyle = makeStyles((theme) => {
     },
   };
 });
+
+const fileFields = Object.keys(VideoFileFieldsMap)
 
 export const Form = () => {
   const classes = useStyle();
@@ -72,7 +74,7 @@ export const Form = () => {
   const theme = useTheme();
   const isGreaterMd = useMediaQuery(theme.breakpoints.up("md"));
   useEffect(() => {
-    const otherFields = ["rating", "opened"];
+    const otherFields = ["rating", "opened"].concat(fileFields);
     for (let name of otherFields) {
       register({ name });
     }
@@ -215,12 +217,12 @@ export const Form = () => {
                 Imagens
               </Typography>
               <UploadField
-                accept="images/*"
+                accept="image/*"
                 label="Thumb"
                 setValue={(value) => setValue("thumb_file", value)}
               />
               <UploadField
-                accept="images/*"
+                accept="image/*"
                 label="Banner"
                 setValue={(value) => setValue("banner_file", value)}
               />
