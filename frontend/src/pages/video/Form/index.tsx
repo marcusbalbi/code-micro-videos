@@ -1,14 +1,21 @@
-import { Checkbox, FormControlLabel, Grid, TextField, Typography } from "@material-ui/core";
+import {
+  Checkbox,
+  FormControlLabel,
+  Grid,
+  TextField,
+  Typography,
+} from "@material-ui/core";
 import { useForm } from "react-hook-form";
 import React, { useEffect, useMemo, useState } from "react";
-import httpVideo from "../../util/http/http-video";
+import httpVideo from "../../../util/http/http-video";
 import * as yup from "yup";
-import { useYupValidationResolver } from "../../hooks/YupValidation";
+import { useYupValidationResolver } from "../../../hooks/YupValidation";
 import { useHistory, useParams } from "react-router";
 import { useSnackbar } from "notistack";
-import { Video } from "../../util/dto";
-import SubmitActions from "../../components/SubmitActions";
-import DefaultForm from "../../components/DefaultForm";
+import { Video } from "../../../util/dto";
+import SubmitActions from "../../../components/SubmitActions";
+import DefaultForm from "../../../components/DefaultForm";
+import { RatingField } from "./RatingField";
 
 export const Form = () => {
   const validationSchema = useMemo(
@@ -16,7 +23,11 @@ export const Form = () => {
       yup.object({
         title: yup.string().label("Título").required().max(255),
         description: yup.string().label("Sinopse").required(),
-        year_launched: yup.number().label("Ano de Lançamento").required().min(1),
+        year_launched: yup
+          .number()
+          .label("Ano de Lançamento")
+          .required()
+          .min(1),
         duration: yup.number().label("Duração").required().min(1),
         rating: yup.string().label("Classificação").required(),
       }),
@@ -42,6 +53,12 @@ export const Form = () => {
   const [loading, setLoading] = useState(false);
   const [video, setVideo] = useState<Video | null>();
 
+  useEffect(() => {
+    const otherFields = ["rating", "opened"];
+    for (let name of otherFields) {
+      register({ name });
+    }
+  }, [register]);
 
   useEffect(() => {
     if (!id) {
@@ -163,7 +180,14 @@ export const Form = () => {
           Generos e Categorias
         </Grid>
         <Grid item xs={12} md={6}>
-          Classificação
+          <RatingField
+            value={watch("rating")}
+            setValue={(value) =>
+              setValue("rating", value, { shouldValidate: true })
+            }
+            error={errors.rating}
+            disabled={loading}
+          />
           <br />
           Upload
           <br />
