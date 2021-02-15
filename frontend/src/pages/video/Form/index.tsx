@@ -18,6 +18,7 @@ import { Video } from "../../../util/dto";
 import SubmitActions from "../../../components/SubmitActions";
 import DefaultForm from "../../../components/DefaultForm";
 import { RatingField } from "./RatingField";
+import InputFile from "../../../components/InputFile";
 
 export const Form = () => {
   const validationSchema = useMemo(
@@ -195,7 +196,7 @@ export const Form = () => {
             }}
           />
           <br />
-          Upload
+          <InputFile />
           <br />
           <FormControlLabel
             control={
