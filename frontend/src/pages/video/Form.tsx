@@ -1,12 +1,12 @@
-import { Checkbox, TextField, FormControlLabel } from "@material-ui/core";
+import { Checkbox, FormControlLabel, Grid, TextField, Typography } from "@material-ui/core";
 import { useForm } from "react-hook-form";
 import React, { useEffect, useMemo, useState } from "react";
-import httpCategory from "../../util/http/http-category";
+import httpVideo from "../../util/http/http-video";
 import * as yup from "yup";
 import { useYupValidationResolver } from "../../hooks/YupValidation";
 import { useHistory, useParams } from "react-router";
 import { useSnackbar } from "notistack";
-import { Category } from "../../util/dto";
+import { Video } from "../../util/dto";
 import SubmitActions from "../../components/SubmitActions";
 import DefaultForm from "../../components/DefaultForm";
 
@@ -14,7 +14,11 @@ export const Form = () => {
   const validationSchema = useMemo(
     () =>
       yup.object({
-        name: yup.string().label("Nome").required(),
+        title: yup.string().label("Título").required().max(255),
+        description: yup.string().label("Sinopse").required(),
+        year_launched: yup.number().label("Ano de Lançamento").required().min(1),
+        duration: yup.number().label("Duração").required().min(1),
+        rating: yup.string().label("Classificação").required(),
       }),
     []
   );
@@ -28,31 +32,26 @@ export const Form = () => {
     watch,
     setValue,
     trigger,
-  } = useForm<Category>({
+  } = useForm<Video>({
     resolver,
-    defaultValues: {
-      is_active: true,
-    },
+    defaultValues: {},
   });
   const snackbar = useSnackbar();
   const history = useHistory();
   const { id } = useParams<{ id: string }>();
   const [loading, setLoading] = useState(false);
-  const [category, setCategory] = useState<Category | null>();
+  const [video, setVideo] = useState<Video | null>();
 
-  useEffect(() => {
-    register("is_active");
-  }, [register]);
 
   useEffect(() => {
     if (!id) {
       return;
     }
-    async function getCategory() {
+    async function getVideo() {
       setLoading(true);
       try {
-        const { data } = await httpCategory.get<{ data: Category }>(id);
-        setCategory(data.data);
+        const { data } = await httpVideo.get<{ data: Video }>(id);
+        setVideo(data.data);
         reset(data.data);
       } catch (error) {
         console.log(error);
@@ -63,33 +62,33 @@ export const Form = () => {
         setLoading(false);
       }
     }
-    getCategory();
+    getVideo();
   }, [id, reset, snackbar]);
 
-  async function onSubmit(formData: Category, event) {
+  async function onSubmit(formData: Video, event) {
     setLoading(true);
     try {
-      const http = !category
-        ? httpCategory.create(formData)
-        : httpCategory.update(id, formData);
+      const http = !video
+        ? httpVideo.create(formData)
+        : httpVideo.update(id, formData);
 
       const { data } = await http;
-      snackbar.enqueueSnackbar("Categoria salva com sucesso!", {
+      snackbar.enqueueSnackbar("Video salvo com sucesso!", {
         variant: "success",
       });
       setTimeout(() => {
         if (!event) {
-          return history.push("/categories");
+          return history.push("/videos");
         }
         if (id) {
-          history.replace(`/categories/${data.data.id}/edit`);
+          history.replace(`/videos/${data.data.id}/edit`);
         } else {
-          history.push(`/categories/${data.data.id}/edit`);
+          history.push(`/videos/${data.data.id}/edit`);
         }
       });
     } catch (error) {
       console.log(error);
-      snackbar.enqueueSnackbar("Falha ao salvar Categoria", {
+      snackbar.enqueueSnackbar("Falha ao salvar Video", {
         variant: "error",
       });
     } finally {
@@ -97,43 +96,96 @@ export const Form = () => {
     }
   }
   return (
-    <DefaultForm onSubmit={handleSubmit(onSubmit)}>
-      <TextField
-        inputRef={register}
-        name="name"
-        label="Nome"
-        fullWidth
-        variant="outlined"
-        disabled={loading}
-        InputLabelProps={{ shrink: true }}
-        error={errors.name !== undefined}
-        helperText={errors.name && errors.name.message}
-      />
-      <TextField
-        inputRef={register}
-        name="description"
-        label="Descrição"
-        margin="normal"
-        variant="outlined"
-        fullWidth
-        multiline
-        rows={5}
-        InputLabelProps={{ shrink: true }}
-        disabled={loading}
-      />
-      <FormControlLabel
-        disabled={loading}
-        label={"Ativo?"}
-        labelPlacement="end"
-        control={
-          <Checkbox
-            color={"primary"}
-            name="is_active"
-            onChange={() => setValue("is_active", !getValues().is_active)}
-            checked={watch("is_active")}
+    <DefaultForm GridItemProps={{ xs: 12 }} onSubmit={handleSubmit(onSubmit)}>
+      <Grid container spacing={5}>
+        <Grid item xs={12} md={6}>
+          <TextField
+            name="title"
+            label="Título"
+            variant="outlined"
+            fullWidth
+            inputRef={register}
+            disabled={loading}
+            InputLabelProps={{ shrink: true }}
+            error={errors.title !== undefined}
+            helperText={errors.title && errors.title.message}
           />
-        }
-      />
+          <TextField
+            name="description"
+            label="Sinopse"
+            multiline
+            rows={4}
+            margin="normal"
+            variant="outlined"
+            fullWidth
+            inputRef={register}
+            disabled={loading}
+            InputLabelProps={{ shrink: true }}
+            error={errors.description !== undefined}
+            helperText={errors.description && errors.description.message}
+          />
+          <Grid container spacing={1}>
+            <Grid item xs={6}>
+              <TextField
+                name="year_launched"
+                label="Ano de Lançamento"
+                type="number"
+                margin="normal"
+                variant="outlined"
+                fullWidth
+                inputRef={register}
+                disabled={loading}
+                InputLabelProps={{ shrink: true }}
+                error={errors.year_launched !== undefined}
+                helperText={
+                  errors.year_launched && errors.year_launched.message
+                }
+              />
+            </Grid>
+            <Grid item xs={6}>
+              <TextField
+                name="duration"
+                label="Duração"
+                type="number"
+                margin="normal"
+                variant="outlined"
+                fullWidth
+                inputRef={register}
+                disabled={loading}
+                InputLabelProps={{ shrink: true }}
+                error={errors.duration !== undefined}
+                helperText={errors.duration && errors.duration.message}
+              />
+            </Grid>
+          </Grid>
+          Elenco
+          <br />
+          Generos e Categorias
+        </Grid>
+        <Grid item xs={12} md={6}>
+          Classificação
+          <br />
+          Upload
+          <br />
+          <FormControlLabel
+            control={
+              <Checkbox
+                name="opened"
+                color={"primary"}
+                onChange={() => setValue("opened", !getValues()["opened"])}
+                checked={watch("opened")}
+                disabled={loading}
+              />
+            }
+            label={
+              <Typography color="primary" variant="subtitle2">
+                Quero que este conteúdo apareça na seção lançamentos
+              </Typography>
+            }
+            labelPlacement="end"
+          />
+        </Grid>
+      </Grid>
       <SubmitActions
         disableButtons={loading}
         handleSave={() => {

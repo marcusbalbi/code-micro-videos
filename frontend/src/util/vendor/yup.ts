@@ -6,6 +6,8 @@ yup.setLocale({
       return `O Campo ${field.label} é Obrigatório`;
     },
     default: "Não é válido",
+    //eslint-disable-next-line
+    notType: "${path} é Inválido",
   },
   string: {
     max: ({ label, max }) => {
