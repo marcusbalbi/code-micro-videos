@@ -4,6 +4,8 @@ import {
   Grid,
   TextField,
   Typography,
+  useMediaQuery,
+  useTheme,
 } from "@material-ui/core";
 import { useForm } from "react-hook-form";
 import React, { useEffect, useMemo, useState } from "react";
@@ -52,7 +54,8 @@ export const Form = () => {
   const { id } = useParams<{ id: string }>();
   const [loading, setLoading] = useState(false);
   const [video, setVideo] = useState<Video | null>();
-
+  const theme = useTheme();
+  const isGreaterMd = useMediaQuery(theme.breakpoints.up("md"));
   useEffect(() => {
     const otherFields = ["rating", "opened"];
     for (let name of otherFields) {
@@ -187,6 +190,9 @@ export const Form = () => {
             }
             error={errors.rating}
             disabled={loading}
+            formControlProps={{
+              margin: isGreaterMd ? "none" : "normal",
+            }}
           />
           <br />
           Upload

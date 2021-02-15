@@ -1,4 +1,5 @@
 import {
+  Box,
   FormControl,
   FormControlLabel,
   FormControlLabelProps,
@@ -6,6 +7,7 @@ import {
   FormLabel,
   Radio,
   RadioGroup,
+  FormControlProps,
 } from "@material-ui/core";
 import React from "react";
 import Rating from "../../../components/Rating";
@@ -15,6 +17,7 @@ interface RatingFieldProps {
   setValue: (value) => void;
   error: any;
   disabled?: boolean;
+  formControlProps?: FormControlProps;
 }
 
 const ratings: FormControlLabelProps[] = [
@@ -63,20 +66,23 @@ export const RatingField: React.FC<RatingFieldProps> = (props) => {
       margin="normal"
       disabled={disabled === true}
       error={error !== undefined}
+      {...props.formControlProps}
     >
       <FormLabel component="legend">Classificação</FormLabel>
-      <RadioGroup
-        name="rating"
-        onChange={(e) => {
-          setValue(e.target.value);
-        }}
-        value={value ? value : ""}
-        row
-      >
-        {ratings.map((props, key) => {
-          return <FormControlLabel key={key} {...props} />;
-        })}
-      </RadioGroup>
+      <Box paddingTop={1}>
+        <RadioGroup
+          name="rating"
+          onChange={(e) => {
+            setValue(e.target.value);
+          }}
+          value={value ? value : ""}
+          row
+        >
+          {ratings.map((props, key) => {
+            return <FormControlLabel key={key} {...props} />;
+          })}
+        </RadioGroup>
+      </Box>
       {error && <FormHelperText>{error.message}</FormHelperText>}
     </FormControl>
   );
