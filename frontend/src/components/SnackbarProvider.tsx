@@ -28,6 +28,7 @@ export const SnackbarProvider: React.FC<SnackbarProviderProps> = (props) => {
     autoHideDuration: 3000,
     maxSnack: 3,
     children: props.children,
+    preventDuplicate: true,
     anchorOrigin: {
       horizontal: "right",
       vertical: "top",

@@ -23,6 +23,7 @@ import DefaultForm from "../../../components/DefaultForm";
 import { RatingField } from "./RatingField";
 import { UploadField } from "./UploadField";
 import AsyncAutocomplete from "../../../components/AsyncAutocomplete";
+import httpGenre from "../../../util/http/http-genre";
 
 const useStyle = makeStyles((theme) => {
   return {
@@ -34,7 +35,7 @@ const useStyle = makeStyles((theme) => {
   };
 });
 
-const fileFields = Object.keys(VideoFileFieldsMap)
+const fileFields = Object.keys(VideoFileFieldsMap);
 
 export const Form = () => {
   const classes = useStyle();
@@ -133,6 +134,20 @@ export const Form = () => {
       setLoading(false);
     }
   }
+
+  const fetchGenders = (searchText) => {
+    console.log("searching;;;", searchText)
+    return httpGenre
+      .list({
+        queryParams: {
+          search: searchText,
+          all: "",
+        },
+      })
+      .then(({ data }) => {
+        return data.data;
+      });
+  };
   return (
     <DefaultForm GridItemProps={{ xs: 12 }} onSubmit={handleSubmit(onSubmit)}>
       <Grid container spacing={5}>
@@ -198,7 +213,10 @@ export const Form = () => {
           </Grid>
           Elenco
           <br />
-          <AsyncAutocomplete TextFieldProps={{ label: "Generos" }} />
+          <AsyncAutocomplete
+            fetchOptions={fetchGenders}
+            TextFieldProps={{ label: "Gêneros" }}
+          />
           Generos e Categorias
         </Grid>
         <Grid item xs={12} md={6}>
