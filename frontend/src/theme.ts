@@ -63,6 +63,9 @@ const theme = createMuiTheme({
           backgroundColor: "#459ac4",
         },
       },
+      toolButton: {
+        color: "#FFF"
+      },
       sortActive: {
         color: "#FFF",
       },

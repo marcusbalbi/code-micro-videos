@@ -2,9 +2,8 @@ import React, { useCallback, useEffect, useRef, useState } from "react";
 
 import format from "date-fns/format";
 import parseISO from "date-fns/parseISO";
-import httpGenre from "../../util/http/http-genre";
-import { BadgeNo, BadgeYes } from "../../components/Badge";
-import { Genre, ListResponse } from "../../util/dto";
+import httpVideo from "../../util/http/http-video";
+import { Video, ListResponse } from "../../util/dto";
 import DefaultTable, { TableColumns } from "../../components/Table";
 import { useSnackbar } from "notistack";
 import { IconButton, Theme, ThemeProvider } from "@material-ui/core";
@@ -13,14 +12,11 @@ import EditIcon from "@material-ui/icons/Edit";
 import { cloneDeep } from "lodash";
 import { FilterResetButton } from "../../components/Table/FilterResetButton";
 import useFilter from "../../hooks/useFilter";
-import yup from "../../util/vendor/yup";
-import httpCategory from "../../util/http/http-category";
 
 const debounceTime = 300;
 const debounceTimeSearchText = 300;
 const rowsPerPage = 15;
 const rowsPerPageOptions = [15, 25, 50];
-
 const columnsDefinition: TableColumns[] = [
   {
     name: "id",
@@ -32,55 +28,11 @@ const columnsDefinition: TableColumns[] = [
     },
   },
   {
-    name: "name",
-    label: "nome",
-    width: "30%",
+    name: "title",
+    label: "Titulo",
+    width: "40%",
     options: {
       filter: false,
-    },
-  },
-  {
-    name: "categories",
-    label: "Categorias",
-    width: "30%",
-    options: {
-      customBodyRender: (value, tableMeta, updateValue) => {
-        if (value && value.length) {
-          return value.map((value: any) => value.name).join(", ");
-        }
-        return ""
-      },
-      filterType: "multiselect",
-      filterOptions: {
-        names: [],
-      },
-    },
-  },
-  {
-    name: "is_active",
-    label: "Ativo?",
-    width: "4%",
-    options: {
-      // filterOptions: {
-      //   names: ["SIM", "NÃO"],
-      // },
-      filter: false,
-      // customFilterListOptions: {
-      //   render: (v) => {
-      //     if (v === true) {
-      //       return ["ativo: SIM"];
-      //     } else if (v === false) {
-      //       return ["ativo: NÃO"];
-      //     }
-      //     return [];
-      //   },
-      // },
-      customBodyRender: (value, tableMeta, updateValue) => {
-        if (value === true) {
-          return <BadgeYes />;
-        }
-        return <BadgeNo />;
-      },
     },
   },
   {
@@ -88,10 +40,10 @@ const columnsDefinition: TableColumns[] = [
     label: "Criado em",
     width: "10%",
     options: {
+      filter: false,
       customBodyRender: (value, tableMeta, updateValue) => {
         return <span>{format(parseISO(value), "dd/MM/yyyy")}</span>;
       },
-      filter: false,
     },
   },
   {
@@ -107,7 +59,7 @@ const columnsDefinition: TableColumns[] = [
             <IconButton
               color={"secondary"}
               component={Link}
-              to={`genres/${tableMeta.rowData[0]}/edit`}
+              to={`videos/${tableMeta.rowData[0]}/edit`}
             >
               <EditIcon fontSize={"inherit"} />
             </IconButton>
@@ -133,8 +85,7 @@ function localTheme(theme: Theme) {
 
 export const Table = () => {
   const canLoad = useRef(true);
-  const [genres, setGenres] = useState<Genre[]>([]);
-  // const [_cat, setCategories] = useState<Category[]>([]);
+  const [videos, setVideos] = useState<Video[]>([]);
   const [loading, setLoading] = useState(false);
   const {
     filterState,
@@ -147,64 +98,31 @@ export const Table = () => {
     rowsPerPage: rowsPerPage,
     columns: columnsDefinition,
     rowsPerPageOptions: rowsPerPageOptions,
-    extraFilter: {
-      createValidationSchema: () => {
-        return yup.object().shape({
-          categories: yup
-            .mixed()
-            .nullable()
-            .transform((value) => {
-              return !value || value === "" ? undefined : value.split(",");
-            })
-            .default(null),
-        });
-      },
-      formatSearchParams: (debouncedState) => {
-        return debouncedState.extraFilter
-          ? {
-              ...(debouncedState.extraFilter &&
-                debouncedState.extraFilter.categories && {
-                  categories: debouncedState.extraFilter.categories.join(","),
-                }),
-            }
-          : undefined;
-      },
-      getStateFromURL: (queryParams) => {
-        return {
-          categories: queryParams.get("categories"),
-        };
-      },
-    },
   });
   const snackbar = useSnackbar();
 
   const getData = useCallback(async () => {
     setLoading(true);
     try {
-      const { data } = await httpGenre.list<ListResponse<Genre>>({
+      const { data } = await httpVideo.list<ListResponse<Video>>({
         queryParams: {
           search:
             typeof debouncedFilterState.search === "string"
               ? debouncedFilterState.search
               : "",
-          withCategories: true,
           page: debouncedFilterState.pagination.page,
           per_page: debouncedFilterState.pagination.per_page,
           sort: debouncedFilterState.order.sort,
           dir: debouncedFilterState.order.dir,
-          ...(debouncedFilterState.extraFilter &&
-            debouncedFilterState.extraFilter.categories && {
-              categories: debouncedFilterState.extraFilter.categories.join(","),
-            }),
         },
       });
       if (canLoad.current) {
-        setGenres(data.data);
+        setVideos(data.data);
         setTotalRecords(data.meta.total);
       }
     } catch (error) {
       console.log(error);
-      if (httpGenre.isCancelledRequest(error)) {
+      if (httpVideo.isCancelledRequest(error)) {
         return;
       }
       snackbar.enqueueSnackbar("Não foi possível carregar as informações", {
@@ -220,48 +138,10 @@ export const Table = () => {
     debouncedFilterState.pagination.per_page,
     debouncedFilterState.order,
     setTotalRecords,
-    debouncedFilterState.extraFilter,
   ]);
 
   useEffect(() => {
     filterManager.replaceHistory();
-    //eslint-disable-next-line
-  }, []);
-
-  const columnCategory = columnsDefinition.find((c) => c.name === "categories");
-  const categoriesFilterValue =
-    filterState.extraFilter && filterState.extraFilter.categories;
-  if (columnCategory && columnCategory.options) {
-    columnCategory.options.filterList = categoriesFilterValue
-      ? [...categoriesFilterValue]
-      : [];
-  }
-  useEffect(() => {
-    let canLoad = true;
-    (async () => {
-      try {
-        const { data } = await httpCategory.list({ queryParams: { all: "" } });
-        if (
-          canLoad &&
-          columnCategory &&
-          columnCategory.options &&
-          columnCategory.options.filterOptions
-        ) {
-          // setCategories(data.data);
-          columnCategory.options.filterOptions.names = data.data.map(
-            (category) => category.name
-          );
-        }
-      } catch (error) {
-        console.log(error);
-        snackbar.enqueueSnackbar("Não foi possível carregar as informações", {
-          variant: "error",
-        });
-      }
-    })();
-    return () => {
-      canLoad = false;
-    };
     //eslint-disable-next-line
   }, []);
 
@@ -279,9 +159,9 @@ export const Table = () => {
     <ThemeProvider theme={localTheme}>
       <DefaultTable
         debouncedSearchTime={debounceTimeSearchText}
-        data={genres}
+        data={videos}
         loading={loading}
-        title={"Listagem de Generos"}
+        title={"Listagem de Videos"}
         columns={columnsDefinition}
         options={{
           serverSide: true,
@@ -302,13 +182,6 @@ export const Table = () => {
                 }}
               />
             );
-          },
-          onFilterChange: (changedColumn, filterList, type, index) => {
-            filterManager.changeExtraFilter({
-              [changedColumn as string]: filterList[index].length
-                ? filterList[index]
-                : null,
-            });
           },
           onSearchChange: (value) => {
             filterManager.changeSearch(value);
