@@ -19,7 +19,7 @@ const AsyncAutocomplete: React.FC<AsyncAutocompleteProps> = (props) => {
   const [options, setOptions] = useState([]);
   const snackbar = useSnackbar();
   const { fetchOptions } = props;
-  const { onOpen, onClose, onInputChange } = props.AutoCompleteProps;
+  const { onOpen, onClose, onInputChange, freeSolo } = props.AutoCompleteProps;
   const textFieldProps: TextFieldProps = {
     margin: "normal",
     variant: "outlined",
@@ -65,7 +65,12 @@ const AsyncAutocomplete: React.FC<AsyncAutocompleteProps> = (props) => {
       );
     },
   };
-  const freeSolo = props.AutoCompleteProps.freeSolo;
+  useEffect(() => {
+    if (!open && !freeSolo) {
+      setOptions([]);
+    }
+  }, [open, freeSolo]);
+
   useEffect(() => {
     console.log({ open, searchText, freeSolo });
     if (!open || (searchText === "" && freeSolo)) {
