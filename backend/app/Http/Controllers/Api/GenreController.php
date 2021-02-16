@@ -6,6 +6,7 @@ use App\Models\Genre;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Api\BasicCrudController;
 use App\Http\Resources\GenreResource;
+use Illuminate\Database\Eloquent\Builder;
 
 class GenreController extends BasicCrudController
 {

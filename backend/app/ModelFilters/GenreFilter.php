@@ -23,4 +23,8 @@ class GenreFilter extends DefaultModelFilter
             ->orWhereIn('name', $idsOrNames);
         });
     }
+
+    public function withCategories() {
+        $this->query->with('categories');
+    }
 }

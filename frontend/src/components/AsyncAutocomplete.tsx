@@ -6,15 +6,20 @@ import { useSnackbar } from "notistack";
 interface AsyncAutocompleteProps {
   fetchOptions: (searchText) => Promise<any>;
   TextFieldProps?: TextFieldProps;
+  AutoCompleteProps: Omit<
+    AutocompleteProps<any, any, any, any>,
+    "renderInput" | "options"
+  >;
 }
 
 const AsyncAutocomplete: React.FC<AsyncAutocompleteProps> = (props) => {
   const [open, setOpen] = useState(false);
   const [searchText, setSearchText] = useState("");
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [options, setOptions] = useState([]);
   const snackbar = useSnackbar();
   const { fetchOptions } = props;
+  const { onOpen, onClose, onInputChange } = props.AutoCompleteProps;
   const textFieldProps: TextFieldProps = {
     margin: "normal",
     variant: "outlined",
@@ -23,21 +28,24 @@ const AsyncAutocomplete: React.FC<AsyncAutocompleteProps> = (props) => {
     ...(props.TextFieldProps && { ...props.TextFieldProps }),
   };
 
-  const autocompleteProps: AutocompleteProps<any, false, false, false> = {
+  const autocompleteProps: AutocompleteProps<any, any, any, any> = {
+    loadingText: "Carregando...",
+    noOptionsText: "Nenhum Item Encontrado",
+    ...(props.AutoCompleteProps && { ...props.AutoCompleteProps }),
     open,
     loading,
     options,
-    loadingText: "Carregando...",
-    noOptionsText: "Nenhum Item Encontrado",
-    getOptionLabel: (option) => option.nome,
-    onOpen: () => {
+    onOpen: (event) => {
       setOpen(true);
+      onOpen && onOpen(event);
     },
-    onClose: () => {
+    onClose: (event, reason) => {
       setOpen(false);
+      onClose && onClose(event, reason);
     },
-    onInputChange: (event, value) => {
+    onInputChange: (event, value, reason) => {
       setSearchText(value);
+      onInputChange && onInputChange(event, value, reason);
     },
     renderInput: (params) => {
       return (
@@ -57,13 +65,17 @@ const AsyncAutocomplete: React.FC<AsyncAutocompleteProps> = (props) => {
       );
     },
   };
-
+  const freeSolo = props.AutoCompleteProps.freeSolo;
   useEffect(() => {
-    let isSubscribed = false;
+    console.log({ open, searchText, freeSolo });
+    if (!open || (searchText === "" && freeSolo)) {
+      return;
+    }
+    let isSubscribed = true;
     async function getData() {
       setLoading(true);
       try {
-        const { data } = await fetchOptions(searchText);
+        const data = await fetchOptions(searchText);
         if (isSubscribed) {
           setOptions(data);
         }
@@ -80,7 +92,7 @@ const AsyncAutocomplete: React.FC<AsyncAutocompleteProps> = (props) => {
     return () => {
       isSubscribed = false;
     };
-  }, [snackbar, fetchOptions, searchText]);
+  }, [snackbar, fetchOptions, searchText, open, freeSolo]);
 
   return <Autocomplete {...autocompleteProps} />;
 };

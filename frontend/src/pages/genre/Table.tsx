@@ -45,7 +45,10 @@ const columnsDefinition: TableColumns[] = [
     width: "30%",
     options: {
       customBodyRender: (value, tableMeta, updateValue) => {
-        return value.map((value: any) => value.name).join(", ");
+        if (value && value.length) {
+          return value.map((value: any) => value.name).join(", ");
+        }
+        return ""
       },
       filterType: "multiselect",
       filterOptions: {
@@ -184,6 +187,7 @@ export const Table = () => {
             typeof debouncedFilterState.search === "string"
               ? debouncedFilterState.search
               : "",
+          withCategories: true,
           page: debouncedFilterState.pagination.page,
           per_page: debouncedFilterState.pagination.per_page,
           sort: debouncedFilterState.order.sort,

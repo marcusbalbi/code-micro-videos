@@ -136,7 +136,6 @@ export const Form = () => {
   }
 
   const fetchGenders = (searchText) => {
-    console.log("searching;;;", searchText)
     return httpGenre
       .list({
         queryParams: {
@@ -215,6 +214,9 @@ export const Form = () => {
           <br />
           <AsyncAutocomplete
             fetchOptions={fetchGenders}
+            AutoCompleteProps={{
+              getOptionLabel: (item) => item.name,
+            }}
             TextFieldProps={{ label: "Gêneros" }}
           />
           Generos e Categorias
