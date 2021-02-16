@@ -22,6 +22,7 @@ import SubmitActions from "../../../components/SubmitActions";
 import DefaultForm from "../../../components/DefaultForm";
 import { RatingField } from "./RatingField";
 import { UploadField } from "./UploadField";
+import AsyncAutocomplete from "../../../components/AsyncAutocomplete";
 
 const useStyle = makeStyles((theme) => {
   return {
@@ -197,6 +198,7 @@ export const Form = () => {
           </Grid>
           Elenco
           <br />
+          <AsyncAutocomplete TextFieldProps={{ label: "Generos" }} />
           Generos e Categorias
         </Grid>
         <Grid item xs={12} md={6}>
