@@ -22,11 +22,8 @@ import SubmitActions from "../../../components/SubmitActions";
 import DefaultForm from "../../../components/DefaultForm";
 import { RatingField } from "./RatingField";
 import { UploadField } from "./UploadField";
-import AsyncAutocomplete from "../../../components/AsyncAutocomplete";
-import httpGenre from "../../../util/http/http-genre";
-import GridSelected from "../../../components/GridSelected";
-import GridSelectedItem from "../../../components/GridSelectedItem";
-import useHttpHandler from "../../../hooks/useHttpHandler";
+import CategoryField from "./CategoryField";
+import GenreField from "./GenreField";
 
 const useStyle = makeStyles((theme) => {
   return {
@@ -137,18 +134,6 @@ export const Form = () => {
       setLoading(false);
     }
   }
-  const autoCompleteHttp = useHttpHandler();
-  const fetchGenders = (searchText) =>
-    autoCompleteHttp(
-      httpGenre.list({
-        queryParams: {
-          search: searchText,
-          all: "",
-        },
-      })
-    ).then((data) => {
-      return data.data;
-    }).catch(error => console.log(error));
   return (
     <DefaultForm GridItemProps={{ xs: 12 }} onSubmit={handleSubmit(onSubmit)}>
       <Grid container spacing={5}>
@@ -214,20 +199,15 @@ export const Form = () => {
           </Grid>
           Elenco
           <br />
-          <AsyncAutocomplete
-            fetchOptions={fetchGenders}
-            AutoCompleteProps={{
-              freeSolo: false,
-              getOptionLabel: (item) => item.name,
-              getOptionSelected: (item) => item.id,
-            }}
-            TextFieldProps={{ label: "Gêneros" }}
-          />
-          <GridSelected>
-            <GridSelectedItem xs={6} onClick={() => {}}>
-              <Typography>Genero 1</Typography>
-            </GridSelectedItem>
-          </GridSelected>
+          <Grid container spacing={2}>
+                <Grid item xs={12} md={6}>
+                  <CategoryField />
+                </Grid>
+                <Grid item xs={12} md={6}>
+                  <GenreField />
+                </Grid>
+          </Grid>
+          
           <br />
           Categorias
         </Grid>
