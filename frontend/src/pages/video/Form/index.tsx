@@ -26,6 +26,7 @@ import AsyncAutocomplete from "../../../components/AsyncAutocomplete";
 import httpGenre from "../../../util/http/http-genre";
 import GridSelected from "../../../components/GridSelected";
 import GridSelectedItem from "../../../components/GridSelectedItem";
+import useHttpHandler from "../../../hooks/useHttpHandler";
 
 const useStyle = makeStyles((theme) => {
   return {
@@ -136,19 +137,18 @@ export const Form = () => {
       setLoading(false);
     }
   }
-
-  const fetchGenders = (searchText) => {
-    return httpGenre
-      .list({
+  const autoCompleteHttp = useHttpHandler();
+  const fetchGenders = (searchText) =>
+    autoCompleteHttp(
+      httpGenre.list({
         queryParams: {
           search: searchText,
           all: "",
         },
       })
-      .then(({ data }) => {
-        return data.data;
-      });
-  };
+    ).then((data) => {
+      return data.data;
+    }).catch(error => console.log(error));
   return (
     <DefaultForm GridItemProps={{ xs: 12 }} onSubmit={handleSubmit(onSubmit)}>
       <Grid container spacing={5}>
