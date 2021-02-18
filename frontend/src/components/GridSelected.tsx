@@ -15,7 +15,7 @@ const useStyles = makeStyles((theme: Theme) => {
 
 interface GridSelectedProps extends GridProps {}
 
-export const Page: React.FC<GridSelectedProps> = (props) => {
+const GridSelected: React.FC<GridSelectedProps> = (props) => {
   const classes = useStyles();
   return (
     <Grid container wrap="wrap" className={classes.root} {...props} >
@@ -23,3 +23,5 @@ export const Page: React.FC<GridSelectedProps> = (props) => {
     </Grid>
   );
 };
+
+export default GridSelected;

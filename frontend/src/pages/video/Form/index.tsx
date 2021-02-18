@@ -24,6 +24,8 @@ import { RatingField } from "./RatingField";
 import { UploadField } from "./UploadField";
 import AsyncAutocomplete from "../../../components/AsyncAutocomplete";
 import httpGenre from "../../../util/http/http-genre";
+import GridSelected from "../../../components/GridSelected";
+import GridSelectedItem from "../../../components/GridSelectedItem";
 
 const useStyle = makeStyles((theme) => {
   return {
@@ -221,7 +223,13 @@ export const Form = () => {
             }}
             TextFieldProps={{ label: "Gêneros" }}
           />
-          Generos e Categorias
+          <GridSelected>
+            <GridSelectedItem xs={6} onClick={() => {}}>
+              <Typography>Genero 1</Typography>
+            </GridSelectedItem>
+          </GridSelected>
+          <br />
+          Categorias
         </Grid>
         <Grid item xs={12} md={6}>
           <RatingField
