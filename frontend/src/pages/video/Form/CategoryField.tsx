@@ -35,7 +35,7 @@ const CategoryField: React.FC<CategoryFieldProps> = (props) => {
         TextFieldProps={{ label: "Categorias" }}
       />
       <GridSelected>
-        <GridSelectedItem xs={6} onClick={() => {}}>
+        <GridSelectedItem onClick={() => {}}>
           <Typography>Categoria 1</Typography>
         </GridSelectedItem>
       </GridSelected>

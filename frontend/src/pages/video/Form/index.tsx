@@ -66,7 +66,9 @@ export const Form = () => {
     trigger,
   } = useForm<Video>({
     resolver,
-    defaultValues: {},
+    defaultValues: {
+      genres: [],
+    },
   });
   const snackbar = useSnackbar();
   const history = useHistory();
@@ -200,14 +202,16 @@ export const Form = () => {
           Elenco
           <br />
           <Grid container spacing={2}>
-                <Grid item xs={12} md={6}>
-                  <CategoryField />
-                </Grid>
-                <Grid item xs={12} md={6}>
-                  <GenreField />
-                </Grid>
+            <Grid item xs={12} md={6}>
+              <CategoryField />
+            </Grid>
+            <Grid item xs={12} md={6}>
+              <GenreField
+                genres={watch("genres")}
+                setGenres={(value) => setValue("genres", value, { shouldValidate: true })}
+              />
+            </Grid>
           </Grid>
-          
           <br />
           Categorias
         </Grid>
