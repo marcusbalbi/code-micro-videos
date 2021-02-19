@@ -3,6 +3,7 @@ import {
   CardContent,
   Checkbox,
   FormControlLabel,
+  FormHelperText,
   Grid,
   makeStyles,
   TextField,
@@ -68,6 +69,7 @@ export const Form = () => {
     resolver,
     defaultValues: {
       genres: [],
+      categories: [],
     },
   });
   const snackbar = useSnackbar();
@@ -78,7 +80,7 @@ export const Form = () => {
   const theme = useTheme();
   const isGreaterMd = useMediaQuery(theme.breakpoints.up("md"));
   useEffect(() => {
-    const otherFields = ["rating", "opened"].concat(fileFields);
+    const otherFields = ["rating", "opened", "genres", "categories"].concat(fileFields);
     for (let name of otherFields) {
       register({ name });
     }
@@ -203,13 +205,25 @@ export const Form = () => {
           <br />
           <Grid container spacing={2}>
             <Grid item xs={12} md={6}>
-              <CategoryField />
-            </Grid>
-            <Grid item xs={12} md={6}>
               <GenreField
                 genres={watch("genres")}
-                setGenres={(value) => setValue("genres", value, { shouldValidate: true })}
+                setGenres={(value) =>
+                  setValue("genres", value, { shouldValidate: true })
+                }
               />
+            </Grid>
+            <Grid item xs={12} md={6}>
+              <CategoryField
+                genres={watch("genres")}
+                categories={watch("categories")}
+                setCategories={(value) =>
+                  setValue("categories", value, { shouldValidate: true })
+                }
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <FormHelperText>Escolha os Gêneros do Video</FormHelperText>
+              <FormHelperText>Escolha pelo menos uma categoria de cada Gênero</FormHelperText>
             </Grid>
           </Grid>
           <br />
