@@ -2,9 +2,11 @@ import { CircularProgress, TextField, TextFieldProps } from "@material-ui/core";
 import { Autocomplete, AutocompleteProps } from "@material-ui/lab";
 import React, { useEffect, useState } from "react";
 import { useSnackbar } from "notistack";
+import { useDebounce } from "use-debounce/lib";
 
 interface AsyncAutocompleteProps {
   fetchOptions: (searchText) => Promise<any>;
+  debounceTime?: number; 
   TextFieldProps?: TextFieldProps;
   AutoCompleteProps: Omit<
     AutocompleteProps<any, any, any, any>,
@@ -18,7 +20,8 @@ const AsyncAutocomplete: React.FC<AsyncAutocompleteProps> = (props) => {
   const [loading, setLoading] = useState(false);
   const [options, setOptions] = useState([]);
   const snackbar = useSnackbar();
-  const { fetchOptions } = props;
+  const { fetchOptions, debounceTime = 300 } = props;
+  const [debouncedSearchText] = useDebounce(searchText, debounceTime)
   const { onOpen, onClose, onInputChange, freeSolo } = props.AutoCompleteProps;
   const textFieldProps: TextFieldProps = {
     margin: "normal",
@@ -72,14 +75,14 @@ const AsyncAutocomplete: React.FC<AsyncAutocompleteProps> = (props) => {
   }, [open, freeSolo]);
 
   useEffect(() => {
-    if (!open || (searchText === "" && freeSolo)) {
+    if (!open || (debouncedSearchText === "" && freeSolo)) {
       return;
     }
     let isSubscribed = true;
     async function getData() {
       setLoading(true);
       try {
-        const data = await fetchOptions(searchText);
+        const data = await fetchOptions(debouncedSearchText);
         if (isSubscribed) {
           setOptions(data);
         }
@@ -91,7 +94,7 @@ const AsyncAutocomplete: React.FC<AsyncAutocompleteProps> = (props) => {
     return () => {
       isSubscribed = false;
     };
-  }, [snackbar, fetchOptions, searchText, open, freeSolo]);
+  }, [snackbar, fetchOptions, debouncedSearchText, open, freeSolo]);
 
   return <Autocomplete {...autocompleteProps} />;
 };
