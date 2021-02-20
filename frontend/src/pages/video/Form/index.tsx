@@ -51,6 +51,8 @@ export const Form = () => {
           .required()
           .min(1),
         duration: yup.number().label("Duração").required().min(1),
+        genres: yup.array().min(1, "Gêneros é Obrigatório"),
+        categories: yup.array().min(1, "Categorias é Obrigatório"),
         rating: yup.string().label("Classificação").required(),
       }),
     []
@@ -80,7 +82,9 @@ export const Form = () => {
   const theme = useTheme();
   const isGreaterMd = useMediaQuery(theme.breakpoints.up("md"));
   useEffect(() => {
-    const otherFields = ["rating", "opened", "genres", "categories"].concat(fileFields);
+    const otherFields = ["rating", "opened", "genres", "categories"].concat(
+      fileFields
+    );
     for (let name of otherFields) {
       register({ name });
     }
@@ -207,6 +211,8 @@ export const Form = () => {
             <Grid item xs={12} md={6}>
               <GenreField
                 genres={watch("genres")}
+                error={errors.genres}
+                disabled={loading}
                 setGenres={(value) =>
                   setValue("genres", value, { shouldValidate: true })
                 }
@@ -215,6 +221,8 @@ export const Form = () => {
             <Grid item xs={12} md={6}>
               <CategoryField
                 genres={watch("genres")}
+                error={errors.categories}
+                disabled={loading}
                 categories={watch("categories")}
                 setCategories={(value) =>
                   setValue("categories", value, { shouldValidate: true })
@@ -223,7 +231,9 @@ export const Form = () => {
             </Grid>
             <Grid item xs={12}>
               <FormHelperText>Escolha os Gêneros do Video</FormHelperText>
-              <FormHelperText>Escolha pelo menos uma categoria de cada Gênero</FormHelperText>
+              <FormHelperText>
+                Escolha pelo menos uma categoria de cada Gênero
+              </FormHelperText>
             </Grid>
           </Grid>
           <br />
