@@ -3,7 +3,10 @@ import {
   FormHelperText,
   Typography,
   FormControlProps,
+  makeStyles,
+  Theme,
 } from "@material-ui/core";
+import { grey } from "@material-ui/core/colors";
 import React from "react";
 import AsyncAutocomplete from "../../../components/AsyncAutocomplete";
 import GridSelected from "../../../components/GridSelected";
@@ -12,6 +15,7 @@ import useCollectionManager from "../../../hooks/useCollectionManager";
 import useHttpHandler from "../../../hooks/useHttpHandler";
 import { Genre } from "../../../util/dto";
 import httpCategory from "../../../util/http/http-category";
+import { getGenresFromCategory } from "../../../util/model-filter";
 
 interface CategoryFieldProps {
   categories: any[] | undefined;
@@ -22,8 +26,18 @@ interface CategoryFieldProps {
   formControlProps?: FormControlProps;
 }
 
+const useStyles = makeStyles((theme: Theme) =>{
+  return {
+    genresSubtitle: {
+      color: grey[800],
+      fontSize: '0.8rem'
+    }
+  }
+});
+
 const CategoryField: React.FC<CategoryFieldProps> = (props) => {
   const { categories, setCategories, genres, disabled, error } = props;
+  const classes = useStyles();
   const { addItem, removeItem } = useCollectionManager(
     categories || [],
     setCategories
@@ -31,7 +45,7 @@ const CategoryField: React.FC<CategoryFieldProps> = (props) => {
   const autoCompleteHttp = useHttpHandler();
   const fetchOptions = (searchText) => {
     if (!genres) {
-      return Promise.resolve()
+      return Promise.resolve();
     }
     return autoCompleteHttp(
       httpCategory.list({
@@ -77,11 +91,19 @@ const CategoryField: React.FC<CategoryFieldProps> = (props) => {
                   item
                   key={key}
                   xs={12}
-                  onClick={() => {
+                  onDelete={() => {
                     removeItem(category);
                   }}
                 >
-                  <Typography>{category.name}</Typography>
+                  <Typography noWrap={true}>{category.name}</Typography>
+                  {genres && (
+                    <Typography className={classes.genresSubtitle}>
+                      Gêneros:{" "}
+                      {getGenresFromCategory(genres, category)
+                        .map((gen) => gen.name)
+                        .join(",")}
+                    </Typography>
+                  )}
                 </GridSelectedItem>
               );
             })}

@@ -30,6 +30,7 @@ const GenreField: React.FC<GenreFieldProps> = (props) => {
       httpGenre.list({
         queryParams: {
           search: searchText,
+          withCategories: true,
           all: "",
         },
       })
@@ -73,7 +74,7 @@ const GenreField: React.FC<GenreFieldProps> = (props) => {
                   item
                   key={key}
                   xs={12}
-                  onClick={() => {
+                  onDelete={() => {
                     removeItem(genre);
                   }}
                 >
