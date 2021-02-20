@@ -210,6 +210,10 @@ export const Form = () => {
           <Grid container spacing={2}>
             <Grid item xs={12} md={6}>
               <GenreField
+                categories={watch("categories")}
+                setCategories={(value) =>
+                  setValue("categories", value, { shouldValidate: true })
+                }
                 genres={watch("genres")}
                 error={errors.genres}
                 disabled={loading}

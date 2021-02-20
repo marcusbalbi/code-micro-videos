@@ -19,7 +19,7 @@ import { getGenresFromCategory } from "../../../util/model-filter";
 
 interface CategoryFieldProps {
   categories: any[] | undefined;
-  setCategories: (caregories) => void;
+  setCategories: any;
   genres: Genre[] | undefined;
   error: any;
   disabled?: boolean;
