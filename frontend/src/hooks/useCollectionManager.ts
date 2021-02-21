@@ -19,7 +19,7 @@ const useCollectionManager = (
       setCollection(collection);
     },
     removeItem: (item) => {
-      const index = collection.find((i) => i.id === item.id);
+      const index = collection.findIndex((i) => i.id === item.id);
       if (index === -1) {
         return;
       }

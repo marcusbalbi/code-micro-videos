@@ -73,7 +73,7 @@ const CastMemberField = React.forwardRef<
         fetchOptions={fetchOptions}
         AutoCompleteProps={{
           ref: autocompleteRef,
-          autoSelect: true,
+          // autoSelect: true,
           freeSolo: true,
           clearOnEscape: true,
           disabled,

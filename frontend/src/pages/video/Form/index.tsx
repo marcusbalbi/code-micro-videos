@@ -285,7 +285,7 @@ export const Form = () => {
                 error={errors.genres}
                 disabled={loading}
                 setGenres={(value) =>
-                  setValue("categories", value, { shouldValidate: true })
+                  setValue("genres", value, { shouldValidate: true })
                 }
               />
             </Grid>

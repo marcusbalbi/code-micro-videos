@@ -9,7 +9,6 @@ import React, {
   RefAttributes,
   useImperativeHandle,
   useRef,
-  useState,
 } from "react";
 import AsyncAutocomplete, {
   AsyncAutoCompleteComponent,
@@ -83,11 +82,13 @@ const GenreField = React.forwardRef<GenreFieldComponent, GenreFieldProps>(
           fetchOptions={fetchOptions}
           AutoCompleteProps={{
             ref: autocompleteRef,
-            autoSelect: true,
+            // autoSelect: true,
             clearOnEscape: true,
             freeSolo: true,
             disabled,
-            getOptionLabel: (item) => item.name,
+            getOptionLabel: (item) => {
+              return item && item.name ? item.name : "";
+            },
             getOptionSelected: (item) => item.id,
 
             onChange: (event, value) => {
@@ -119,12 +120,14 @@ const GenreField = React.forwardRef<GenreFieldComponent, GenreFieldProps>(
                               genres,
                               category
                             );
+                            console.log(genresFromCategory);
                             return (
                               genresFromCategory.length === 1 &&
                               genresFromCategory[0].id === genre.id
                             );
                           }
                         );
+                        console.log(categoriesWithOneGenre);
                         categoriesWithOneGenre.forEach((cat) =>
                           removeCategory(cat)
                         );

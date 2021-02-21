@@ -81,7 +81,7 @@ const CategoryField = React.forwardRef<
         fetchOptions={fetchOptions}
         AutoCompleteProps={{
           ref: autocompleteRef,
-          autoSelect: true,
+          // autoSelect: true,
           clearOnEscape: true,
           disabled: disabled === true || !genres || genres.length <= 0,
           getOptionLabel: (item) => item.name,
