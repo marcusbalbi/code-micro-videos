@@ -17,6 +17,7 @@ const debounceTime = 300;
 const debounceTimeSearchText = 300;
 const rowsPerPage = 15;
 const rowsPerPageOptions = [15, 25, 50];
+
 const columnsDefinition: TableColumns[] = [
   {
     name: "id",
@@ -30,9 +31,33 @@ const columnsDefinition: TableColumns[] = [
   {
     name: "title",
     label: "Titulo",
-    width: "40%",
+    width: "20%",
     options: {
       filter: false,
+    },
+  },
+  {
+    name: "genres",
+    label: "Gêneros",
+    width: "13%",
+    options: {
+      filter: false,
+      sort: false,
+      customBodyRender: (value, tableMeta, updateValue) => {
+        return value.map((v) => v.name).join(", ");
+      },
+    },
+  },
+  {
+    name: "categories",
+    label: "Categorias",
+    width: "12%",
+    options: {
+      filter: false,
+      sort: false,
+      customBodyRender: (value, tableMeta, updateValue) => {
+        return value.map((v) => v.name).join(", ");
+      },
     },
   },
   {

@@ -20,7 +20,7 @@ export const VideoListPage = () => {
         </Fab>
       </Box>
       <Box>
-        <Table></Table>
+        <Table />
       </Box>
     </Page>
   );
