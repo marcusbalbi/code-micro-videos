@@ -25,9 +25,17 @@ import { RatingField } from "./RatingField";
 import { UploadField } from "./UploadField";
 import CategoryField from "./CategoryField";
 import GenreField from "./GenreField";
+import CastMemberField from "./CastMemberField";
 
 const useStyle = makeStyles((theme) => {
   return {
+    cardOpened: {
+      borderRadius: "4px",
+      backgroundColor: "#f5f5f5",
+    },
+    cardContentOpened: {
+     paddingBottom: theme.spacing(2, 0) + "px !important"
+    },
     cardUpload: {
       borderRadius: "4px",
       backgroundColor: "#F5F5F5",
@@ -51,6 +59,7 @@ export const Form = () => {
           .required()
           .min(1),
         duration: yup.number().label("Duração").required().min(1),
+        cast_members: yup.array().min(1, "Elenco é Obrigatório"),
         genres: yup.array().min(1, "Gêneros é Obrigatório"),
         categories: yup.array().min(1, "Categorias é Obrigatório"),
         rating: yup.string().label("Classificação").required(),
@@ -70,8 +79,11 @@ export const Form = () => {
   } = useForm<Video>({
     resolver,
     defaultValues: {
+      rating: undefined,
       genres: [],
       categories: [],
+      cast_members: [],
+      opened: false,
     },
   });
   const snackbar = useSnackbar();
@@ -82,9 +94,13 @@ export const Form = () => {
   const theme = useTheme();
   const isGreaterMd = useMediaQuery(theme.breakpoints.up("md"));
   useEffect(() => {
-    const otherFields = ["rating", "opened", "genres", "categories"].concat(
-      fileFields
-    );
+    const otherFields = [
+      "rating",
+      "opened",
+      "genres",
+      "categories",
+      "cast_members",
+    ].concat(fileFields);
     for (let name of otherFields) {
       register({ name });
     }
@@ -205,7 +221,14 @@ export const Form = () => {
               />
             </Grid>
           </Grid>
-          Elenco
+          <CastMemberField
+            error={errors.cast_members}
+            disabled={loading}
+            castMembers={watch("cast_members")}
+            setCastMembers={(value) =>
+              setValue("cast_members", value, { shouldValidate: true })
+            }
+          />
           <br />
           <Grid container spacing={2}>
             <Grid item xs={12} md={6}>
@@ -218,7 +241,7 @@ export const Form = () => {
                 error={errors.genres}
                 disabled={loading}
                 setGenres={(value) =>
-                  setValue("genres", value, { shouldValidate: true })
+                  setValue("categories", value, { shouldValidate: true })
                 }
               />
             </Grid>
@@ -240,8 +263,6 @@ export const Form = () => {
               </FormHelperText>
             </Grid>
           </Grid>
-          <br />
-          Categorias
         </Grid>
         <Grid item xs={12} md={6}>
           <RatingField
@@ -290,23 +311,27 @@ export const Form = () => {
             </CardContent>
           </Card>
           <br />
-          <FormControlLabel
-            control={
-              <Checkbox
-                name="opened"
-                color={"primary"}
-                onChange={() => setValue("opened", !getValues()["opened"])}
-                checked={watch("opened")}
-                disabled={loading}
+          <Card className={classes.cardOpened}>
+            <CardContent className={classes.cardContentOpened}>
+              <FormControlLabel
+                control={
+                  <Checkbox
+                    name="opened"
+                    color={"primary"}
+                    onChange={() => setValue("opened", !getValues()["opened"])}
+                    checked={watch("opened")}
+                    disabled={loading}
+                  />
+                }
+                label={
+                  <Typography color="primary" variant="subtitle2">
+                    Quero que este conteúdo apareça na seção lançamentos
+                  </Typography>
+                }
+                labelPlacement="end"
               />
-            }
-            label={
-              <Typography color="primary" variant="subtitle2">
-                Quero que este conteúdo apareça na seção lançamentos
-              </Typography>
-            }
-            labelPlacement="end"
-          />
+            </CardContent>
+          </Card>
         </Grid>
       </Grid>
       <SubmitActions
