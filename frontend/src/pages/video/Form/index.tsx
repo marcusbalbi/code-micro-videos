@@ -33,7 +33,7 @@ import { UploadField } from "./UploadField";
 import CategoryField, { CategoryFieldComponent } from "./CategoryField";
 import GenreField, { GenreFieldComponent } from "./GenreField";
 import CastMemberField, { CastMemberFieldComponent } from "./CastMemberField";
-import { omit, zipObject } from "lodash";
+import { get, omit, zipObject } from "lodash";
 import { InputFileComponent } from "../../../components/InputFile";
 
 const useStyle = makeStyles((theme) => {
@@ -69,7 +69,27 @@ export const Form = () => {
           .min(1),
         duration: yup.number().label("Duração").required().min(1),
         cast_members: yup.array().min(1, "Elenco é Obrigatório"),
-        genres: yup.array().min(1, "Gêneros é Obrigatório"),
+        genres: yup
+          .array()
+          .min(1, "Gêneros é Obrigatório")
+          .test({
+            message:
+              "Cada Gênero escolhido precisa ter pelo menos uma categoria selecionada",
+            test: (value, ctx) => {
+              if (!value) {
+                return false;
+              }
+              return value.every(
+                (v) =>
+                  v.categories.filter((cat) => {
+                    const categories = ctx.parent.categories;
+                    return (
+                      categories && categories.map((c) => c.id).includes(cat.id)
+                    );
+                  }).length !== 0
+              );
+            },
+          }),
         categories: yup.array().min(1, "Categorias é Obrigatório"),
         rating: yup.string().label("Classificação").required(),
       }),
