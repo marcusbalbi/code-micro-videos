@@ -12,7 +12,14 @@ import {
   useTheme,
 } from "@material-ui/core";
 import { useForm } from "react-hook-form";
-import React, { useEffect, useMemo, useState } from "react";
+import React, {
+  createRef,
+  MutableRefObject,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import httpVideo from "../../../util/http/http-video";
 import * as yup from "yup";
 import { useYupValidationResolver } from "../../../hooks/YupValidation";
@@ -23,9 +30,11 @@ import SubmitActions from "../../../components/SubmitActions";
 import DefaultForm from "../../../components/DefaultForm";
 import { RatingField } from "./RatingField";
 import { UploadField } from "./UploadField";
-import CategoryField from "./CategoryField";
-import GenreField from "./GenreField";
-import CastMemberField from "./CastMemberField";
+import CategoryField, { CategoryFieldComponent } from "./CategoryField";
+import GenreField, { GenreFieldComponent } from "./GenreField";
+import CastMemberField, { CastMemberFieldComponent } from "./CastMemberField";
+import { omit, zipObject } from "lodash";
+import { InputFileComponent } from "../../../components/InputFile";
 
 const useStyle = makeStyles((theme) => {
   return {
@@ -34,7 +43,7 @@ const useStyle = makeStyles((theme) => {
       backgroundColor: "#f5f5f5",
     },
     cardContentOpened: {
-     paddingBottom: theme.spacing(2, 0) + "px !important"
+      paddingBottom: theme.spacing(2, 0) + "px !important",
     },
     cardUpload: {
       borderRadius: "4px",
@@ -93,6 +102,17 @@ export const Form = () => {
   const [video, setVideo] = useState<Video | null>();
   const theme = useTheme();
   const isGreaterMd = useMediaQuery(theme.breakpoints.up("md"));
+  const castMemberRef = useRef() as MutableRefObject<CastMemberFieldComponent>;
+  const genreRef = useRef() as MutableRefObject<GenreFieldComponent>;
+  const categoryRef = useRef() as MutableRefObject<CategoryFieldComponent>;
+  const uploadsRef = useRef(
+    zipObject(
+      fileFields,
+      fileFields.map(() => createRef())
+    )
+  ) as MutableRefObject<{
+    [key: string]: MutableRefObject<InputFileComponent>;
+  }>;
   useEffect(() => {
     const otherFields = [
       "rating",
@@ -129,16 +149,31 @@ export const Form = () => {
   }, [id, reset, snackbar]);
 
   async function onSubmit(formData: Video, event) {
+    const sendData = omit(formData, ["genres", "categories", "cast_members"]);
+    sendData["cast_member_id"] =
+      formData &&
+      formData.cast_members &&
+      formData.cast_members.map((castMember) => castMember.id);
+
+    sendData["categories_id"] =
+      formData &&
+      formData.categories &&
+      formData.categories.map((category) => category.id);
+
+    sendData["genres_id"] =
+      formData && formData.genres && formData.genres.map((genre) => genre.id);
+
     setLoading(true);
     try {
       const http = !video
-        ? httpVideo.create(formData)
-        : httpVideo.update(id, formData);
+        ? httpVideo.create(sendData)
+        : httpVideo.update(video.id, { ...sendData, _method: "PUT" });
 
       const { data } = await http;
       snackbar.enqueueSnackbar("Video salvo com sucesso!", {
         variant: "success",
       });
+      id && resetForm(video);
       setTimeout(() => {
         if (!event) {
           return history.push("/videos");
@@ -157,6 +192,15 @@ export const Form = () => {
     } finally {
       setLoading(false);
     }
+  }
+  function resetForm(data) {
+    Object.keys(uploadsRef.current).forEach((field) => {
+      uploadsRef.current[field].current.clear();
+    });
+    castMemberRef.current.clear();
+    genreRef.current.clear();
+    categoryRef.current.clear();
+    reset(data);
   }
   return (
     <DefaultForm GridItemProps={{ xs: 12 }} onSubmit={handleSubmit(onSubmit)}>
@@ -282,11 +326,13 @@ export const Form = () => {
                 Imagens
               </Typography>
               <UploadField
+                ref={uploadsRef.current["thumb_file"]}
                 accept="image/*"
                 label="Thumb"
                 setValue={(value) => setValue("thumb_file", value)}
               />
               <UploadField
+                ref={uploadsRef.current["banner_file"]}
                 accept="image/*"
                 label="Banner"
                 setValue={(value) => setValue("banner_file", value)}
@@ -299,11 +345,13 @@ export const Form = () => {
                 Videos
               </Typography>
               <UploadField
+                ref={uploadsRef.current["trailer_file"]}
                 accept="video/mp4"
                 label="Trailer"
                 setValue={(value) => setValue("trailer_file", value)}
               />
               <UploadField
+                ref={uploadsRef.current["video_file"]}
                 accept="video/mp4"
                 label="Principal"
                 setValue={(value) => setValue("video_file", value)}

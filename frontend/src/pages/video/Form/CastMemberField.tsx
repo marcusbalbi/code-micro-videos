@@ -4,8 +4,15 @@ import {
   Typography,
   FormControlProps,
 } from "@material-ui/core";
-import React, { RefAttributes } from "react";
-import AsyncAutocomplete from "../../../components/AsyncAutocomplete";
+import React, {
+  MutableRefObject,
+  RefAttributes,
+  useImperativeHandle,
+  useRef,
+} from "react";
+import AsyncAutocomplete, {
+  AsyncAutoCompleteComponent,
+} from "../../../components/AsyncAutocomplete";
 import GridSelected from "../../../components/GridSelected";
 import GridSelectedItem from "../../../components/GridSelectedItem";
 import useCollectionManager from "../../../hooks/useCollectionManager";
@@ -30,7 +37,7 @@ const CastMemberField = React.forwardRef<
   CastMemberFieldProps
 >((props, ref) => {
   const { castMembers, setCastMembers, disabled, error } = props;
-  // const classes = useStyles();
+  const autocompleteRef = useRef() as MutableRefObject<AsyncAutoCompleteComponent>;
   const { addItem, removeItem } = useCollectionManager(
     castMembers || [],
     setCastMembers
@@ -53,13 +60,20 @@ const CastMemberField = React.forwardRef<
       })
       .catch((error) => console.log(error));
   };
+  useImperativeHandle(ref, () => {
+    return {
+      clear: () => {
+        autocompleteRef.current.clear();
+      },
+    };
+  });
   return (
     <>
       <AsyncAutocomplete
         fetchOptions={fetchOptions}
         AutoCompleteProps={{
+          ref: autocompleteRef,
           autoSelect: true,
-          ref: ref,
           freeSolo: true,
           clearOnEscape: true,
           disabled,
