@@ -35,6 +35,7 @@ import GenreField, { GenreFieldComponent } from "./GenreField";
 import CastMemberField, { CastMemberFieldComponent } from "./CastMemberField";
 import { omit, zipObject } from "lodash";
 import { InputFileComponent } from "../../../components/InputFile";
+import useSnackbarFromError from "../../../hooks/useSnackbarFromError";
 
 const useStyle = makeStyles((theme) => {
   return {
@@ -105,6 +106,7 @@ export const Form = () => {
     watch,
     setValue,
     trigger,
+    formState,
   } = useForm<Video>({
     resolver,
     defaultValues: {
@@ -133,6 +135,7 @@ export const Form = () => {
   ) as MutableRefObject<{
     [key: string]: MutableRefObject<InputFileComponent>;
   }>;
+  useSnackbarFromError(formState.submitCount, errors);
   useEffect(() => {
     const otherFields = [
       "rating",
@@ -172,6 +175,10 @@ export const Form = () => {
     }
     getVideo();
   }, [id, reset, snackbar]);
+
+  useEffect(() => {
+    console.log(formState, formState.submitCount);
+  }, [formState]);
 
   async function onSubmit(formData: Video, event) {
     const sendData = omit(formData, ["genres", "categories", "cast_members"]);
