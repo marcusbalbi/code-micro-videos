@@ -33,7 +33,7 @@ import { UploadField } from "./UploadField";
 import CategoryField, { CategoryFieldComponent } from "./CategoryField";
 import GenreField, { GenreFieldComponent } from "./GenreField";
 import CastMemberField, { CastMemberFieldComponent } from "./CastMemberField";
-import { get, omit, zipObject } from "lodash";
+import { omit, zipObject } from "lodash";
 import { InputFileComponent } from "../../../components/InputFile";
 
 const useStyle = makeStyles((theme) => {
@@ -187,7 +187,11 @@ export const Form = () => {
     try {
       const http = !video
         ? httpVideo.create(sendData)
-        : httpVideo.update(video.id, { ...sendData, _method: "PUT" });
+        : httpVideo.update(
+            video.id,
+            { ...sendData, _method: "PUT" },
+            { http: { usePost: true } }
+          );
 
       const { data } = await http;
       snackbar.enqueueSnackbar("Video salvo com sucesso!", {
