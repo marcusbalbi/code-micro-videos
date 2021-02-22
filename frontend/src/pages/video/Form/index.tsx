@@ -154,6 +154,11 @@ export const Form = () => {
       setLoading(true);
       try {
         const { data } = await httpVideo.get<{ data: Video }>(id);
+        Object.keys(data.data).forEach((key) => {
+          if (key.endsWith("_file")) {
+            delete data.data[key];
+          }
+        });
         setVideo(data.data);
         reset(data.data);
       } catch (error) {
@@ -170,7 +175,7 @@ export const Form = () => {
 
   async function onSubmit(formData: Video, event) {
     const sendData = omit(formData, ["genres", "categories", "cast_members"]);
-    sendData["cast_member_id"] =
+    sendData["cast_members_id"] =
       formData &&
       formData.cast_members &&
       formData.cast_members.map((castMember) => castMember.id);
@@ -221,9 +226,9 @@ export const Form = () => {
     Object.keys(uploadsRef.current).forEach((field) => {
       uploadsRef.current[field].current.clear();
     });
-    castMemberRef.current.clear();
-    genreRef.current.clear();
-    categoryRef.current.clear();
+    castMemberRef && castMemberRef.current && castMemberRef.current.clear();
+    genreRef && genreRef.current && genreRef.current.clear();
+    categoryRef && categoryRef.current && categoryRef.current.clear();
     reset(data);
   }
   return (
