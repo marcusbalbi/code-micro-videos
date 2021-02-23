@@ -45,7 +45,7 @@ export default class HttpResource {
       sendData = this.getFormData(data);
     }
     const { http } = (options || {}) as any;
-    return !http.usePost
+    return !http || !http.usePost
       ? this.http.put<T>(`${this.resource}/${id}`, sendData)
       : this.http.post<T>(`${this.resource}/${id}`, sendData);
   }
