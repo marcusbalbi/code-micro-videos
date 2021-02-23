@@ -120,7 +120,7 @@ function localTheme(theme: Theme) {
 export const Table = () => {
   const canLoad = useRef(true);
   const [videos, setVideos] = useState<Video[]>([]);
-  const [loading, setLoading] = useState(false);
+  const loading = useContext(LoadingContext);
   const {
     openDeleteDialog,
     setOpenDeleteDialog,
@@ -142,7 +142,6 @@ export const Table = () => {
   const snackbar = useSnackbar();
 
   const getData = useCallback(async () => {
-    setLoading(true);
     try {
       const { data } = await httpVideo.list<ListResponse<Video>>({
         queryParams: {
@@ -168,8 +167,6 @@ export const Table = () => {
       snackbar.enqueueSnackbar("Não foi possível carregar as informações", {
         variant: "error",
       });
-    } finally {
-      setLoading(false);
     }
   }, [
     snackbar,
@@ -234,11 +231,8 @@ export const Table = () => {
       });
   }
 
-  const testLoading = useContext(LoadingContext);
-
   return (
     <ThemeProvider theme={localTheme}>
-      {testLoading ? "true" : "false"}
       <DeleteDialog open={openDeleteDialog} handleClose={deleteRows} />
       <DefaultTable
         debouncedSearchTime={debounceTimeSearchText}

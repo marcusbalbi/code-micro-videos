@@ -10,7 +10,7 @@ import {
 
 import { useForm } from "react-hook-form";
 import * as yup from "yup";
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useContext, useEffect, useMemo, useState } from "react";
 import httpCastMember from "../../util/http/http-cast-member";
 import { useYupValidationResolver } from "../../hooks/YupValidation";
 import { useHistory, useParams } from "react-router";
@@ -18,6 +18,7 @@ import { useSnackbar } from "notistack";
 import { CastMember } from "../../util/dto";
 import SubmitActions from "../../components/SubmitActions";
 import DefaultForm from "../../components/DefaultForm";
+import LoadingContext from "../../components/loading/LoadingContext";
 
 export const Form = () => {
   const validationSchema = useMemo(
@@ -45,7 +46,7 @@ export const Form = () => {
   const snackbar = useSnackbar();
   const history = useHistory();
   const { id } = useParams<{ id: string }>();
-  const [loading, setLoading] = useState(false);
+  const loading = useContext(LoadingContext);
   const [castMember, setCastMember] = useState<CastMember | null>(null);
 
   useEffect(() => {
@@ -57,7 +58,6 @@ export const Form = () => {
       return;
     }
     async function getCastMember() {
-      setLoading(true);
       try {
         const { data } = await httpCastMember.get<{ data: CastMember }>(id);
         setCastMember(data.data);
@@ -67,15 +67,12 @@ export const Form = () => {
         snackbar.enqueueSnackbar("Não foi possível carregar as informações", {
           variant: "error",
         });
-      } finally {
-        setLoading(false);
       }
     }
     getCastMember();
   }, [id, reset, snackbar]);
 
   async function onSubmit(formData: CastMember, event) {
-    setLoading(true);
     try {
       const http = !castMember
         ? httpCastMember.create(formData)
@@ -100,8 +97,6 @@ export const Form = () => {
       snackbar.enqueueSnackbar("Falha ao salvar Membro de Elenco", {
         variant: "error",
       });
-    } finally {
-      setLoading(false);
     }
   }
   return (

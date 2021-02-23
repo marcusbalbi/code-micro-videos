@@ -3,7 +3,6 @@ import React from "react";
 import { BrowserRouter } from "react-router-dom";
 import "./App.css";
 import Breadcrumbs from "./components/Breadcrumbs";
-import LoadingContext from "./components/loading/LoadingContext";
 import LoadingProvider from "./components/loading/LoadingProvider";
 import { Navbar } from "./components/Navbar";
 import { SnackbarProvider } from "./components/SnackbarProvider";

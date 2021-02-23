@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import React, { useCallback, useContext, useEffect, useRef, useState } from "react";
 
 import format from "date-fns/format";
 import parseISO from "date-fns/parseISO";
@@ -15,6 +15,7 @@ import { FilterResetButton } from "../../components/Table/FilterResetButton";
 import useFilter from "../../hooks/useFilter";
 import yup from "../../util/vendor/yup";
 import httpCategory from "../../util/http/http-category";
+import LoadingContext from "../../components/loading/LoadingContext";
 
 const debounceTime = 300;
 const debounceTimeSearchText = 300;
@@ -135,7 +136,7 @@ export const Table = () => {
   const canLoad = useRef(true);
   const [genres, setGenres] = useState<Genre[]>([]);
   // const [_cat, setCategories] = useState<Category[]>([]);
-  const [loading, setLoading] = useState(false);
+  const loading = useContext(LoadingContext);
   const {
     filterState,
     debouncedFilterState,
@@ -179,7 +180,6 @@ export const Table = () => {
   const snackbar = useSnackbar();
 
   const getData = useCallback(async () => {
-    setLoading(true);
     try {
       const { data } = await httpGenre.list<ListResponse<Genre>>({
         queryParams: {
@@ -210,8 +210,6 @@ export const Table = () => {
       snackbar.enqueueSnackbar("Não foi possível carregar as informações", {
         variant: "error",
       });
-    } finally {
-      setLoading(false);
     }
   }, [
     snackbar,

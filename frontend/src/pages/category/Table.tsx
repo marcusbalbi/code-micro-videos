@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import React, { useCallback, useContext, useEffect, useRef, useState } from "react";
 
 import format from "date-fns/format";
 import parseISO from "date-fns/parseISO";
@@ -13,6 +13,7 @@ import EditIcon from "@material-ui/icons/Edit";
 import { cloneDeep } from "lodash";
 import { FilterResetButton } from "../../components/Table/FilterResetButton";
 import useFilter from "../../hooks/useFilter";
+import LoadingContext from "../../components/loading/LoadingContext";
 
 const debounceTime = 300;
 const debounceTimeSearchText = 300;
@@ -113,7 +114,7 @@ function localTheme(theme: Theme) {
 export const Table = () => {
   const canLoad = useRef(true);
   const [categories, setCategories] = useState<Category[]>([]);
-  const [loading, setLoading] = useState(false);
+  const loading = useContext(LoadingContext);
   const {
     filterState,
     debouncedFilterState,
@@ -129,7 +130,6 @@ export const Table = () => {
   const snackbar = useSnackbar();
 
   const getData = useCallback(async () => {
-    setLoading(true);
     try {
       const { data } = await httpCategory.list<ListResponse<Category>>({
         queryParams: {
@@ -155,8 +155,6 @@ export const Table = () => {
       snackbar.enqueueSnackbar("Não foi possível carregar as informações", {
         variant: "error",
       });
-    } finally {
-      setLoading(false);
     }
   }, [
     snackbar,
