@@ -12,6 +12,8 @@ import EditIcon from "@material-ui/icons/Edit";
 import { cloneDeep } from "lodash";
 import { FilterResetButton } from "../../components/Table/FilterResetButton";
 import useFilter from "../../hooks/useFilter";
+import DeleteDialog from "../../components/DeleteDialog";
+import useDeleteCollection from "../../hooks/useDeleteCollection";
 
 const debounceTime = 300;
 const debounceTimeSearchText = 300;
@@ -113,6 +115,12 @@ export const Table = () => {
   const [videos, setVideos] = useState<Video[]>([]);
   const [loading, setLoading] = useState(false);
   const {
+    openDeleteDialog,
+    setOpenDeleteDialog,
+    rowsToDelete,
+    setRowsToDelete,
+  } = useDeleteCollection();
+  const {
     filterState,
     debouncedFilterState,
     totalRecords,
@@ -180,8 +188,47 @@ export const Table = () => {
     //eslint-disable-next-line
   }, [getData]);
 
+  function deleteRows(confirmed) {
+    console.log("conformed ?", confirmed);
+    if (!confirmed) {
+      setOpenDeleteDialog(false);
+      return;
+    }
+    const ids = rowsToDelete.data
+      .map((value) => {
+        return videos[value.index].id;
+      })
+      .join(",");
+
+    httpVideo
+      .deleteCollection({ ids })
+      .then((response) => {
+        snackbar.enqueueSnackbar("Registros excluidos com sucesso!", {
+          variant: "success",
+        });
+        if (
+          rowsToDelete.data.length === filterState.pagination.per_page &&
+          filterState.pagination.page > 1
+        ) {
+          const page = filterState.pagination.page - 2;
+          filterManager.changePage(page);
+        } else {
+          return getData()
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+        snackbar.enqueueSnackbar("Não foi possivel excluir os registros", {
+          variant: "error",
+        });
+      }).finally(() => {
+        setOpenDeleteDialog(false)
+      });
+  }
+
   return (
     <ThemeProvider theme={localTheme}>
+      <DeleteDialog open={openDeleteDialog} handleClose={deleteRows} />
       <DefaultTable
         debouncedSearchTime={debounceTimeSearchText}
         data={videos}
@@ -198,6 +245,11 @@ export const Table = () => {
           sortOrder: {
             name: filterState.order.sort || "NONE",
             direction: (filterState.order.dir as any) || "asc",
+          },
+          onRowsDelete: (rowsDeleted) => {
+            console.log(rowsDeleted);
+            setRowsToDelete(rowsDeleted as any);
+            return false;
           },
           customToolbar: () => {
             return (

@@ -53,6 +53,13 @@ export default class HttpResource {
   delete<T = any>(id): Promise<AxiosResponse<T>> {
     return this.http.delete<T>(`${this.resource}/${id}`);
   }
+  deleteCollection<T = any>(queryParams): Promise<AxiosResponse<T>> {
+    const config: AxiosRequestConfig   = {}
+    if (queryParams) {
+      config["params"] = queryParams;
+    }
+    return this.http.delete<T>(`${this.resource}`, config);
+  }
 
   isCancelledRequest(error) {
     return axios.isCancel(error);
