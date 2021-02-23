@@ -1,4 +1,10 @@
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import React, {
+  useCallback,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 
 import format from "date-fns/format";
 import parseISO from "date-fns/parseISO";
@@ -14,6 +20,7 @@ import { FilterResetButton } from "../../components/Table/FilterResetButton";
 import useFilter from "../../hooks/useFilter";
 import DeleteDialog from "../../components/DeleteDialog";
 import useDeleteCollection from "../../hooks/useDeleteCollection";
+import LoadingContext from "../../components/loading/LoadingContext";
 
 const debounceTime = 300;
 const debounceTimeSearchText = 300;
@@ -213,7 +220,7 @@ export const Table = () => {
           const page = filterState.pagination.page - 2;
           filterManager.changePage(page);
         } else {
-          return getData()
+          return getData();
         }
       })
       .catch((err) => {
@@ -221,13 +228,17 @@ export const Table = () => {
         snackbar.enqueueSnackbar("Não foi possivel excluir os registros", {
           variant: "error",
         });
-      }).finally(() => {
-        setOpenDeleteDialog(false)
+      })
+      .finally(() => {
+        setOpenDeleteDialog(false);
       });
   }
 
+  const testLoading = useContext(LoadingContext);
+
   return (
     <ThemeProvider theme={localTheme}>
+      {testLoading ? "true" : "false"}
       <DeleteDialog open={openDeleteDialog} handleClose={deleteRows} />
       <DefaultTable
         debouncedSearchTime={debounceTimeSearchText}

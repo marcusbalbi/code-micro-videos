@@ -4,6 +4,7 @@ import { BrowserRouter } from "react-router-dom";
 import "./App.css";
 import Breadcrumbs from "./components/Breadcrumbs";
 import LoadingContext from "./components/loading/LoadingContext";
+import LoadingProvider from "./components/loading/LoadingProvider";
 import { Navbar } from "./components/Navbar";
 import { SnackbarProvider } from "./components/SnackbarProvider";
 import Spinner from "./components/Spinner";
@@ -13,7 +14,7 @@ import "./util/vendor/yup";
 function App() {
   return (
     <React.Fragment>
-      <LoadingContext.Provider value={true}>
+      <LoadingProvider>
         <MuiThemeProvider theme={theme}>
           <SnackbarProvider>
             <CssBaseline />
@@ -27,7 +28,7 @@ function App() {
             </BrowserRouter>
           </SnackbarProvider>
         </MuiThemeProvider>
-      </LoadingContext.Provider>
+      </LoadingProvider>
     </React.Fragment>
   );
 }
