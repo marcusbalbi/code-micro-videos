@@ -1,13 +1,5 @@
 import React from "react";
-import {
-  Box,
-  Container,
-  LinearProgress,
-  makeStyles,
-  MuiThemeProvider,
-  Theme,
-  Typography,
-} from "@material-ui/core";
+import { LinearProgress, MuiThemeProvider, Theme } from "@material-ui/core";
 
 function makeLocalTheme(theme: Theme): Theme {
   return {

@@ -3,6 +3,7 @@ import React from "react";
 import { BrowserRouter } from "react-router-dom";
 import "./App.css";
 import Breadcrumbs from "./components/Breadcrumbs";
+import LoadingContext from "./components/loading/LoadingContext";
 import { Navbar } from "./components/Navbar";
 import { SnackbarProvider } from "./components/SnackbarProvider";
 import Spinner from "./components/Spinner";
@@ -12,19 +13,21 @@ import "./util/vendor/yup";
 function App() {
   return (
     <React.Fragment>
-      <MuiThemeProvider theme={theme}>
-        <SnackbarProvider>
-          <CssBaseline />
-          <BrowserRouter>
-            <Spinner />
-            <Navbar />
-            <Box paddingTop={"70px"}>
-              <Breadcrumbs />
-              <AppRouter />
-            </Box>
-          </BrowserRouter>
-        </SnackbarProvider>
-      </MuiThemeProvider>
+      <LoadingContext.Provider value={true}>
+        <MuiThemeProvider theme={theme}>
+          <SnackbarProvider>
+            <CssBaseline />
+            <BrowserRouter>
+              <Spinner />
+              <Navbar />
+              <Box paddingTop={"70px"}>
+                <Breadcrumbs />
+                <AppRouter />
+              </Box>
+            </BrowserRouter>
+          </SnackbarProvider>
+        </MuiThemeProvider>
+      </LoadingContext.Provider>
     </React.Fragment>
   );
 }
