@@ -100,10 +100,10 @@ abstract class BasicCrudController extends Controller
         $validator = \Validator::make([
             "ids" => $ids
         ], [
-            "ids" => "required|exists" . (new $model)->getTable() . ",id"
+            "ids" => "required|exists:" . (new $model)->getTable() . ",id"
         ]);
 
-        return $validator->valdiate();
+        return $validator->validate();
     }
 
     protected function queryBuilder(): Builder
