@@ -175,10 +175,6 @@ export const Form = () => {
     getVideo();
   }, [id, reset, snackbar]);
 
-  useEffect(() => {
-    console.log(formState, formState.submitCount);
-  }, [formState]);
-
   async function onSubmit(formData: Video, event) {
     const sendData = omit(formData, ["genres", "categories", "cast_members"]);
     sendData["cast_members_id"] =

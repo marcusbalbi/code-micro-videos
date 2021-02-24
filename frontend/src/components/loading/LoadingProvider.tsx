@@ -41,13 +41,12 @@ const LoadingProvider = (props) => {
   }, []);
 
   useEffect(() => {
-    if (countRequest <= 0) {
+    if (countRequest === 0) {
       setLoading(false);
     }
   }, [countRequest]);
   return (
     <LoadingContext.Provider value={loading}>
-      {countRequest}
       {props.children}
     </LoadingContext.Provider>
   );

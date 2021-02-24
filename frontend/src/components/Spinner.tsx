@@ -22,7 +22,7 @@ const Spinner = () => {
   const loading = useContext(LoadingContext);
   return (
     <MuiThemeProvider theme={makeLocalTheme}>
-      <Fade in={loading}>
+      <Fade in={loading} >
         <LinearProgress
           color={"primary"}
           style={{ position: "fixed", width: "100%", zIndex: 9999 }}

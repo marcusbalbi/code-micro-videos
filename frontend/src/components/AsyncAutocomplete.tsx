@@ -107,7 +107,7 @@ const AsyncAutocomplete = React.forwardRef<
     return () => {
       isSubscribed = false;
     };
-  }, [snackbar, fetchOptions, debouncedSearchText, open, freeSolo]);
+  }, [debouncedSearchText, open, freeSolo]);
   useImperativeHandle(ref, () => {
     return {
       clear: () => {
