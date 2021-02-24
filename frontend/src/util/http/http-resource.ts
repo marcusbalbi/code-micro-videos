@@ -26,8 +26,12 @@ export default class HttpResource {
     return this.http.get<T>(this.resource, config);
   }
 
-  get<T = any>(id): Promise<AxiosResponse<T>> {
-    return this.http.get<T>(`${this.resource}/${id}`);
+  get<T = any>(id, queryParams?): Promise<AxiosResponse<T>> {
+    const config: AxiosRequestConfig = {};
+    if (queryParams) {
+      config["params"] = queryParams;
+    }
+    return this.http.get<T>(`${this.resource}/${id}`, config);
   }
 
   create<T = any>(data): Promise<AxiosResponse<T>> {
@@ -54,7 +58,7 @@ export default class HttpResource {
     return this.http.delete<T>(`${this.resource}/${id}`);
   }
   deleteCollection<T = any>(queryParams): Promise<AxiosResponse<T>> {
-    const config: AxiosRequestConfig   = {}
+    const config: AxiosRequestConfig = {};
     if (queryParams) {
       config["params"] = queryParams;
     }

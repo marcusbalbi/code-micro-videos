@@ -56,7 +56,7 @@ export const Form = () => {
       }
       const promises = [httpCategory.list({ queryParams: { all: "" } })];
       if (id) {
-        promises.push(httpGenre.get(id));
+        promises.push(httpGenre.get(id, { with: "categories" }));
       }
       try {
         const [categoryResponse, genreResponse] = await Promise.all(promises);

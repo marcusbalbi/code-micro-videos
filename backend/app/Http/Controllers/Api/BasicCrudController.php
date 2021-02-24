@@ -63,9 +63,14 @@ abstract class BasicCrudController extends Controller
     }
 
 
-    public function show($id)
+    public function show($id, Request $request)
     {
         $obj = $this->findOrFail($id);
+        $relations = explode(",", $request->get("with", ""));
+
+        if ($request->get("with")) {
+            $obj->load($relations);
+        }
         $resource = $this->resource();
         return new $resource($obj);
     }
