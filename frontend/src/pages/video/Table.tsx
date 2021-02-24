@@ -1,4 +1,10 @@
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import React, {
+  useCallback,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 
 import format from "date-fns/format";
 import parseISO from "date-fns/parseISO";
@@ -12,6 +18,9 @@ import EditIcon from "@material-ui/icons/Edit";
 import { cloneDeep } from "lodash";
 import { FilterResetButton } from "../../components/Table/FilterResetButton";
 import useFilter from "../../hooks/useFilter";
+import DeleteDialog from "../../components/DeleteDialog";
+import useDeleteCollection from "../../hooks/useDeleteCollection";
+import LoadingContext from "../../components/loading/LoadingContext";
 
 const debounceTime = 300;
 const debounceTimeSearchText = 300;
@@ -111,7 +120,13 @@ function localTheme(theme: Theme) {
 export const Table = () => {
   const canLoad = useRef(true);
   const [videos, setVideos] = useState<Video[]>([]);
-  const [loading, setLoading] = useState(false);
+  const loading = useContext(LoadingContext);
+  const {
+    openDeleteDialog,
+    setOpenDeleteDialog,
+    rowsToDelete,
+    setRowsToDelete,
+  } = useDeleteCollection();
   const {
     filterState,
     debouncedFilterState,
@@ -127,7 +142,6 @@ export const Table = () => {
   const snackbar = useSnackbar();
 
   const getData = useCallback(async () => {
-    setLoading(true);
     try {
       const { data } = await httpVideo.list<ListResponse<Video>>({
         queryParams: {
@@ -153,8 +167,6 @@ export const Table = () => {
       snackbar.enqueueSnackbar("Não foi possível carregar as informações", {
         variant: "error",
       });
-    } finally {
-      setLoading(false);
     }
   }, [
     snackbar,
@@ -180,8 +192,48 @@ export const Table = () => {
     //eslint-disable-next-line
   }, [getData]);
 
+  function deleteRows(confirmed) {
+    console.log("conformed ?", confirmed);
+    if (!confirmed) {
+      setOpenDeleteDialog(false);
+      return;
+    }
+    const ids = rowsToDelete.data
+      .map((value) => {
+        return videos[value.index].id;
+      })
+      .join(",");
+
+    httpVideo
+      .deleteCollection({ ids })
+      .then((response) => {
+        snackbar.enqueueSnackbar("Registros excluidos com sucesso!", {
+          variant: "success",
+        });
+        if (
+          rowsToDelete.data.length === filterState.pagination.per_page &&
+          filterState.pagination.page > 1
+        ) {
+          const page = filterState.pagination.page - 2;
+          filterManager.changePage(page);
+        } else {
+          return getData();
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+        snackbar.enqueueSnackbar("Não foi possivel excluir os registros", {
+          variant: "error",
+        });
+      })
+      .finally(() => {
+        setOpenDeleteDialog(false);
+      });
+  }
+
   return (
     <ThemeProvider theme={localTheme}>
+      <DeleteDialog open={openDeleteDialog} handleClose={deleteRows} />
       <DefaultTable
         debouncedSearchTime={debounceTimeSearchText}
         data={videos}
@@ -198,6 +250,11 @@ export const Table = () => {
           sortOrder: {
             name: filterState.order.sort || "NONE",
             direction: (filterState.order.dir as any) || "asc",
+          },
+          onRowsDelete: (rowsDeleted) => {
+            console.log(rowsDeleted);
+            setRowsToDelete(rowsDeleted as any);
+            return false;
           },
           customToolbar: () => {
             return (

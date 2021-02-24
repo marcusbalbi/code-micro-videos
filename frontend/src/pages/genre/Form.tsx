@@ -1,6 +1,6 @@
 import { MenuItem, TextField } from "@material-ui/core";
 import { useForm } from "react-hook-form";
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useContext, useEffect, useMemo, useState } from "react";
 import httpCategory from "../../util/http/http-category";
 import httpGenre from "../../util/http/http-genre";
 import * as yup from "yup";
@@ -10,6 +10,7 @@ import { useHistory, useParams } from "react-router";
 import { Genre } from "../../util/dto";
 import SubmitActions from "../../components/SubmitActions";
 import DefaultForm from "../../components/DefaultForm";
+import LoadingContext from "../../components/loading/LoadingContext";
 
 export const Form = () => {
   const validationSchema = useMemo(
@@ -39,7 +40,7 @@ export const Form = () => {
   const snackbar = useSnackbar();
   const history = useHistory();
   const { id } = useParams<{ id: string }>();
-  const [loading, setLoading] = useState(false);
+  const loading = useContext(LoadingContext);
   const [genre, setGenre] = useState<Genre | null>(null);
 
   const [categories, setCategories] = useState<any[]>([]);
@@ -53,10 +54,9 @@ export const Form = () => {
       if (!canLoad) {
         return;
       }
-      setLoading(true);
       const promises = [httpCategory.list({ queryParams: { all: "" } })];
       if (id) {
-        promises.push(httpGenre.get(id));
+        promises.push(httpGenre.get(id, { with: "categories" }));
       }
       try {
         const [categoryResponse, genreResponse] = await Promise.all(promises);
@@ -76,8 +76,6 @@ export const Form = () => {
         snackbar.enqueueSnackbar("Não foi possível carregar as informações", {
           variant: "error",
         });
-      } finally {
-        setLoading(false);
       }
     })();
     return () => {
@@ -86,7 +84,6 @@ export const Form = () => {
   }, [id, reset, snackbar]);
 
   async function onSubmit(formData, event) {
-    setLoading(true);
     try {
       const http = !genre
         ? httpGenre.create(formData)
@@ -111,8 +108,6 @@ export const Form = () => {
       snackbar.enqueueSnackbar("Falha ao salvar Gênero", {
         variant: "error",
       });
-    } finally {
-      setLoading(false);
     }
   }
   return (

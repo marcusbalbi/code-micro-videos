@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import React, { useCallback, useContext, useEffect, useRef, useState } from "react";
 
 import format from "date-fns/format";
 import parseISO from "date-fns/parseISO";
@@ -13,6 +13,7 @@ import { cloneDeep, invert } from "lodash";
 import { FilterResetButton } from "../../components/Table/FilterResetButton";
 import useFilter from "../../hooks/useFilter";
 import yup from "../../util/vendor/yup";
+import LoadingContext from "../../components/loading/LoadingContext";
 
 const castMemberNames = Object.values(CastMemberTypeMap);
 
@@ -108,7 +109,7 @@ function localTheme(theme: Theme) {
 export const Table = () => {
   const canLoad = useRef(true);
   const [castMembers, setCastMembers] = useState<CastMember[]>([]);
-  const [loading, setLoading] = useState(false);
+  const loading = useContext(LoadingContext);
   const {
     filterState,
     debouncedFilterState,
@@ -164,7 +165,6 @@ export const Table = () => {
   }
 
   const getData = useCallback(async () => {
-    setLoading(true);
     try {
       const { data } = await httpCastMember.list<ListResponse<CastMember>>({
         queryParams: {
@@ -195,8 +195,6 @@ export const Table = () => {
       snackbar.enqueueSnackbar("Não foi possível carregar as informações", {
         variant: "error",
       });
-    } finally {
-      setLoading(false);
     }
   }, [
     snackbar,

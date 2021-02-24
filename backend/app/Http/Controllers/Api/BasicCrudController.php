@@ -63,9 +63,14 @@ abstract class BasicCrudController extends Controller
     }
 
 
-    public function show($id)
+    public function show($id, Request $request)
     {
         $obj = $this->findOrFail($id);
+        $relations = explode(",", $request->get("with", ""));
+
+        if ($request->get("with")) {
+            $obj->load($relations);
+        }
         $resource = $this->resource();
         return new $resource($obj);
     }
@@ -85,6 +90,25 @@ abstract class BasicCrudController extends Controller
         $obj = $this->findOrFail($id);
         $obj->delete();
         return response()->noContent();
+    }
+
+    public function destroyCollection(Request $request)
+    {
+        $data = $this->validateIds($request);
+        $this->model()::whereIn('id', $data["ids"])->delete();
+        return response()->noContent();
+    }
+    public function validateIds(Request $request)
+    {
+        $model = $this->model();
+        $ids = explode(",", $request->get("ids"));
+        $validator = \Validator::make([
+            "ids" => $ids
+        ], [
+            "ids" => "required|exists:" . (new $model)->getTable() . ",id"
+        ]);
+
+        return $validator->validate();
     }
 
     protected function queryBuilder(): Builder

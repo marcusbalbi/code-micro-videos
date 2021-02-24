@@ -15,6 +15,7 @@ import { useForm } from "react-hook-form";
 import React, {
   createRef,
   MutableRefObject,
+  useContext,
   useEffect,
   useMemo,
   useRef,
@@ -35,6 +36,8 @@ import GenreField, { GenreFieldComponent } from "./GenreField";
 import CastMemberField, { CastMemberFieldComponent } from "./CastMemberField";
 import { omit, zipObject } from "lodash";
 import { InputFileComponent } from "../../../components/InputFile";
+import useSnackbarFromError from "../../../hooks/useSnackbarFromError";
+import LoadingContext from "../../../components/loading/LoadingContext";
 
 const useStyle = makeStyles((theme) => {
   return {
@@ -105,6 +108,7 @@ export const Form = () => {
     watch,
     setValue,
     trigger,
+    formState,
   } = useForm<Video>({
     resolver,
     defaultValues: {
@@ -118,7 +122,7 @@ export const Form = () => {
   const snackbar = useSnackbar();
   const history = useHistory();
   const { id } = useParams<{ id: string }>();
-  const [loading, setLoading] = useState(false);
+  const loading = useContext(LoadingContext);
   const [video, setVideo] = useState<Video | null>();
   const theme = useTheme();
   const isGreaterMd = useMediaQuery(theme.breakpoints.up("md"));
@@ -133,6 +137,7 @@ export const Form = () => {
   ) as MutableRefObject<{
     [key: string]: MutableRefObject<InputFileComponent>;
   }>;
+  useSnackbarFromError(formState.submitCount, errors);
   useEffect(() => {
     const otherFields = [
       "rating",
@@ -151,7 +156,6 @@ export const Form = () => {
       return;
     }
     async function getVideo() {
-      setLoading(true);
       try {
         const { data } = await httpVideo.get<{ data: Video }>(id);
         Object.keys(data.data).forEach((key) => {
@@ -166,12 +170,14 @@ export const Form = () => {
         snackbar.enqueueSnackbar("Não foi possível carregar as informações", {
           variant: "error",
         });
-      } finally {
-        setLoading(false);
       }
     }
     getVideo();
   }, [id, reset, snackbar]);
+
+  useEffect(() => {
+    console.log(formState, formState.submitCount);
+  }, [formState]);
 
   async function onSubmit(formData: Video, event) {
     const sendData = omit(formData, ["genres", "categories", "cast_members"]);
@@ -188,7 +194,6 @@ export const Form = () => {
     sendData["genres_id"] =
       formData && formData.genres && formData.genres.map((genre) => genre.id);
 
-    setLoading(true);
     try {
       const http = !video
         ? httpVideo.create(sendData)
@@ -218,8 +223,6 @@ export const Form = () => {
       snackbar.enqueueSnackbar("Falha ao salvar Video", {
         variant: "error",
       });
-    } finally {
-      setLoading(false);
     }
   }
   function resetForm(data) {
