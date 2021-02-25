@@ -10,6 +10,7 @@ import {
   Tooltip,
   Typography,
 } from "@material-ui/core";
+import UploadProgress from "../UploadProgress";
 
 const useStyles = makeStyles((theme: Theme) => {
   return {
@@ -49,6 +50,7 @@ const UploadItem: React.FC<UploadItemProps> = (props) => {
               </Typography>
             }
           />
+          <UploadProgress size={30} />
         </ListItem>
       </Tooltip>
       <Divider component="li" />
