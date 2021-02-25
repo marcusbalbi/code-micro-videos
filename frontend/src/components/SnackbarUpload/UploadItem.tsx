@@ -11,6 +11,7 @@ import {
   Typography,
 } from "@material-ui/core";
 import UploadProgress from "../UploadProgress";
+import UploadAction from "./UploadAction";
 
 const useStyles = makeStyles((theme: Theme) => {
   return {
@@ -50,6 +51,7 @@ const UploadItem: React.FC<UploadItemProps> = (props) => {
               </Typography>
             }
           />
+          <UploadAction />
           <UploadProgress size={30} />
         </ListItem>
       </Tooltip>
