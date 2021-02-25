@@ -13,6 +13,7 @@ import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import ExpandLessIcon from "@material-ui/icons/ExpandLess";
 import CloseIcon from "@material-ui/icons/Close";
 import { useSnackbar } from "notistack";
+import UploadItem from "./UploadItem";
 
 const useStyles = makeStyles((theme: Theme) => {
   return {
@@ -31,6 +32,10 @@ const useStyles = makeStyles((theme: Theme) => {
       marginLeft: "auto !important",
       color: theme.palette.primary.contrastText,
     },
+    list: {
+      paddingTop: 0,
+      paddingBottom: 0,
+    }
   };
 });
 
@@ -70,7 +75,12 @@ const SnackbarUpload = React.forwardRef<any, SnackbarUploadProps>(
           </div>
         </CardActions>
         <Collapse in={expanded}>
-          <List>Items</List>
+          <List className={classes.list} >
+            <UploadItem />
+            <UploadItem />
+            <UploadItem />
+            <UploadItem />
+          </List>
         </Collapse>
       </Card>
     );
