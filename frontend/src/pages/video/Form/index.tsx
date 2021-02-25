@@ -38,6 +38,7 @@ import { omit, zipObject } from "lodash";
 import { InputFileComponent } from "../../../components/InputFile";
 import useSnackbarFromError from "../../../hooks/useSnackbarFromError";
 import LoadingContext from "../../../components/loading/LoadingContext";
+import SnackbarUpload from "../../../components/SnackbarUpload";
 
 const useStyle = makeStyles((theme) => {
   return {
@@ -152,6 +153,17 @@ export const Form = () => {
   }, [register]);
 
   useEffect(() => {
+    snackbar.enqueueSnackbar('', {
+      persist: true,
+      key: 'snackbar-upload',
+      anchorOrigin: {
+        vertical: "bottom",
+        horizontal: "right",
+      },
+      content: (key, message) => {
+        return <SnackbarUpload id={key} />
+      }
+    })
     if (!id) {
       return;
     }
