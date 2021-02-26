@@ -10,6 +10,7 @@ const listRoutes = {
   "cast_members.list": "Membros de elenco",
   "genres.list": "Gêneros",
   "videos.list": "Videos",
+  "uploads": "Uploads",
 };
 const menuRoutes = routes.filter((route) =>
   Object.keys(listRoutes).includes(route.name)
