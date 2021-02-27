@@ -1,6 +1,6 @@
 import { createActions, createReducer } from "reduxsauce";
 import { Actions, AddUploadAction, State } from "./types";
-
+import update from "immutability-helper";
 export const { Types, Creators } = createActions<
   {
     ADD_UPLOAD: string;
@@ -24,8 +24,27 @@ const addUpload = (state = INITIAL_STATE, action: AddUploadAction): State => {
   if (index !== -1 && state.uploads[index].progress < 1) {
     return state;
   }
+
+  const uploads =
+    index === -1
+      ? state.uploads
+      : update(state.uploads, { $splice: [[index, 1]] });
+
   return {
-    ...state,
+    uploads: [
+      ...uploads,
+      {
+        video: action.payload.video,
+        files: action.payload.files.map((file) => {
+          return {
+            fileField: file.fileField,
+            filename: file.file.name,
+            progress: 0,
+          };
+        }),
+        progress: 0,
+      },
+    ],
   };
 };
 
