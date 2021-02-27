@@ -1,7 +1,5 @@
 import { createActions, createReducer } from "reduxsauce";
-import {
-  Actions, AddUploadAction, State
-} from "./types";
+import { Actions, AddUploadAction, State } from "./types";
 
 export const { Types, Creators } = createActions<
   {
@@ -15,13 +13,24 @@ export const { Types, Creators } = createActions<
 });
 
 export const INITIAL_STATE: State = {
-  uploads: []
-}
+  uploads: [],
+};
 
 const addUpload = (state = INITIAL_STATE, action: AddUploadAction): State => {
+  if (!action.payload.files.length) {
+    return state;
+  }
+  const index = findIndexUpload(state, action.payload.video.id);
+  if (index !== -1 && state.uploads[index].progress < 1) {
+    return state;
+  }
   return {
     ...state,
   };
+};
+
+const findIndexUpload = (state: State, id?: string) => {
+  return state.uploads.findIndex((upload) => upload.video.id === id);
 };
 
 const reducer = createReducer<State, Actions>(INITIAL_STATE, {

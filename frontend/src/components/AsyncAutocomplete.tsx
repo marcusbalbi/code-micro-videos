@@ -6,7 +6,6 @@ import React, {
   useImperativeHandle,
   useState,
 } from "react";
-import { useSnackbar } from "notistack";
 import { useDebounce } from "use-debounce/lib";
 
 interface AsyncAutocompleteProps extends RefAttributes<AsyncAutocompleteProps> {
@@ -31,7 +30,6 @@ const AsyncAutocomplete = React.forwardRef<
   const [searchText, setSearchText] = useState("");
   const [loading, setLoading] = useState(false);
   const [options, setOptions] = useState([]);
-  const snackbar = useSnackbar();
   const { fetchOptions, debounceTime = 300 } = props;
   const [debouncedSearchText] = useDebounce(searchText, debounceTime);
   const { onOpen, onClose, onInputChange, freeSolo } = props.AutoCompleteProps;
