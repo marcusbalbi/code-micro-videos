@@ -1,21 +1,29 @@
 import { AxiosError } from "axios";
+import { AnyAction } from "redux";
 import { Video } from "../../util/dto";
 
-interface FileUpload {
+export interface FileUpload {
   fileField: string; //Thumb, Banner, Video etc
   filename: string;
   progress: number;
   error?: AxiosError;
 }
 
-interface Upload {
+export interface Upload {
   video: Video;
   progress: number;
   files: FileUpload[];
 }
 
-interface UploadCollectionState {
+export interface State {
   uploads: Upload[];
 }
 
-export {}
+export interface AddUploadAction extends AnyAction {
+  payload: {
+    video: Video;
+    files: Array<{ file: File; fileField: string }>;
+  };
+}
+
+export type Actions = AddUploadAction;
