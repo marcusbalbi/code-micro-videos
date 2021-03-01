@@ -1,18 +1,29 @@
 import { createActions, createReducer } from "reduxsauce";
-import { Actions, AddUploadAction, RemoveUploadAction, State } from "./types";
+import {
+  Actions,
+  AddUploadAction,
+  RemoveUploadAction,
+  UpdateProgressAction,
+  State,
+} from "./types";
 import update from "immutability-helper";
 export const { Types, Creators } = createActions<
   {
     ADD_UPLOAD: string;
     REMOVE_UPLOAD: string;
+    UPDATE_PROGRESS: string;
   },
   {
     addUpload(payload: AddUploadAction["payload"]): AddUploadAction;
     removeUpload(payload: RemoveUploadAction["payload"]): RemoveUploadAction;
+    updateProgress(
+      payload: UpdateProgressAction["payload"]
+    ): UpdateProgressAction;
   }
 >({
   addUpload: ["payload"],
   removeUpload: ["payload"],
+  updateProgress: ["payload"],
 });
 
 export const INITIAL_STATE: State = {
@@ -65,9 +76,41 @@ const removeUpload = (
     uploads,
   };
 };
+const updateProgress = (
+  state: State = INITIAL_STATE,
+  action: UpdateProgressAction
+): State => {
+  const videoId = action.payload.video.id || "0";
+  const fileField = action.payload.fileUpload;
+  const { indexUpload, indexFile } = findIndexUploadAndFile(
+    state,
+    videoId,
+    fileField
+  );
+  return state;
+};
+
+const findIndexUploadAndFile = (
+  state: State,
+  videoId: string,
+  fileField: string
+): { indexUpload?; indexFile? } => {
+  const indexUpload = findIndexUpload(state, videoId);
+  if (indexUpload === -1) {
+    return {};
+  }
+  const upload = state.uploads[indexUpload];
+  const indexFile = findIndexFile(upload.files, fileField);
+
+  return indexFile === -1 ? {} : { indexFile, indexUpload };
+};
 
 const findIndexUpload = (state: State, id?: string) => {
   return state.uploads.findIndex((upload) => upload.video.id === id);
+};
+
+const findIndexFile = (files: Array<{ fileField }>, fileField: string) => {
+  return files.findIndex((file) => file.fileField === fileField);
 };
 
 const reducer = createReducer<State, Actions>(INITIAL_STATE, {

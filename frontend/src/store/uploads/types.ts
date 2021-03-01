@@ -30,5 +30,12 @@ export interface RemoveUploadAction extends AnyAction {
     id: string;
   };
 }
+export interface UpdateProgressAction extends AnyAction {
+  payload: {
+    video: Video;
+    fileUpload: string;
+    progress: number;
+  };
+}
 
-export type Actions = AddUploadAction | RemoveUploadAction;
+export type Actions = AddUploadAction | RemoveUploadAction | UpdateProgressAction;
