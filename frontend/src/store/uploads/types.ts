@@ -25,5 +25,10 @@ export interface AddUploadAction extends AnyAction {
     files: Array<{ file: File; fileField: string }>;
   };
 }
+export interface RemoveUploadAction extends AnyAction {
+  payload: {
+    id: string;
+  };
+}
 
-export type Actions = AddUploadAction;
+export type Actions = AddUploadAction | RemoveUploadAction;
