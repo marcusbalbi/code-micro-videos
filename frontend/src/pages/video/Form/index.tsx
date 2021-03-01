@@ -39,6 +39,8 @@ import { InputFileComponent } from "../../../components/InputFile";
 import useSnackbarFromError from "../../../hooks/useSnackbarFromError";
 import LoadingContext from "../../../components/loading/LoadingContext";
 import SnackbarUpload from "../../../components/SnackbarUpload";
+import { useDispatch, useSelector } from "react-redux";
+import { State as StateUploads, Upload } from "../../../store/uploads/types";
 
 const useStyle = makeStyles((theme) => {
   return {
@@ -139,6 +141,10 @@ export const Form = () => {
     [key: string]: MutableRefObject<InputFileComponent>;
   }>;
   useSnackbarFromError(formState.submitCount, errors);
+
+  // const uploads = useSelector<StateUploads, Upload[]>((state) => state.uploads);
+
+  // const dispatch = useDispatch()
   useEffect(() => {
     const otherFields = [
       "rating",
