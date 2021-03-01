@@ -87,7 +87,32 @@ const updateProgress = (
     videoId,
     fileField
   );
-  return state;
+  if (typeof indexUpload === "undefined") {
+    return state;
+  }
+  const upload = state.uploads[indexUpload];
+  const file = upload.files[indexFile];
+
+  const uploads = update(state.uploads, {
+    [indexUpload]: {
+      $apply(upload) {
+        const files = update(upload.files, {
+          [indexFile]: {
+            $set: { ...file, progress: action.upload.progress },
+          },
+        });
+        const progress = calculateGlobalProgress(files);
+        return {
+          ...upload,
+          progress,
+          files
+        }
+      },
+    },
+  });
+  return {
+    uploads
+  };
 };
 
 const findIndexUploadAndFile = (
@@ -105,6 +130,18 @@ const findIndexUploadAndFile = (
   return indexFile === -1 ? {} : { indexFile, indexUpload };
 };
 
+const calculateGlobalProgress = (files: Array<{ progress }>) => {
+  const countFiles = files.length;
+  if (!countFiles) {
+    return 0;
+  }
+  const sumProgress = files.reduce((sum, file) => {
+    return sum + file.progress;
+  }, 0);
+
+  return sumProgress / countFiles;
+};
+
 const findIndexUpload = (state: State, id?: string) => {
   return state.uploads.findIndex((upload) => upload.video.id === id);
 };
@@ -116,6 +153,7 @@ const findIndexFile = (files: Array<{ fileField }>, fileField: string) => {
 const reducer = createReducer<State, Actions>(INITIAL_STATE, {
   [Types.ADD_UPLOAD]: addUpload,
   [Types.REMOVE_UPLOAD]: removeUpload,
+  [Types.UPDATE_PROGRESS]: updateProgress,
 });
 
 export default reducer;
