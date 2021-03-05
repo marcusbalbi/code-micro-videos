@@ -41,6 +41,7 @@ import LoadingContext from "../../../components/loading/LoadingContext";
 import SnackbarUpload from "../../../components/SnackbarUpload";
 import { useDispatch, useSelector } from "react-redux";
 import { State as StateUploads, Upload } from "../../../store/uploads/types";
+import { Creators } from "../../../store/uploads";
 
 const useStyle = makeStyles((theme) => {
   return {
@@ -142,9 +143,37 @@ export const Form = () => {
   }>;
   useSnackbarFromError(formState.submitCount, errors);
 
-  // const uploads = useSelector<StateUploads, Upload[]>((state) => state.uploads);
+  const uploads = useSelector<StateUploads, Upload[]>((state) => state.uploads);
 
-  // const dispatch = useDispatch()
+  const dispatch = useDispatch();
+
+  useMemo(() => {
+    setTimeout(() => {
+      const obj: any = {
+        video: {
+          id: 1,
+          title: "e o vento levou",
+        },
+        files: [
+          { file: new File([""], "teste.mp4"), fileField: "trailer_file" },
+          { file: new File([""], "teste.mp4"), fileField: "video_file" },
+        ],
+      };
+      dispatch(Creators.addUpload(obj))
+      const progress1 = {
+        fileField: "trailer_file",
+        progress: 10,
+        video: { id: 1 },
+      } as any;
+      dispatch(Creators.updateProgress(progress1))
+      const progress2 = {
+        fileField: "video_file",
+        progress: 20,
+        video: { id: 1 },
+      } as any;
+      dispatch(Creators.updateProgress(progress2));
+    }, 1000);
+  }, []);
   useEffect(() => {
     const otherFields = [
       "rating",
@@ -159,17 +188,17 @@ export const Form = () => {
   }, [register]);
 
   useEffect(() => {
-    snackbar.enqueueSnackbar('', {
+    snackbar.enqueueSnackbar("", {
       persist: true,
-      key: 'snackbar-upload',
+      key: "snackbar-upload",
       anchorOrigin: {
         vertical: "bottom",
         horizontal: "right",
       },
       content: (key, message) => {
-        return <SnackbarUpload id={key} />
-      }
-    })
+        return <SnackbarUpload id={key} />;
+      },
+    });
     if (!id) {
       return;
     }

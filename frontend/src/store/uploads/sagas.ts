@@ -2,6 +2,8 @@ import { Types } from "./index";
 import { actionChannel, take, call } from "redux-saga/effects";
 import { AddUploadAction, FileInfo } from "./types";
 import { Video } from "../../util/dto";
+import httpVideo from "../../util/http/http-video";
+import { number } from "yup/lib/locale";
 
 export function* uploadWatcherSaga() {
   const newFilesChannel = yield actionChannel(Types.ADD_UPLOAD);
@@ -22,5 +24,27 @@ function* uploadFile({
   video: Video;
   fileInfo: FileInfo;
 }) {
-  console.log(video, fileInfo);
+  yield call(sendUpload, { id: video.id, fileInfo });
+}
+
+function* sendUpload({
+  id,
+  fileInfo,
+}: {
+  id: string | undefined;
+  fileInfo: FileInfo;
+}) {
+  httpVideo.update(
+    id,
+    {
+      [fileInfo.fileField]: fileInfo.file,
+    },
+    {
+      config: {
+        onUploadProgress: (progressEvent) => {
+          console.log(progressEvent);
+        },
+      },
+    }
+  );
 }

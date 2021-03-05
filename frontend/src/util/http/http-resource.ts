@@ -42,7 +42,7 @@ export default class HttpResource {
   update<T = any>(
     id,
     data,
-    options?: { http?: { usePost: boolean } }
+    options?: { http?: { usePost: boolean }, config?: AxiosRequestConfig }
   ): Promise<AxiosResponse<T>> {
     let sendData = data;
     if (this.containsFile(data)) {

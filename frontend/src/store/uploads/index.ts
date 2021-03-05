@@ -49,7 +49,15 @@ const addUpload = (state = INITIAL_STATE, action: AddUploadAction): State => {
     index === -1
       ? state.uploads
       : update(state.uploads, { $splice: [[index, 1]] });
-
+  console.log(
+    action.payload.files.map((file) => {
+      return {
+        fileField: file.fileField,
+        filename: file.file.name,
+        progress: 0,
+      };
+    })
+  );
   return {
     uploads: [
       ...uploads,
@@ -103,6 +111,7 @@ const updateProgress = (
   if (file.progress === action.payload.progress) {
     return state;
   }
+  console.log(state.uploads, indexUpload, "=============================");
   const uploads = update(state.uploads, {
     [indexUpload]: {
       $apply(upload) {
