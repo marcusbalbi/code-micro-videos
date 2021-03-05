@@ -33,10 +33,10 @@ class VideoController extends BasicCrudController
                 'array',
                 'exists:cast_members,id,deleted_at,NULL'
             ],
-            'thumb_file' => 'image|max:'.Video::THUMB_FILE_MAX_FILE,
-            'banner_file' => 'image|max:'.Video::BANNER_FILE_MAX_FILE,
-            'trailer_file' => 'mimetypes:video/mp4|max:'.VIDEO::TRAILER_FILE_MAX_FILE,
-            'video_file' => 'mimetypes:video/mp4|max:'.VIDEO::VIDEO_FILE_MAX_FILE
+            'thumb_file' => 'image|max:' . Video::THUMB_FILE_MAX_FILE,
+            'banner_file' => 'image|max:' . Video::BANNER_FILE_MAX_FILE,
+            'trailer_file' => 'mimetypes:video/mp4|max:' . VIDEO::TRAILER_FILE_MAX_FILE,
+            'video_file' => 'mimetypes:video/mp4|max:' . VIDEO::VIDEO_FILE_MAX_FILE
         ];
     }
 
@@ -61,10 +61,28 @@ class VideoController extends BasicCrudController
     {
         $obj = $this->findOrFail($id);
         $this->addRuleIfGenreHasCategories($request);
-        $validatedData = $this->validate($request, $this->rulesUpdate());
+        $validatedData = $this->validate(
+            $request,
+            $request->isMethod("PUT") ? $this->rulesUpdate() : $this->rulesPatch()
+        );
         $obj->update($validatedData);
         $resource = $this->resource();
         return new $resource($obj);
+    }
+
+    protected function rulesPatch()
+    {
+        return array_map(function ($rules) {
+            if (is_array($rules)) {
+                $exists = in_array("required", $rules);
+                if ($exists) {
+                    array_unshift($rules, "sometimes");
+                }
+            } else {
+                return str_replace("required", "sometimes|required", $rules);
+            }
+            return $rules;
+        }, $this->rulesUpdate());
     }
 
     protected function model()
