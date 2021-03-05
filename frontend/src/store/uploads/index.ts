@@ -5,6 +5,7 @@ import {
   RemoveUploadAction,
   UpdateProgressAction,
   State,
+  SetUploadErrorAction,
 } from "./types";
 import update from "immutability-helper";
 export const { Types, Creators } = createActions<
@@ -12,6 +13,7 @@ export const { Types, Creators } = createActions<
     ADD_UPLOAD: string;
     REMOVE_UPLOAD: string;
     UPDATE_PROGRESS: string;
+    SET_UPLOAD_ERROR: string;
   },
   {
     addUpload(payload: AddUploadAction["payload"]): AddUploadAction;
@@ -19,11 +21,15 @@ export const { Types, Creators } = createActions<
     updateProgress(
       payload: UpdateProgressAction["payload"]
     ): UpdateProgressAction;
+    setUploadError(
+      payload: SetUploadErrorAction["payload"]
+    ): SetUploadErrorAction;
   }
 >({
   addUpload: ["payload"],
   removeUpload: ["payload"],
   updateProgress: ["payload"],
+  setUploadError: ["payload"],
 });
 
 export const INITIAL_STATE: State = {
@@ -76,6 +82,7 @@ const removeUpload = (
     uploads,
   };
 };
+
 const updateProgress = (
   state: State = INITIAL_STATE,
   action: UpdateProgressAction
@@ -93,6 +100,9 @@ const updateProgress = (
   const upload = state.uploads[indexUpload];
   const file = upload.files[indexFile];
 
+  if (file.progress === action.payload.progress) {
+    return state;
+  }
   const uploads = update(state.uploads, {
     [indexUpload]: {
       $apply(upload) {
@@ -105,13 +115,44 @@ const updateProgress = (
         return {
           ...upload,
           progress,
-          files
-        }
+          files,
+        };
       },
     },
   });
   return {
-    uploads
+    uploads,
+  };
+};
+
+const setUploadError = (
+  state: State = INITIAL_STATE,
+  action: SetUploadErrorAction
+): State => {
+  const videoId = action.payload.video.id || "0";
+  const fileField = action.payload.fileUpload;
+  const { indexUpload, indexFile } = findIndexUploadAndFile(
+    state,
+    videoId,
+    fileField
+  );
+  if (typeof indexUpload === "undefined") {
+    return state;
+  }
+  const upload = state.uploads[indexUpload];
+  const file = upload.files[indexFile];
+
+  const uploads = update(state.uploads, {
+    [indexUpload]: {
+      files: {
+        [indexFile]: {
+          $set: { ...file, error: action.payload.error, progress: 1 },
+        },
+      },
+    },
+  });
+  return {
+    uploads,
   };
 };
 
@@ -154,6 +195,7 @@ const reducer = createReducer<State, Actions>(INITIAL_STATE, {
   [Types.ADD_UPLOAD]: addUpload,
   [Types.REMOVE_UPLOAD]: removeUpload,
   [Types.UPDATE_PROGRESS]: updateProgress,
+  [Types.SET_UPLOAD_ERROR]: setUploadError,
 });
 
 export default reducer;
