@@ -3,7 +3,7 @@ import { actionChannel, take, call } from "redux-saga/effects";
 import { AddUploadAction, FileInfo } from "./types";
 import { Video } from "../../util/dto";
 import httpVideo from "../../util/http/http-video";
-import { number } from "yup/lib/locale";
+import { eventChannel } from "@redux-saga/core";
 
 export function* uploadWatcherSaga() {
   const newFilesChannel = yield actionChannel(Types.ADD_UPLOAD);
@@ -24,27 +24,50 @@ function* uploadFile({
   video: Video;
   fileInfo: FileInfo;
 }) {
-  yield call(sendUpload, { id: video.id, fileInfo });
+  const channel = yield call(sendUpload, { id: video.id, fileInfo });
+  while (true) {
+    try {
+      const event = yield take(channel);
+      console.log(event);
+    } catch (err) {
+      console.log(err);
+    }
+  }
 }
 
-function* sendUpload({
+function sendUpload({
   id,
   fileInfo,
 }: {
   id: string | undefined;
   fileInfo: FileInfo;
 }) {
-  httpVideo.update(
-    id,
-    {
-      [fileInfo.fileField]: fileInfo.file,
-    },
-    {
-      config: {
-        onUploadProgress: (progressEvent) => {
-          console.log(progressEvent);
+  return eventChannel((emitter) => {
+    httpVideo
+      .partialUpdate(
+        id,
+        {
+          [fileInfo.fileField]: fileInfo.file,
+          _method: "PATCH",
         },
-      },
-    }
-  );
+        {
+          http: {
+            usePost: true,
+          },
+          config: {
+            onUploadProgress: (progressEvent) => {
+              emitter(progressEvent);
+            },
+          },
+        }
+      )
+      .then((response) => {
+        emitter(response);
+      })
+      .catch((error) => {
+        emitter(error);
+      });
+    const unsubscribe = () => {};
+    return unsubscribe;
+  });
 }
