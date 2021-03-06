@@ -11,10 +11,14 @@ export function* uploadWatcherSaga() {
   while (true) {
     const { payload }: AddUploadAction = yield take(newFilesChannel);
     for (const fileInfo of payload.files) {
-      const response = yield call(uploadFile, {
-        video: payload.video,
-        fileInfo: fileInfo,
-      });
+      try {
+        const response = yield call(uploadFile, {
+          video: payload.video,
+          fileInfo: fileInfo,
+        });
+      } catch (err) {
+        console.log(err)
+      }
     }
     console.log(payload);
   }
@@ -42,6 +46,14 @@ function* uploadFile({
         })
       );
     } catch (err) {
+      yield put(
+        Creators.setUploadError({
+          error: err,
+          fileUpload: fileInfo.fileField,
+          video,
+        })
+      );
+      throw err;
       console.log(err);
     }
   }
