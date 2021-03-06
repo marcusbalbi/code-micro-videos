@@ -17,7 +17,7 @@ export function* uploadWatcherSaga() {
           fileInfo: fileInfo,
         });
       } catch (err) {
-        console.log(err)
+        console.log(err);
       }
     }
     console.log(payload);
@@ -54,7 +54,6 @@ function* uploadFile({
         })
       );
       throw err;
-      console.log(err);
     }
   }
 }
@@ -79,6 +78,9 @@ function sendUpload({
             usePost: true,
           },
           config: {
+            headers: {
+              ignoreLoading: true,
+            },
             onUploadProgress: (progressEvent: ProgressEvent) => {
               if (progressEvent.lengthComputable) {
                 const progress = progressEvent.loaded / progressEvent.total;
