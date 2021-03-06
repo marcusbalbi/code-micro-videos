@@ -40,8 +40,8 @@ import useSnackbarFromError from "../../../hooks/useSnackbarFromError";
 import LoadingContext from "../../../components/loading/LoadingContext";
 import SnackbarUpload from "../../../components/SnackbarUpload";
 import { useDispatch, useSelector } from "react-redux";
-import { UploadState, Upload, UploadModule } from "../../../store/uploads/types";
 import { Creators } from "../../../store/uploads";
+import { Upload, UploadModule } from "../../../store/uploads/types";
 
 const useStyle = makeStyles((theme) => {
   return {
@@ -143,12 +143,10 @@ export const Form = () => {
   }>;
   useSnackbarFromError(formState.submitCount, errors);
 
+  const dispatch = useDispatch();
   const uploads = useSelector<UploadModule, Upload[]>(
     (state) => state.upload.uploads
   );
-
-  const dispatch = useDispatch();
-
   useMemo(() => {
     setTimeout(() => {
       const obj: any = {
@@ -161,13 +159,13 @@ export const Form = () => {
           { file: new File([""], "teste.mp4"), fileField: "video_file" },
         ],
       };
-      dispatch(Creators.addUpload(obj))
+      dispatch(Creators.addUpload(obj));
       const progress1 = {
         fileField: "trailer_file",
         progress: 10,
         video: { id: 1 },
       } as any;
-      dispatch(Creators.updateProgress(progress1))
+      dispatch(Creators.updateProgress(progress1));
       const progress2 = {
         fileField: "video_file",
         progress: 20,
@@ -175,6 +173,7 @@ export const Form = () => {
       } as any;
       dispatch(Creators.updateProgress(progress2));
     }, 1000);
+    //eslint-disable-next-line
   }, []);
   useEffect(() => {
     const otherFields = [
@@ -281,6 +280,7 @@ export const Form = () => {
   }
   return (
     <DefaultForm GridItemProps={{ xs: 12 }} onSubmit={handleSubmit(onSubmit)}>
+      {JSON.stringify(uploads)}
       <Grid container spacing={5}>
         <Grid item xs={12} md={6}>
           <TextField

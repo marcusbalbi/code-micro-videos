@@ -110,17 +110,16 @@ const updateProgress = (
   }
   const upload = state.uploads[indexUpload];
   const file = upload.files[indexFile];
-
   if (file.progress === action.payload.progress) {
     return state;
   }
-  console.log(state.uploads, indexUpload, "=============================");
+  console.log(action.payload.progress, "=============================");
   const uploads = update(state.uploads, {
     [indexUpload]: {
       $apply(upload) {
         const files = update(upload.files, {
           [indexFile]: {
-            $set: { ...file, progress: action.upload.progress },
+            $set: { ...file, progress: action.payload.progress },
           },
         });
         const progress = calculateGlobalProgress(files);

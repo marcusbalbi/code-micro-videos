@@ -42,7 +42,7 @@ function* uploadFile({
         Creators.updateProgress({
           video,
           fileUpload: fileInfo.fileField,
-          progress,
+          progress: 1
         })
       );
     } catch (err) {
@@ -94,7 +94,7 @@ function sendUpload({
         emitter({ response });
       })
       .catch((error) => {
-        emitter(error);
+        emitter({error});
       })
       .finally(() => {
         emitter(END);
