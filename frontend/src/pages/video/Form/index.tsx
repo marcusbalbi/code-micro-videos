@@ -40,7 +40,7 @@ import useSnackbarFromError from "../../../hooks/useSnackbarFromError";
 import LoadingContext from "../../../components/loading/LoadingContext";
 import SnackbarUpload from "../../../components/SnackbarUpload";
 import { useDispatch, useSelector } from "react-redux";
-import { State as StateUploads, Upload } from "../../../store/uploads/types";
+import { UploadState, Upload, UploadModule } from "../../../store/uploads/types";
 import { Creators } from "../../../store/uploads";
 
 const useStyle = makeStyles((theme) => {
@@ -143,7 +143,9 @@ export const Form = () => {
   }>;
   useSnackbarFromError(formState.submitCount, errors);
 
-  const uploads = useSelector<StateUploads, Upload[]>((state) => state.uploads);
+  const uploads = useSelector<UploadModule, Upload[]>(
+    (state) => state.upload.uploads
+  );
 
   const dispatch = useDispatch();
 

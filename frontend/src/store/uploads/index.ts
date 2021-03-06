@@ -4,7 +4,7 @@ import {
   AddUploadAction,
   RemoveUploadAction,
   UpdateProgressAction,
-  State,
+  UploadState,
   SetUploadErrorAction,
 } from "./types";
 import update from "immutability-helper";
@@ -32,11 +32,14 @@ export const { Types, Creators } = createActions<
   setUploadError: ["payload"],
 });
 
-export const INITIAL_STATE: State = {
+export const INITIAL_STATE: UploadState = {
   uploads: [],
 };
 
-const addUpload = (state = INITIAL_STATE, action: AddUploadAction): State => {
+const addUpload = (
+  state = INITIAL_STATE,
+  action: AddUploadAction
+): UploadState => {
   if (!action.payload.files.length) {
     return state;
   }
@@ -77,9 +80,9 @@ const addUpload = (state = INITIAL_STATE, action: AddUploadAction): State => {
 };
 
 const removeUpload = (
-  state: State = INITIAL_STATE,
+  state: UploadState = INITIAL_STATE,
   action: RemoveUploadAction
-): State => {
+): UploadState => {
   const uploads = state.uploads.filter((item) => {
     return item.video.id !== action.payload.id;
   });
@@ -92,9 +95,9 @@ const removeUpload = (
 };
 
 const updateProgress = (
-  state: State = INITIAL_STATE,
+  state: UploadState = INITIAL_STATE,
   action: UpdateProgressAction
-): State => {
+): UploadState => {
   const videoId = action.payload.video.id || "0";
   const fileField = action.payload.fileUpload;
   const { indexUpload, indexFile } = findIndexUploadAndFile(
@@ -135,9 +138,9 @@ const updateProgress = (
 };
 
 const setUploadError = (
-  state: State = INITIAL_STATE,
+  state: UploadState = INITIAL_STATE,
   action: SetUploadErrorAction
-): State => {
+): UploadState => {
   const videoId = action.payload.video.id || "0";
   const fileField = action.payload.fileUpload;
   const { indexUpload, indexFile } = findIndexUploadAndFile(
@@ -166,7 +169,7 @@ const setUploadError = (
 };
 
 const findIndexUploadAndFile = (
-  state: State,
+  state: UploadState,
   videoId: string,
   fileField: string
 ): { indexUpload?; indexFile? } => {
@@ -192,7 +195,7 @@ const calculateGlobalProgress = (files: Array<{ progress }>) => {
   return sumProgress / countFiles;
 };
 
-const findIndexUpload = (state: State, id?: string) => {
+const findIndexUpload = (state: UploadState, id?: string) => {
   return state.uploads.findIndex((upload) => upload.video.id === id);
 };
 
@@ -200,7 +203,7 @@ const findIndexFile = (files: Array<{ fileField }>, fileField: string) => {
   return files.findIndex((file) => file.fileField === fileField);
 };
 
-const reducer = createReducer<State, Actions>(INITIAL_STATE, {
+const reducer = createReducer<UploadState, Actions>(INITIAL_STATE, {
   [Types.ADD_UPLOAD]: addUpload,
   [Types.REMOVE_UPLOAD]: removeUpload,
   [Types.UPDATE_PROGRESS]: updateProgress,
