@@ -1,9 +1,9 @@
-import { Types } from "./index";
-import { actionChannel, take, call } from "redux-saga/effects";
+import { Types, Creators } from "./index";
+import { actionChannel, take, call, put } from "redux-saga/effects";
 import { AddUploadAction, FileInfo } from "./types";
 import { Video } from "../../util/dto";
 import httpVideo from "../../util/http/http-video";
-import { eventChannel } from "@redux-saga/core";
+import { END, eventChannel } from "@redux-saga/core";
 
 export function* uploadWatcherSaga() {
   const newFilesChannel = yield actionChannel(Types.ADD_UPLOAD);
@@ -11,7 +11,10 @@ export function* uploadWatcherSaga() {
   while (true) {
     const { payload }: AddUploadAction = yield take(newFilesChannel);
     for (const fileInfo of payload.files) {
-      yield call(uploadFile, { video: payload.video, fileInfo: fileInfo });
+      const response = yield call(uploadFile, {
+        video: payload.video,
+        fileInfo: fileInfo,
+      });
     }
     console.log(payload);
   }
@@ -27,8 +30,17 @@ function* uploadFile({
   const channel = yield call(sendUpload, { id: video.id, fileInfo });
   while (true) {
     try {
-      const event = yield take(channel);
-      console.log(event);
+      const { progress, response } = yield take(channel);
+      if (response) {
+        return response;
+      }
+      yield put(
+        Creators.updateProgress({
+          video,
+          fileUpload: fileInfo.fileField,
+          progress,
+        })
+      );
     } catch (err) {
       console.log(err);
     }
@@ -55,17 +67,23 @@ function sendUpload({
             usePost: true,
           },
           config: {
-            onUploadProgress: (progressEvent) => {
-              emitter(progressEvent);
+            onUploadProgress: (progressEvent: ProgressEvent) => {
+              if (progressEvent.lengthComputable) {
+                const progress = progressEvent.loaded / progressEvent.total;
+                emitter({ progress });
+              }
             },
           },
         }
       )
       .then((response) => {
-        emitter(response);
+        emitter({ response });
       })
       .catch((error) => {
         emitter(error);
+      })
+      .finally(() => {
+        emitter(END);
       });
     const unsubscribe = () => {};
     return unsubscribe;
