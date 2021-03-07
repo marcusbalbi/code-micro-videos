@@ -41,7 +41,7 @@ import LoadingContext from "../../../components/loading/LoadingContext";
 import SnackbarUpload from "../../../components/SnackbarUpload";
 import { useDispatch, useSelector } from "react-redux";
 import { Creators } from "../../../store/uploads";
-import { Upload, UploadModule } from "../../../store/uploads/types";
+import { FileInfo, Upload, UploadModule } from "../../../store/uploads/types";
 
 const useStyle = makeStyles((theme) => {
   return {
@@ -147,34 +147,7 @@ export const Form = () => {
   const uploads = useSelector<UploadModule, Upload[]>(
     (state) => state.upload.uploads
   );
-  useMemo(() => {
-    setTimeout(() => {
-      const obj: any = {
-        video: {
-          id: "7e12b869-628c-47ec-af86-2b47ecaf2df4",
-          title: "e o vento levou",
-        },
-        files: [
-          { file: new File([""], "teste.mp4"), fileField: "trailer_file" },
-          { file: new File([""], "teste.mp4"), fileField: "video_file" },
-        ],
-      };
-      dispatch(Creators.addUpload(obj));
-      const progress1 = {
-        fileField: "trailer_file",
-        progress: 10,
-        video: { id: 1 },
-      } as any;
-      dispatch(Creators.updateProgress(progress1));
-      const progress2 = {
-        fileField: "video_file",
-        progress: 20,
-        video: { id: 1 },
-      } as any;
-      dispatch(Creators.updateProgress(progress2));
-    }, 1000);
-    //eslint-disable-next-line
-  }, []);
+
   useEffect(() => {
     const otherFields = [
       "rating",
@@ -189,17 +162,6 @@ export const Form = () => {
   }, [register]);
 
   useEffect(() => {
-    snackbar.enqueueSnackbar("", {
-      persist: true,
-      key: "snackbar-upload",
-      anchorOrigin: {
-        vertical: "bottom",
-        horizontal: "right",
-      },
-      content: (key, message) => {
-        return <SnackbarUpload id={key} />;
-      },
-    });
     if (!id) {
       return;
     }
@@ -224,7 +186,12 @@ export const Form = () => {
   }, [id, reset, snackbar]);
 
   async function onSubmit(formData: Video, event) {
-    const sendData = omit(formData, ["genres", "categories", "cast_members"]);
+    const sendData = omit(formData, [
+      "genres",
+      "categories",
+      "cast_members",
+      ...fileFields,
+    ]);
     sendData["cast_members_id"] =
       formData &&
       formData.cast_members &&
@@ -241,16 +208,13 @@ export const Form = () => {
     try {
       const http = !video
         ? httpVideo.create(sendData)
-        : httpVideo.update(
-            video.id,
-            { ...sendData, _method: "PUT" },
-            { http: { usePost: true } }
-          );
+        : httpVideo.update(video.id, sendData);
 
       const { data } = await http;
       snackbar.enqueueSnackbar("Video salvo com sucesso!", {
         variant: "success",
       });
+      uploadFiles(data.data);
       id && resetForm(video);
       setTimeout(() => {
         if (!event) {
@@ -278,9 +242,30 @@ export const Form = () => {
     categoryRef && categoryRef.current && categoryRef.current.clear();
     reset(data);
   }
+  function uploadFiles(video) {
+    const files: FileInfo[] = fileFields
+      .filter((fileField) => getValues()[fileField])
+      .map((fileField) => {
+        return {
+          fileField,
+          file: getValues()[fileField],
+        };
+      });
+    dispatch(Creators.addUpload({ video, files }));
+    snackbar.enqueueSnackbar("", {
+      persist: true,
+      key: "snackbar-upload",
+      anchorOrigin: {
+        vertical: "bottom",
+        horizontal: "right",
+      },
+      content: (key, message) => {
+        return <SnackbarUpload id={key} />;
+      },
+    });
+  }
   return (
     <DefaultForm GridItemProps={{ xs: 12 }} onSubmit={handleSubmit(onSubmit)}>
-      {JSON.stringify(uploads)}
       <Grid container spacing={5}>
         <Grid item xs={12} md={6}>
           <TextField

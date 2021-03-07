@@ -55,30 +55,41 @@ const UploadItem: React.FC<UploadItemProps> = (props) => {
         }
         placement="left"
       >
-        <ListItem
-          onMouseOver={() => {
-            setItemHover(true);
-          }}
-          onMouseLeave={() => {
-            setItemHover(false);
-          }}
-          className={classes.listItem}
-          button
-        >
-          <ListItemIcon className={classes.movieIcon}>
-            <MovieIcon />
-          </ListItemIcon>
-          <ListItemText
-            className={classes.listItemText}
-            primary={
-              <Typography noWrap={true} variant={"subtitle2"} color={"inherit"}>
-                E o Vento Levou!!!
-              </Typography>
-            }
-          />
-          <UploadProgress size={30} uploadOrFile={upload} />
-          <UploadAction upload={upload} hover={itemHover} />
-        </ListItem>
+        <>
+          {upload.files.map((file, key) => {
+            return (
+              <ListItem
+                key={key}
+                onMouseOver={() => {
+                  setItemHover(true);
+                }}
+                onMouseLeave={() => {
+                  setItemHover(false);
+                }}
+                className={classes.listItem}
+                button
+              >
+                <ListItemIcon className={classes.movieIcon}>
+                  <MovieIcon />
+                </ListItemIcon>
+                <ListItemText
+                  className={classes.listItemText}
+                  primary={
+                    <Typography
+                      noWrap={true}
+                      variant={"subtitle2"}
+                      color={"inherit"}
+                    >
+                      {file.filename}
+                    </Typography>
+                  }
+                />
+                <UploadProgress size={30} uploadOrFile={upload} />
+                <UploadAction upload={upload} hover={itemHover} />
+              </ListItem>
+            );
+          })}
+        </>
       </Tooltip>
       <Divider component="li" />
     </>
