@@ -11,6 +11,9 @@ import ErrorIcon from "@material-ui/icons/Error";
 import EditIcon from "@material-ui/icons/Edit";
 import DeleteIcon from "@material-ui/icons/Delete";
 import { Link } from "react-router-dom";
+import { FileUpload, Upload } from "../../store/uploads/types";
+import { useDispatch } from "react-redux";
+import { Creators } from "../../store/uploads";
 
 const useStyles = makeStyles((theme: Theme) => {
   return {
@@ -30,19 +33,24 @@ const useStyles = makeStyles((theme: Theme) => {
   };
 });
 
-interface UploadActionProps {}
+interface UploadActionProps {
+  uploadOrFile: Upload | FileUpload;
+}
 
 const UploadAction: React.FC<UploadActionProps> = (props) => {
   const classes = useStyles();
-
+  const { uploadOrFile } = props;
+  const dispatch = useDispatch();
   return (
     <Fade in={true} timeout={{ enter: 1000 }}>
       <>
-        <CheckCircleIcon className={classes.successIcon} />
+        {uploadOrFile.progress === 1 && (
+          <CheckCircleIcon className={classes.successIcon} />
+        )}
         <ErrorIcon className={classes.errorIcon} />
         <>
           <Divider className={classes.divider} orientation={"vertical"} />
-          <IconButton>
+          <IconButton onClick={() => { dispatch(Creators.removeUpload({ id: (uploadOrFile as any).video.id }));  }}>
             <DeleteIcon color={"primary"} />
           </IconButton>
           <IconButton component={Link} to={`/videos/uuid/edit`}>

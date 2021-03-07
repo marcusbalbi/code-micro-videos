@@ -14,7 +14,7 @@ const LoadingProvider = (props) => {
   useMemo(() => {
     let isSubscribed = true;
     const requestIds = addGlobalRequestInterceptor((config) => {
-      if (isSubscribed && config.headers.ignoreLoading !== undefined) {
+      if (isSubscribed && config.headers.ignoreLoading === undefined) {
         setLoading(true);
         setCountRequest((prev) => prev + 1);
       }

@@ -12,6 +12,7 @@ import {
 } from "@material-ui/core";
 import UploadProgress from "../UploadProgress";
 import UploadAction from "./UploadAction";
+import { Upload } from "../../store/uploads/types";
 
 const useStyles = makeStyles((theme: Theme) => {
   return {
@@ -32,13 +33,16 @@ const useStyles = makeStyles((theme: Theme) => {
   };
 });
 
-interface UploadItemProps {}
+interface UploadItemProps {
+  upload: Upload;
+}
 
 const UploadItem: React.FC<UploadItemProps> = (props) => {
   const classes = useStyles();
+  const { upload } = props;
   return (
     <>
-      <Tooltip title={"Não foi possivel realizar o upload, clique para mais detalhes"} placement="left" >
+      <Tooltip title={upload.video.title || "Sem Titulo"} placement="left">
         <ListItem className={classes.listItem} button>
           <ListItemIcon className={classes.movieIcon}>
             <MovieIcon />
@@ -51,8 +55,8 @@ const UploadItem: React.FC<UploadItemProps> = (props) => {
               </Typography>
             }
           />
-          <UploadAction />
-          <UploadProgress size={30} />
+          <UploadProgress size={30} uploadOrFile={upload} />
+          <UploadAction upload={upload} />
         </ListItem>
       </Tooltip>
       <Divider component="li" />

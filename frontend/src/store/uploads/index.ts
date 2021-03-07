@@ -113,7 +113,6 @@ const updateProgress = (
   if (file.progress === action.payload.progress) {
     return state;
   }
-  console.log(action.payload.progress, "=============================");
   const uploads = update(state.uploads, {
     [indexUpload]: {
       $apply(upload) {

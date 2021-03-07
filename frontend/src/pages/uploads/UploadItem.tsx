@@ -10,6 +10,7 @@ import ImageIcon from "@material-ui/icons/Image";
 import React from "react";
 import UploadProgress from "../../components/UploadProgress";
 import UploadAction from "./UploadAction";
+import { FileUpload, Upload } from "../../store/uploads/types";
 
 const useStyles = makeStyles((theme: Theme) => {
   return {
@@ -24,9 +25,13 @@ const useStyles = makeStyles((theme: Theme) => {
   };
 });
 
-const UploadItem = (props) => {
-  const classes = useStyles();
+interface UploadItemProps {
+  uploadOrFile: Upload | FileUpload;
+}
 
+const UploadItem: React.FC<UploadItemProps> = (props) => {
+  const classes = useStyles();
+  const { uploadOrFile } = props;
   function makeIcon() {
     if (true) {
       return <MovieIcon className={classes.icon} />;
@@ -48,8 +53,8 @@ const UploadItem = (props) => {
             alignItems={"center"}
             justify={"flex-end"}
           >
-            <UploadProgress size={48} />
-            <UploadAction />
+            <UploadProgress size={48} uploadOrFile={uploadOrFile} />
+            <UploadAction uploadOrFile={uploadOrFile} />
           </Grid>
         </Grid>
       </Grid>

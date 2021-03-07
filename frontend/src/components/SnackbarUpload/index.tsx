@@ -88,10 +88,9 @@ const SnackbarUpload = React.forwardRef<any, SnackbarUploadProps>(
         </CardActions>
         <Collapse in={expanded}>
           <List className={classes.list}>
-            <UploadItem />
-            <UploadItem />
-            <UploadItem />
-            <UploadItem />
+            {uploads.map((upload, key) => {
+              return <UploadItem key={key} upload={upload} />;
+            })}
           </List>
         </Collapse>
       </Card>
