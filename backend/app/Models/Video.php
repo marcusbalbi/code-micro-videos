@@ -33,6 +33,8 @@ class Video extends Model
         'banner_file'
     ];
 
+    protected $keyType = 'string';
+
     protected $dates = ['deleted_at'];
 
     protected $casts = [
