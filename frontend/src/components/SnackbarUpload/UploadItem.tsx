@@ -55,41 +55,30 @@ const UploadItem: React.FC<UploadItemProps> = (props) => {
         }
         placement="left"
       >
-        <>
-          {upload.files.map((file, key) => {
-            return (
-              <ListItem
-                key={key}
-                onMouseOver={() => {
-                  setItemHover(true);
-                }}
-                onMouseLeave={() => {
-                  setItemHover(false);
-                }}
-                className={classes.listItem}
-                button
-              >
-                <ListItemIcon className={classes.movieIcon}>
-                  <MovieIcon />
-                </ListItemIcon>
-                <ListItemText
-                  className={classes.listItemText}
-                  primary={
-                    <Typography
-                      noWrap={true}
-                      variant={"subtitle2"}
-                      color={"inherit"}
-                    >
-                      {`${upload.video.title} - ${file.filename}`}
-                    </Typography>
-                  }
-                />
-                <UploadProgress size={30} uploadOrFile={upload} />
-                <UploadAction upload={upload} hover={itemHover} />
-              </ListItem>
-            );
-          })}
-        </>
+        <ListItem
+          onMouseOver={() => {
+            setItemHover(true);
+          }}
+          onMouseLeave={() => {
+            setItemHover(false);
+          }}
+          className={classes.listItem}
+          button
+        >
+          <ListItemIcon className={classes.movieIcon}>
+            <MovieIcon />
+          </ListItemIcon>
+          <ListItemText
+            className={classes.listItemText}
+            primary={
+              <Typography noWrap={true} variant={"subtitle2"} color={"inherit"}>
+                {`${upload.video.title}`}
+              </Typography>
+            }
+          />
+          <UploadProgress size={30} uploadOrFile={upload} />
+          <UploadAction upload={upload} hover={itemHover} />
+        </ListItem>
       </Tooltip>
       <Divider component="li" />
     </>

@@ -3,7 +3,6 @@ import {
   CardContent,
   Checkbox,
   FormControlLabel,
-  FormHelperText,
   Grid,
   makeStyles,
   TextField,
@@ -39,9 +38,9 @@ import { InputFileComponent } from "../../../components/InputFile";
 import useSnackbarFromError from "../../../hooks/useSnackbarFromError";
 import LoadingContext from "../../../components/loading/LoadingContext";
 import SnackbarUpload from "../../../components/SnackbarUpload";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { Creators } from "../../../store/uploads";
-import { FileInfo, Upload, UploadModule } from "../../../store/uploads/types";
+import { FileInfo } from "../../../store/uploads/types";
 
 const useStyle = makeStyles((theme) => {
   return {
@@ -144,9 +143,6 @@ export const Form = () => {
   useSnackbarFromError(formState.submitCount, errors);
 
   const dispatch = useDispatch();
-  const uploads = useSelector<UploadModule, Upload[]>(
-    (state) => state.upload.uploads
-  );
 
   useEffect(() => {
     const otherFields = [
