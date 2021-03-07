@@ -1,9 +1,9 @@
-import { Types, Creators } from "./index";
-import { actionChannel, take, call, put } from "redux-saga/effects";
 import { AddUploadAction, FileInfo } from "./types";
+import { Creators, Types } from "./index";
+import { END, eventChannel } from "@redux-saga/core";
+import { actionChannel, call, put, take } from "redux-saga/effects";
 import { Video } from "../../util/dto";
 import httpVideo from "../../util/http/http-video";
-import { END, eventChannel } from "@redux-saga/core";
 
 export function* uploadWatcherSaga() {
   const newFilesChannel = yield actionChannel(Types.ADD_UPLOAD);

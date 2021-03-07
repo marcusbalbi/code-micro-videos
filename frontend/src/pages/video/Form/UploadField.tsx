@@ -1,11 +1,11 @@
 import {
-  FormControl,
-  FormHelperText,
-  FormControlProps,
   Button,
+  FormControl,
+  FormControlProps,
+  FormHelperText,
 } from "@material-ui/core";
-import React, { MutableRefObject, useImperativeHandle, useRef } from "react";
 import InputFile, { InputFileComponent } from "../../../components/InputFile";
+import React, { MutableRefObject, useImperativeHandle, useRef } from "react";
 import CloudUploadIcon from "@material-ui/icons/CloudUpload";
 interface UploadFieldProps {
   accept: string;

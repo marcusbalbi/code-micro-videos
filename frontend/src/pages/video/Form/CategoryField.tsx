@@ -1,29 +1,30 @@
+import AsyncAutocomplete, {
+  AsyncAutoCompleteComponent,
+} from "../../../components/AsyncAutocomplete";
 import {
   FormControl,
-  FormHelperText,
-  Typography,
   FormControlProps,
-  makeStyles,
+  FormHelperText,
   Theme,
+  Typography,
+  makeStyles,
   useTheme,
 } from "@material-ui/core";
-import { grey } from "@material-ui/core/colors";
 import React, {
   MutableRefObject,
   RefAttributes,
   useImperativeHandle,
   useRef,
 } from "react";
-import AsyncAutocomplete, {
-  AsyncAutoCompleteComponent,
-} from "../../../components/AsyncAutocomplete";
+import { Genre } from "../../../util/dto";
 import GridSelected from "../../../components/GridSelected";
 import GridSelectedItem from "../../../components/GridSelectedItem";
+import { getGenresFromCategory } from "../../../util/model-filter";
+import { grey } from "@material-ui/core/colors";
+import httpCategory from "../../../util/http/http-category";
+
 import useCollectionManager from "../../../hooks/useCollectionManager";
 import useHttpHandler from "../../../hooks/useHttpHandler";
-import { Genre } from "../../../util/dto";
-import httpCategory from "../../../util/http/http-category";
-import { getGenresFromCategory } from "../../../util/model-filter";
 
 interface CategoryFieldProps extends RefAttributes<CategoryFieldProps> {
   categories: any[] | undefined;

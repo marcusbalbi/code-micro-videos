@@ -1,11 +1,11 @@
-import React, { useRef, useState, useEffect } from "react";
-import Grow from "@material-ui/core/Grow";
-import TextField from "@material-ui/core/TextField";
-import SearchIcon from "@material-ui/icons/Search";
-import IconButton from "@material-ui/core/IconButton";
+import React, { useEffect, useRef, useState } from "react";
 import ClearIcon from "@material-ui/icons/Clear";
-import { makeStyles } from "@material-ui/core/styles";
+import Grow from "@material-ui/core/Grow";
+import IconButton from "@material-ui/core/IconButton";
+import SearchIcon from "@material-ui/icons/Search";
+import TextField from "@material-ui/core/TextField";
 import { debounce } from "lodash";
+import { makeStyles } from "@material-ui/core/styles";
 const useStyles = makeStyles(
   (theme) => ({
     main: {

@@ -1,15 +1,15 @@
-import { RouteProps } from "react-router-dom";
-import CategoryListPage from "../pages/category/CategoryListPage";
-import CategoryFormPage from "../pages/category/CategoryFormPage";
-import GenreListPage from "../pages/genre/GenreListPage";
-import GenreFormPage from "../pages/genre/GenreFormPage";
-import { Dashboard } from "../pages/Dashboard";
-import CastMemberListPage from "../pages/cast-member/CastMemberListPage";
 import CastMemberFormPage from "../pages/cast-member/CastMemberFormPage";
-
-import VideoListPage from "../pages/video/VideoListPage";
-import VideoFormPage from "../pages/video/VideoFormPage";
+import CastMemberListPage from "../pages/cast-member/CastMemberListPage";
+import CategoryFormPage from "../pages/category/CategoryFormPage";
+import CategoryListPage from "../pages/category/CategoryListPage";
+import { Dashboard } from "../pages/Dashboard";
+import GenreFormPage from "../pages/genre/GenreFormPage";
+import GenreListPage from "../pages/genre/GenreListPage";
+import { RouteProps } from "react-router-dom";
 import UploadPage from "../pages/uploads";
+import VideoFormPage from "../pages/video/VideoFormPage";
+import VideoListPage from "../pages/video/VideoListPage";
+
 export interface MyRouteProps extends RouteProps {
   label: string;
   name: string;

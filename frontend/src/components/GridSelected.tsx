@@ -1,6 +1,6 @@
-import React from "react";
-import { makeStyles, Grid, createStyles, Theme } from "@material-ui/core";
+import { Grid, Theme, createStyles, makeStyles } from "@material-ui/core";
 import { GridProps } from "@material-ui/core/Grid";
+import React from "react";
 
 const useStyles = makeStyles((theme: Theme) => {
   return createStyles({
@@ -18,7 +18,7 @@ interface GridSelectedProps extends GridProps {}
 const GridSelected: React.FC<GridSelectedProps> = (props) => {
   const classes = useStyles();
   return (
-    <Grid container wrap="wrap" className={classes.root} {...props} >
+    <Grid container wrap="wrap" className={classes.root} {...props}>
       {props.children}
     </Grid>
   );

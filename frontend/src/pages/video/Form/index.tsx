@@ -1,46 +1,47 @@
+import * as yup from "yup";
 import {
   Card,
   CardContent,
   Checkbox,
   FormControlLabel,
   Grid,
-  makeStyles,
   TextField,
   Typography,
+  makeStyles,
   useMediaQuery,
   useTheme,
 } from "@material-ui/core";
-import { useForm } from "react-hook-form";
+import CastMemberField, { CastMemberFieldComponent } from "./CastMemberField";
+import CategoryField, { CategoryFieldComponent } from "./CategoryField";
+import GenreField, { GenreFieldComponent } from "./GenreField";
 import React, {
-  createRef,
   MutableRefObject,
+  createRef,
   useContext,
   useEffect,
   useMemo,
   useRef,
   useState,
 } from "react";
-import httpVideo from "../../../util/http/http-video";
-import * as yup from "yup";
-import { useYupValidationResolver } from "../../../hooks/YupValidation";
-import { useHistory, useParams } from "react-router";
-import { useSnackbar } from "notistack";
 import { Video, VideoFileFieldsMap } from "../../../util/dto";
-import SubmitActions from "../../../components/SubmitActions";
-import DefaultForm from "../../../components/DefaultForm";
-import { RatingField } from "./RatingField";
-import { UploadField } from "./UploadField";
-import CategoryField, { CategoryFieldComponent } from "./CategoryField";
-import GenreField, { GenreFieldComponent } from "./GenreField";
-import CastMemberField, { CastMemberFieldComponent } from "./CastMemberField";
 import { omit, zipObject } from "lodash";
-import { InputFileComponent } from "../../../components/InputFile";
-import useSnackbarFromError from "../../../hooks/useSnackbarFromError";
-import LoadingContext from "../../../components/loading/LoadingContext";
-import SnackbarUpload from "../../../components/SnackbarUpload";
-import { useDispatch } from "react-redux";
+import { useHistory, useParams } from "react-router";
 import { Creators } from "../../../store/uploads";
+import DefaultForm from "../../../components/DefaultForm";
 import { FileInfo } from "../../../store/uploads/types";
+import { InputFileComponent } from "../../../components/InputFile";
+import LoadingContext from "../../../components/loading/LoadingContext";
+import { RatingField } from "./RatingField";
+import SnackbarUpload from "../../../components/SnackbarUpload";
+import SubmitActions from "../../../components/SubmitActions";
+import { UploadField } from "./UploadField";
+import httpVideo from "../../../util/http/http-video";
+import { useDispatch } from "react-redux";
+import { useForm } from "react-hook-form";
+import { useSnackbar } from "notistack";
+import useSnackbarFromError from "../../../hooks/useSnackbarFromError";
+import { useYupValidationResolver } from "../../../hooks/YupValidation";
+
 
 const useStyle = makeStyles((theme) => {
   return {

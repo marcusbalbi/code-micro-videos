@@ -1,18 +1,18 @@
-import React, { useState } from "react";
-import MovieIcon from "@material-ui/icons/Movie";
 import {
   Divider,
   ListItem,
   ListItemIcon,
   ListItemText,
-  makeStyles,
   Theme,
   Tooltip,
   Typography,
+  makeStyles,
 } from "@material-ui/core";
-import UploadProgress from "../UploadProgress";
-import UploadAction from "./UploadAction";
+import React, { useState } from "react";
+import MovieIcon from "@material-ui/icons/Movie";
 import { Upload } from "../../store/uploads/types";
+import UploadAction from "./UploadAction";
+import UploadProgress from "../UploadProgress";
 import { hasError } from "../../store/uploads/getters";
 
 const useStyles = makeStyles((theme: Theme) => {

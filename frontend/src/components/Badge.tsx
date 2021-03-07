@@ -1,5 +1,5 @@
-import { Chip, createMuiTheme, MuiThemeProvider } from "@material-ui/core";
 import * as React from "react";
+import { Chip, MuiThemeProvider, createMuiTheme } from "@material-ui/core";
 import theme from "../theme";
 
 const Badgetheme = createMuiTheme({
@@ -22,5 +22,5 @@ export const BadgeNo = () => {
     <MuiThemeProvider theme={Badgetheme}>
       <Chip label={"NÃO"} color={"secondary"} />
     </MuiThemeProvider>
-  );;
+  );
 };

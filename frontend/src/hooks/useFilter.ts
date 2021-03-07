@@ -1,14 +1,14 @@
 import { Dispatch, Reducer, useReducer, useState } from "react";
-import { useHistory } from "react-router";
-import { useDebounce } from "use-debounce";
-import reducer, { Creators } from "../store/filter/index";
-import { MUIDataTableColumn } from "mui-datatables";
 import {
-  State as FilterState,
   Actions as FilterActions,
+  State as FilterState,
 } from "../store/filter/types";
+import reducer, { Creators } from "../store/filter/index";
 import { History } from "history";
+import { MUIDataTableColumn } from "mui-datatables";
 import { isEqual } from "lodash";
+import { useDebounce } from "use-debounce";
+import { useHistory } from "react-router";
 import yup from "../util/vendor/yup";
 export interface FilterManagerOptions {
   rowsPerPage: number;

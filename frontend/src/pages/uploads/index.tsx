@@ -7,15 +7,15 @@ import {
   ExpansionPanelSummary,
   Grid,
   List,
-  makeStyles,
   Theme,
   Typography,
+  makeStyles,
 } from "@material-ui/core";
-import React from "react";
-import { Page } from "../../components/Page";
-import UploadItem from "./UploadItem";
-import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import { Upload, UploadModule } from "../../store/uploads/types";
+import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
+import { Page } from "../../components/Page";
+import React from "react";
+import UploadItem from "./UploadItem";
 import { VideoFileFieldsMap } from "../../util/dto";
 import { useSelector } from "react-redux";
 

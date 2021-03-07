@@ -3,15 +3,16 @@ import MUIDataTable, {
   MUIDataTableOptions,
   MUIDataTableProps,
 } from "mui-datatables";
-import React from "react";
-import { merge, omit, cloneDeep } from "lodash";
 import {
   MuiThemeProvider,
   Theme,
   useMediaQuery,
   useTheme,
 } from "@material-ui/core";
+import { cloneDeep, merge, omit } from "lodash";
 import DebouncedTableSearch from "./DebouncedTableSearch";
+import React from "react";
+
 export interface TableColumns extends MUIDataTableColumn {
   width?: string;
 }

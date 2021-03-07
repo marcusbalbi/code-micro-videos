@@ -1,25 +1,25 @@
-import React, { useEffect, useState } from "react";
 import {
   Divider,
   Fade,
   IconButton,
-  makeStyles,
   Theme,
+  makeStyles,
 } from "@material-ui/core";
-import CheckCircleIcon from "@material-ui/icons/CheckCircle";
-import ErrorIcon from "@material-ui/icons/Error";
-import EditIcon from "@material-ui/icons/Edit";
-import DeleteIcon from "@material-ui/icons/Delete";
-import { Link } from "react-router-dom";
 import { FileUpload, Upload } from "../../store/uploads/types";
-import { useDispatch } from "react-redux";
-import { Creators } from "../../store/uploads";
+import React, { useEffect, useState } from "react";
 import {
   hasError,
   isFinished,
   isUploadType,
 } from "../../store/uploads/getters";
+import CheckCircleIcon from "@material-ui/icons/CheckCircle";
+import { Creators } from "../../store/uploads";
+import DeleteIcon from "@material-ui/icons/Delete";
+import EditIcon from "@material-ui/icons/Edit";
+import ErrorIcon from "@material-ui/icons/Error";
+import { Link } from "react-router-dom";
 import { useDebounce } from "use-debounce/lib";
+import { useDispatch } from "react-redux";
 
 const useStyles = makeStyles((theme: Theme) => {
   return {

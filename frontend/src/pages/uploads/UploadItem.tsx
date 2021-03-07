@@ -1,16 +1,17 @@
+import { FileUpload, Upload } from "../../store/uploads/types";
 import {
   Grid,
   ListItem,
-  makeStyles,
   Theme,
   Typography,
+  makeStyles,
 } from "@material-ui/core";
-import MovieIcon from "@material-ui/icons/Movie";
+
 import ImageIcon from "@material-ui/icons/Image";
+import MovieIcon from "@material-ui/icons/Movie";
 import React from "react";
-import UploadProgress from "../../components/UploadProgress";
 import UploadAction from "./UploadAction";
-import { FileUpload, Upload } from "../../store/uploads/types";
+import UploadProgress from "../../components/UploadProgress";
 
 const useStyles = makeStyles((theme: Theme) => {
   return {

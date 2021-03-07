@@ -1,15 +1,15 @@
-import React from "react";
 import {
   AppBar,
   Button,
-  makeStyles,
-  Toolbar,
   Theme,
-  Typography
+  Toolbar,
+  Typography,
+  makeStyles,
 } from "@material-ui/core";
+import { Menu } from "./Menu";
+import React from "react";
 
 import logo from "../../static/img/logo.png";
-import { Menu } from "./Menu";
 
 const useStyles = makeStyles((theme: Theme) => {
   return {

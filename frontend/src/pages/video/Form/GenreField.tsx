@@ -1,3 +1,6 @@
+import AsyncAutocomplete, {
+  AsyncAutoCompleteComponent,
+} from "../../../components/AsyncAutocomplete";
 import {
   FormControl,
   FormControlProps,
@@ -11,15 +14,12 @@ import React, {
   useImperativeHandle,
   useRef,
 } from "react";
-import AsyncAutocomplete, {
-  AsyncAutoCompleteComponent,
-} from "../../../components/AsyncAutocomplete";
 import GridSelected from "../../../components/GridSelected";
 import GridSelectedItem from "../../../components/GridSelectedItem";
+import { getGenresFromCategory } from "../../../util/model-filter";
+import httpGenre from "../../../util/http/http-genre";
 import useCollectionManager from "../../../hooks/useCollectionManager";
 import useHttpHandler from "../../../hooks/useHttpHandler";
-import httpGenre from "../../../util/http/http-genre";
-import { getGenresFromCategory } from "../../../util/model-filter";
 
 interface GenreFieldProps extends RefAttributes<GenreFieldProps> {
   genres: any[] | undefined;

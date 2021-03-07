@@ -1,15 +1,15 @@
-import { Checkbox, TextField, FormControlLabel } from "@material-ui/core";
-import { useForm } from "react-hook-form";
-import React, { useContext, useEffect, useMemo, useState } from "react";
-import httpCategory from "../../util/http/http-category";
 import * as yup from "yup";
-import { useYupValidationResolver } from "../../hooks/YupValidation";
+import { Checkbox, FormControlLabel, TextField } from "@material-ui/core";
+import React, { useContext, useEffect, useMemo, useState } from "react";
 import { useHistory, useParams } from "react-router";
-import { useSnackbar } from "notistack";
 import { Category } from "../../util/dto";
-import SubmitActions from "../../components/SubmitActions";
 import DefaultForm from "../../components/DefaultForm";
 import LoadingContext from "../../components/loading/LoadingContext";
+import SubmitActions from "../../components/SubmitActions";
+import httpCategory from "../../util/http/http-category";
+import { useForm } from "react-hook-form";
+import { useSnackbar } from "notistack";
+import { useYupValidationResolver } from "../../hooks/YupValidation";
 
 export const Form = () => {
   const validationSchema = useMemo(

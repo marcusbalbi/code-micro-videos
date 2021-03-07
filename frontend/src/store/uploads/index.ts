@@ -1,12 +1,12 @@
-import { createActions, createReducer } from "reduxsauce";
 import {
   Actions,
   AddUploadAction,
   RemoveUploadAction,
+  SetUploadErrorAction,
   UpdateProgressAction,
   UploadState,
-  SetUploadErrorAction,
 } from "./types";
+import { createActions, createReducer } from "reduxsauce";
 import update from "immutability-helper";
 export const { Types, Creators } = createActions<
   {

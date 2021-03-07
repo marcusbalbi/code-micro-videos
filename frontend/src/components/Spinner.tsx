@@ -1,10 +1,10 @@
-import React, { useContext } from "react";
 import {
   Fade,
   LinearProgress,
   MuiThemeProvider,
   Theme,
 } from "@material-ui/core";
+import React, { useContext } from "react";
 import LoadingContext from "./loading/LoadingContext";
 
 function makeLocalTheme(theme: Theme): Theme {

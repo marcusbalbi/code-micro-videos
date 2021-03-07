@@ -1,8 +1,8 @@
+import { IconButton, MenuItem, Menu as MuiMenu } from "@material-ui/core";
 import React, { useState } from "react";
-import { IconButton, Menu as MuiMenu, MenuItem } from "@material-ui/core";
-import { Menu as MenuIcon } from "@material-ui/icons";
 import routes, { MyRouteProps } from "../../routes";
 import { Link } from "react-router-dom";
+import { Menu as MenuIcon } from "@material-ui/icons";
 
 const listRoutes = {
   dashboard: "Dashboard",

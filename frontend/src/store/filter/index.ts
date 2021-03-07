@@ -1,14 +1,14 @@
-import { createActions, createReducer } from "reduxsauce";
 import {
+  Actions,
+  CleanFilterAction,
   SetOrderAction,
   SetPageAction,
   SetPerPageAction,
   SetSearchAction,
-  CleanFilterAction,
-  updateExtraFilterAction,
   State,
-  Actions,
+  updateExtraFilterAction,
 } from "./types";
+import { createActions, createReducer } from "reduxsauce";
 
 export const { Types, Creators } = createActions<
   {

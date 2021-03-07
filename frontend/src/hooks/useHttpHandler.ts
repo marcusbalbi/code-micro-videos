@@ -1,5 +1,5 @@
-import { useSnackbar } from "notistack";
 import axios from "axios";
+import { useSnackbar } from "notistack";
 
 const useHttpHandler = () => {
   const snackbar = useSnackbar();

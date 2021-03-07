@@ -1,0 +1,15 @@
+{
+  "extends": ["react-app", "react-app/jest"],
+  "rules": {
+    "sort-imports": [
+      1,
+      {
+        "ignoreCase": false,
+        "ignoreDeclarationSort": false,
+        "ignoreMemberSort": false,
+        "memberSyntaxSortOrder": ["none", "all", "multiple", "single"],
+        "allowSeparatedGroups": false
+      }
+    ]
+  }
+}

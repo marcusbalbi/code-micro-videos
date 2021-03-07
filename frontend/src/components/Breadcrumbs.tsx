@@ -1,15 +1,15 @@
 /* eslint-disable no-nested-ternary */
-import React from "react";
-import { makeStyles, Theme, createStyles } from "@material-ui/core/styles";
-import Link, { LinkProps } from "@material-ui/core/Link";
-import Typography from "@material-ui/core/Typography";
-import MuiBreadcrumbs from "@material-ui/core/Breadcrumbs";
-import { Route } from "react-router";
-import { Link as RouterLink } from "react-router-dom";
-import RouteParser from "route-parser";
-import { Location } from "history";
-import routes from "../routes";
 import { Box, Container } from "@material-ui/core";
+import Link, { LinkProps } from "@material-ui/core/Link";
+import { Theme, createStyles, makeStyles } from "@material-ui/core/styles";
+import { Location } from "history";
+import MuiBreadcrumbs from "@material-ui/core/Breadcrumbs";
+import React from "react";
+import { Route } from "react-router";
+import RouteParser from "route-parser";
+import { Link as RouterLink } from "react-router-dom";
+import Typography from "@material-ui/core/Typography";
+import routes from "../routes";
 
 const breadcrumbNameMap: { [key: string]: string } = {};
 
@@ -82,7 +82,7 @@ export default function Breadcrumbs() {
 
   return (
     <Container>
-      <Box paddingTop={2} paddingBottom={1} >
+      <Box paddingTop={2} paddingBottom={1}>
         <Route>
           {({ location }) => {
             return makeBreadcrumb(location);

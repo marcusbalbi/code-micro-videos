@@ -1,6 +1,6 @@
-import { IconButton, makeStyles, Tooltip } from "@material-ui/core";
-import React from "react";
+import { IconButton, Tooltip, makeStyles } from "@material-ui/core";
 import ClearAllIcon from "@material-ui/icons/ClearAll";
+import React from "react";
 interface FilterResetButtonProps {
   handleClick: () => void;
 }

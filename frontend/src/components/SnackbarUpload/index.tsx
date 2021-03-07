@@ -1,22 +1,22 @@
-import React, { useState } from "react";
 import {
   Card,
   CardActions,
   Collapse,
   IconButton,
   List,
-  makeStyles,
   Theme,
   Typography,
+  makeStyles,
 } from "@material-ui/core";
-import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
-import ExpandLessIcon from "@material-ui/icons/ExpandLess";
-import CloseIcon from "@material-ui/icons/Close";
-import { useSnackbar } from "notistack";
-import UploadItem from "./UploadItem";
+import React, { useState } from "react";
 import { Upload, UploadModule } from "../../store/uploads/types";
+import CloseIcon from "@material-ui/icons/Close";
+import ExpandLessIcon from "@material-ui/icons/ExpandLess";
+import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
+import UploadItem from "./UploadItem";
 import { countInProgress } from "../../store/uploads/getters";
 import { useSelector } from "react-redux";
+import { useSnackbar } from "notistack";
 
 const useStyles = makeStyles((theme: Theme) => {
   return {

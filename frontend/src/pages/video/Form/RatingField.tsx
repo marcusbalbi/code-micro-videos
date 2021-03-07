@@ -3,14 +3,14 @@ import {
   FormControl,
   FormControlLabel,
   FormControlLabelProps,
+  FormControlProps,
   FormHelperText,
   FormLabel,
   Radio,
   RadioGroup,
-  FormControlProps,
 } from "@material-ui/core";
-import React from "react";
 import Rating from "../../../components/Rating";
+import React from "react";
 
 interface RatingFieldProps {
   value: string | undefined;

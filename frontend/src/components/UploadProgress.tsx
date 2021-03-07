@@ -1,8 +1,8 @@
-import { CircularProgress, Fade, makeStyles, Theme } from "@material-ui/core";
-import { grey } from "@material-ui/core/colors";
-import React from "react";
-import { hasError } from "../store/uploads/getters";
+import { CircularProgress, Fade, Theme, makeStyles } from "@material-ui/core";
 import { FileUpload, Upload } from "../store/uploads/types";
+import React from "react";
+import { grey } from "@material-ui/core/colors";
+import { hasError } from "../store/uploads/getters";
 
 const useStyles = makeStyles((theme: Theme) => {
   return {

@@ -1,16 +1,16 @@
+import * as yup from "yup";
 import { MenuItem, TextField } from "@material-ui/core";
-import { useForm } from "react-hook-form";
 import React, { useContext, useEffect, useMemo, useState } from "react";
+import { useHistory, useParams } from "react-router";
+import DefaultForm from "../../components/DefaultForm";
+import { Genre } from "../../util/dto";
+import LoadingContext from "../../components/loading/LoadingContext";
+import SubmitActions from "../../components/SubmitActions";
 import httpCategory from "../../util/http/http-category";
 import httpGenre from "../../util/http/http-genre";
-import * as yup from "yup";
-import { useYupValidationResolver } from "../../hooks/YupValidation";
+import { useForm } from "react-hook-form";
 import { useSnackbar } from "notistack";
-import { useHistory, useParams } from "react-router";
-import { Genre } from "../../util/dto";
-import SubmitActions from "../../components/SubmitActions";
-import DefaultForm from "../../components/DefaultForm";
-import LoadingContext from "../../components/loading/LoadingContext";
+import { useYupValidationResolver } from "../../hooks/YupValidation";
 
 export const Form = () => {
   const validationSchema = useMemo(

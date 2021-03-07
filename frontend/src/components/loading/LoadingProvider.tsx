@@ -1,11 +1,11 @@
 import React, { useEffect, useMemo, useState } from "react";
-import LoadingContext from "./LoadingContext";
 import {
   addGlobalRequestInterceptor,
   addGlobalResponseInterceptor,
-  removeGlobalResponseInterceptor,
   removeGlobalRequestInterceptor,
+  removeGlobalResponseInterceptor,
 } from "../../util/http";
+import LoadingContext from "./LoadingContext";
 import { omit } from "lodash";
 
 const LoadingProvider = (props) => {

@@ -1,10 +1,10 @@
 import { InputAdornment, TextField, TextFieldProps } from "@material-ui/core";
 import React, {
-  useRef,
   MutableRefObject,
-  useState,
-  useImperativeHandle,
   RefAttributes,
+  useImperativeHandle,
+  useRef,
+  useState,
 } from "react";
 
 export interface InputFileProps extends RefAttributes<InputFileComponent> {

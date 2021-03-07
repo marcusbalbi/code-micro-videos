@@ -1,9 +1,9 @@
-import { createMuiTheme } from "@material-ui/core";
-import { red, green } from "@material-ui/core/colors";
 import {
   PaletteOptions,
   SimplePaletteColorOptions,
 } from "@material-ui/core/styles/createPalette";
+import { green, red } from "@material-ui/core/colors";
+import { createMuiTheme } from "@material-ui/core";
 
 const palette: PaletteOptions = {
   primary: {
@@ -13,7 +13,7 @@ const palette: PaletteOptions = {
   secondary: {
     main: "#4db5ab",
     contrastText: "#FFF",
-    dark: "#055a52"
+    dark: "#055a52",
   },
   background: {
     default: "#fafafa",
@@ -64,7 +64,7 @@ const theme = createMuiTheme({
         },
       },
       toolButton: {
-        color: "#FFF"
+        color: "#FFF",
       },
       sortActive: {
         color: "#FFF",
