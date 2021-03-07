@@ -34,15 +34,18 @@ function* uploadFile({
   const channel = yield call(sendUpload, { id: video.id, fileInfo });
   while (true) {
     try {
-      const { progress, response } = yield take(channel);
+      const { progress, response, error } = yield take(channel);
       if (response) {
         return response;
+      }
+      if (error) {
+        throw error;
       }
       yield put(
         Creators.updateProgress({
           video,
           fileUpload: fileInfo.fileField,
-          progress: 1
+          progress,
         })
       );
     } catch (err) {
@@ -94,7 +97,7 @@ function sendUpload({
         emitter({ response });
       })
       .catch((error) => {
-        emitter({error});
+        emitter({ error });
       })
       .finally(() => {
         emitter(END);

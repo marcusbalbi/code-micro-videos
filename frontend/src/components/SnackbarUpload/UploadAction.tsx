@@ -12,6 +12,7 @@ import DeleteIcon from "@material-ui/icons/Delete";
 import { Upload } from "../../store/uploads/types";
 import { useDispatch } from "react-redux";
 import { Creators } from "../../store/uploads";
+import { hasError } from "../../store/uploads/getters";
 
 const useStyles = makeStyles((theme: Theme) => {
   return {
@@ -32,20 +33,21 @@ const UploadAction: React.FC<UploadActionProps> = (props) => {
   const classes = useStyles();
   const { upload } = props;
   const dispatch = useDispatch();
+  const error = hasError(upload);
   return (
     <Fade in={true} timeout={{ enter: 1000 }}>
       <ListItemSecondaryAction>
         <span>
-          {upload.progress === 1 && (
+          {upload.progress === 1 && !error && (
             <IconButton className={classes.successIcon} edge={"end"}>
               <CheckCircleIcon />
             </IconButton>
           )}
-          {
+          {error && (
             <IconButton className={classes.errorIcon} edge={"end"}>
               <ErrorIcon />
             </IconButton>
-          }
+          )}
         </span>
         <span>
           <IconButton

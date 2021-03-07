@@ -13,6 +13,7 @@ import {
 import UploadProgress from "../UploadProgress";
 import UploadAction from "./UploadAction";
 import { Upload } from "../../store/uploads/types";
+import { hasError } from "../../store/uploads/getters";
 
 const useStyles = makeStyles((theme: Theme) => {
   return {
@@ -40,9 +41,19 @@ interface UploadItemProps {
 const UploadItem: React.FC<UploadItemProps> = (props) => {
   const classes = useStyles();
   const { upload } = props;
+  const error = hasError(upload);
   return (
     <>
-      <Tooltip title={upload.video.title || "Sem Titulo"} placement="left">
+      <Tooltip
+        disableFocusListener
+        disableTouchListener
+        title={
+          error
+            ? "Não foi Possivel fazer o upload, clique para mais detalhes"
+            : ""
+        }
+        placement="left"
+      >
         <ListItem className={classes.listItem} button>
           <ListItemIcon className={classes.movieIcon}>
             <MovieIcon />
