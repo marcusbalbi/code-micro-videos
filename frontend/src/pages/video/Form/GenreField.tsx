@@ -3,6 +3,7 @@ import {
   FormControlProps,
   FormHelperText,
   Typography,
+  useTheme,
 } from "@material-ui/core";
 import React, {
   MutableRefObject,
@@ -44,6 +45,7 @@ const GenreField = React.forwardRef<GenreFieldComponent, GenreFieldProps>(
       categories,
       setCategories,
     } = props;
+    const theme = useTheme();
     const autocompleteRef = useRef() as MutableRefObject<AsyncAutoCompleteComponent>;
     const { addItem, removeItem } = useCollectionManager(
       genres || [],
@@ -104,6 +106,9 @@ const GenreField = React.forwardRef<GenreFieldComponent, GenreFieldProps>(
           error={error !== undefined}
           {...props.formControlProps}
         >
+          <FormHelperText style={{ height: theme.spacing(5) }}>
+            Escolha os Gêneros do Video
+          </FormHelperText>
           <GridSelected>
             {genres &&
               genres.map((genre, key) => {

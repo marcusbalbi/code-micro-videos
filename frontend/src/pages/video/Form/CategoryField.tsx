@@ -5,10 +5,18 @@ import {
   FormControlProps,
   makeStyles,
   Theme,
+  useTheme,
 } from "@material-ui/core";
 import { grey } from "@material-ui/core/colors";
-import React, { MutableRefObject, RefAttributes, useImperativeHandle, useRef } from "react";
-import AsyncAutocomplete, { AsyncAutoCompleteComponent } from "../../../components/AsyncAutocomplete";
+import React, {
+  MutableRefObject,
+  RefAttributes,
+  useImperativeHandle,
+  useRef,
+} from "react";
+import AsyncAutocomplete, {
+  AsyncAutoCompleteComponent,
+} from "../../../components/AsyncAutocomplete";
 import GridSelected from "../../../components/GridSelected";
 import GridSelectedItem from "../../../components/GridSelectedItem";
 import useCollectionManager from "../../../hooks/useCollectionManager";
@@ -51,6 +59,7 @@ const CategoryField = React.forwardRef<
     setCategories
   );
   const autoCompleteHttp = useHttpHandler();
+  const theme = useTheme();
   const fetchOptions = (searchText) => {
     if (!genres) {
       return Promise.resolve();
@@ -68,13 +77,13 @@ const CategoryField = React.forwardRef<
       })
       .catch((error) => console.log(error));
   };
-    useImperativeHandle(ref, () => {
-      return {
-        clear: () => {
-          autocompleteRef.current.clear();
-        },
-      };
-    });
+  useImperativeHandle(ref, () => {
+    return {
+      clear: () => {
+        autocompleteRef.current.clear();
+      },
+    };
+  });
   return (
     <>
       <AsyncAutocomplete
@@ -92,6 +101,7 @@ const CategoryField = React.forwardRef<
         }}
         TextFieldProps={{ label: "Categorias", error: error !== undefined }}
       />
+
       <FormControl
         margin="normal"
         fullWidth
@@ -99,6 +109,9 @@ const CategoryField = React.forwardRef<
         error={error !== undefined}
         {...props.formControlProps}
       >
+        <FormHelperText style={{ height: theme.spacing(5) }} >
+          Escolha pelo menos uma categoria de cada Gênero
+        </FormHelperText>
         <GridSelected>
           {categories &&
             categories.map((category, key) => {

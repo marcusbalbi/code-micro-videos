@@ -80,7 +80,7 @@ const UploadItem: React.FC<UploadItemProps> = (props) => {
                       variant={"subtitle2"}
                       color={"inherit"}
                     >
-                      {file.filename}
+                      {`${upload.video.title} - ${file.filename}`}
                     </Typography>
                   }
                 />

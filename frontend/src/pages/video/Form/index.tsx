@@ -251,6 +251,9 @@ export const Form = () => {
           file: getValues()[fileField],
         };
       });
+    if (!files.length) {
+      return;
+    }
     dispatch(Creators.addUpload({ video, files }));
     snackbar.enqueueSnackbar("", {
       persist: true,
@@ -337,6 +340,7 @@ export const Form = () => {
           />
           <br />
           <Grid container spacing={2}>
+            
             <Grid item xs={12} md={6}>
               <GenreField
                 categories={watch("categories")}
@@ -361,12 +365,6 @@ export const Form = () => {
                   setValue("categories", value, { shouldValidate: true })
                 }
               />
-            </Grid>
-            <Grid item xs={12}>
-              <FormHelperText>Escolha os Gêneros do Video</FormHelperText>
-              <FormHelperText>
-                Escolha pelo menos uma categoria de cada Gênero
-              </FormHelperText>
             </Grid>
           </Grid>
         </Grid>

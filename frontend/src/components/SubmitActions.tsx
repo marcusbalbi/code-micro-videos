@@ -24,7 +24,7 @@ const SubmitActions: React.FC<SubmitActionProps> = (props) => {
     disabled: props.disableButtons  === undefined ? false : props.disableButtons,
   };
   return (
-    <Box dir={"rtl"}>
+    <Box dir={"ltf"}>
       <Button {...buttonProps} onClick={props.handleSave}>
         Salvar
       </Button>
