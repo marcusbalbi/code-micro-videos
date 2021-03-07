@@ -5,14 +5,15 @@ import {
   makeStyles,
   Theme,
 } from "@material-ui/core";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import CheckCircleIcon from "@material-ui/icons/CheckCircle";
 import ErrorIcon from "@material-ui/icons/Error";
 import DeleteIcon from "@material-ui/icons/Delete";
 import { Upload } from "../../store/uploads/types";
 import { useDispatch } from "react-redux";
 import { Creators } from "../../store/uploads";
-import { hasError } from "../../store/uploads/getters";
+import { hasError, isFinished } from "../../store/uploads/getters";
+import { useDebounce } from "use-debounce/lib";
 
 const useStyles = makeStyles((theme: Theme) => {
   return {
@@ -27,17 +28,24 @@ const useStyles = makeStyles((theme: Theme) => {
 
 interface UploadActionProps {
   upload: Upload;
+  hover: boolean;
 }
 
 const UploadAction: React.FC<UploadActionProps> = (props) => {
   const classes = useStyles();
-  const { upload } = props;
+  const { upload, hover } = props;
   const dispatch = useDispatch();
   const error = hasError(upload);
+  const [show, setShow] = useState(false);
+  const [debouncedShow] = useDebounce(show, 2500);
+
+  useEffect(() => {
+    setShow(isFinished(upload));
+  }, [upload]);
   return (
-    <Fade in={true} timeout={{ enter: 1000 }}>
+    debouncedShow ? <Fade in={true} timeout={{ enter: 1000 }}>
       <ListItemSecondaryAction>
-        <span>
+        <span hidden={hover}>
           {upload.progress === 1 && !error && (
             <IconButton className={classes.successIcon} edge={"end"}>
               <CheckCircleIcon />
@@ -49,7 +57,7 @@ const UploadAction: React.FC<UploadActionProps> = (props) => {
             </IconButton>
           )}
         </span>
-        <span>
+        <span hidden={!hover}>
           <IconButton
             color={"primary"}
             edge={"end"}
@@ -65,7 +73,7 @@ const UploadAction: React.FC<UploadActionProps> = (props) => {
           </IconButton>
         </span>
       </ListItemSecondaryAction>
-    </Fade>
+    </Fade> : null
   );
 };
 

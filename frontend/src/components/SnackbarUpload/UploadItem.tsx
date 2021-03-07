@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import MovieIcon from "@material-ui/icons/Movie";
 import {
   Divider,
@@ -42,6 +42,7 @@ const UploadItem: React.FC<UploadItemProps> = (props) => {
   const classes = useStyles();
   const { upload } = props;
   const error = hasError(upload);
+  const [itemHover, setItemHover] = useState(false);
   return (
     <>
       <Tooltip
@@ -54,7 +55,16 @@ const UploadItem: React.FC<UploadItemProps> = (props) => {
         }
         placement="left"
       >
-        <ListItem className={classes.listItem} button>
+        <ListItem
+          onMouseOver={() => {
+            setItemHover(true);
+          }}
+          onMouseLeave={() => {
+            setItemHover(false);
+          }}
+          className={classes.listItem}
+          button
+        >
           <ListItemIcon className={classes.movieIcon}>
             <MovieIcon />
           </ListItemIcon>
@@ -67,7 +77,7 @@ const UploadItem: React.FC<UploadItemProps> = (props) => {
             }
           />
           <UploadProgress size={30} uploadOrFile={upload} />
-          <UploadAction upload={upload} />
+          <UploadAction upload={upload} hover={itemHover} />
         </ListItem>
       </Tooltip>
       <Divider component="li" />

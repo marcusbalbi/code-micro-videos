@@ -16,8 +16,8 @@ const LoadingProvider = (props) => {
     const requestIds = addGlobalRequestInterceptor((config) => {
       if (isSubscribed && config.headers.ignoreLoading === undefined) {
         setLoading(true);
-        setCountRequest((prev) => prev + 1);
       }
+      setCountRequest((prev) => prev + 1);
       config.headers = omit(config.headers, "ignoreLoading");
       return config;
     });
