@@ -16,7 +16,7 @@ import { useSnackbar } from "notistack";
 import UploadItem from "./UploadItem";
 import { Upload, UploadModule } from "../../store/uploads/types";
 import { countInProgress } from "../../store/uploads/getters";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 
 const useStyles = makeStyles((theme: Theme) => {
   return {
@@ -58,8 +58,6 @@ const SnackbarUpload = React.forwardRef<any, SnackbarUploadProps>(
     );
 
     const countUploadsInProgress = countInProgress(uploads);
-
-    const dispatch = useDispatch();
 
     return (
       <Card ref={ref} className={classes.card}>

@@ -105,6 +105,7 @@ const AsyncAutocomplete = React.forwardRef<
     return () => {
       isSubscribed = false;
     };
+    //eslint-disable-next-line
   }, [debouncedSearchText, open, freeSolo]);
   useImperativeHandle(ref, () => {
     return {
