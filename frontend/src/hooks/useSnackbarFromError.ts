@@ -2,17 +2,16 @@ import { useEffect } from "react";
 import { useSnackbar } from "notistack";
 
 const useSnackbarFromError = (submitCount, errors) => {
-  const snackbar = useSnackbar();
+  const {enqueueSnackbar} = useSnackbar();
   useEffect(() => {
     const hasErrors = Object.keys(errors).length !== 0;
     if (submitCount > 0 && hasErrors) {
-      snackbar.enqueueSnackbar(
+      enqueueSnackbar(
         "Formulário inválido, Reveja os campos marcados de vermelho.",
         { variant: "error" }
       );
     }
-    //eslint-disable-next-line
-  }, [submitCount]);
+  }, [submitCount, errors, enqueueSnackbar]);
 };
 
 export default useSnackbarFromError;

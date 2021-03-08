@@ -42,7 +42,6 @@ import { useSnackbar } from "notistack";
 import useSnackbarFromError from "../../../hooks/useSnackbarFromError";
 import { useYupValidationResolver } from "../../../hooks/YupValidation";
 
-
 const useStyle = makeStyles((theme) => {
   return {
     cardOpened: {
@@ -123,7 +122,7 @@ export const Form = () => {
       opened: false,
     },
   });
-  const snackbar = useSnackbar();
+  const { enqueueSnackbar } = useSnackbar();
   const history = useHistory();
   const { id } = useParams<{ id: string }>();
   const loading = useContext(LoadingContext);
@@ -174,13 +173,13 @@ export const Form = () => {
         reset(data.data);
       } catch (error) {
         console.log(error);
-        snackbar.enqueueSnackbar("Não foi possível carregar as informações", {
+        enqueueSnackbar("Não foi possível carregar as informações", {
           variant: "error",
         });
       }
     }
     getVideo();
-  }, [id, reset, snackbar]);
+  }, [id, reset, enqueueSnackbar]);
 
   async function onSubmit(formData: Video, event) {
     const sendData = omit(formData, [
@@ -208,7 +207,7 @@ export const Form = () => {
         : httpVideo.update(video.id, sendData);
 
       const { data } = await http;
-      snackbar.enqueueSnackbar("Video salvo com sucesso!", {
+      enqueueSnackbar("Video salvo com sucesso!", {
         variant: "success",
       });
       uploadFiles(data.data);
@@ -225,7 +224,7 @@ export const Form = () => {
       });
     } catch (error) {
       console.log(error);
-      snackbar.enqueueSnackbar("Falha ao salvar Video", {
+      enqueueSnackbar("Falha ao salvar Video", {
         variant: "error",
       });
     }
@@ -252,7 +251,7 @@ export const Form = () => {
       return;
     }
     dispatch(Creators.addUpload({ video, files }));
-    snackbar.enqueueSnackbar("", {
+    enqueueSnackbar("", {
       persist: true,
       key: "snackbar-upload",
       anchorOrigin: {
@@ -337,7 +336,6 @@ export const Form = () => {
           />
           <br />
           <Grid container spacing={2}>
-            
             <Grid item xs={12} md={6}>
               <GenreField
                 categories={watch("categories")}

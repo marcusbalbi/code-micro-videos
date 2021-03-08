@@ -37,7 +37,7 @@ export const Form = () => {
       categories_id: [],
     },
   });
-  const snackbar = useSnackbar();
+  const { enqueueSnackbar } = useSnackbar();
   const history = useHistory();
   const { id } = useParams<{ id: string }>();
   const loading = useContext(LoadingContext);
@@ -73,7 +73,7 @@ export const Form = () => {
         }
       } catch (error) {
         console.log(error);
-        snackbar.enqueueSnackbar("Não foi possível carregar as informações", {
+        enqueueSnackbar("Não foi possível carregar as informações", {
           variant: "error",
         });
       }
@@ -81,7 +81,7 @@ export const Form = () => {
     return () => {
       canLoad = false;
     };
-  }, [id, reset, snackbar]);
+  }, [id, reset, enqueueSnackbar]);
 
   async function onSubmit(formData, event) {
     try {
@@ -90,7 +90,7 @@ export const Form = () => {
         : httpGenre.update(id, formData);
 
       const { data } = await http;
-      snackbar.enqueueSnackbar("Gênero salvo com sucesso!", {
+      enqueueSnackbar("Gênero salvo com sucesso!", {
         variant: "success",
       });
       setTimeout(() => {
@@ -105,7 +105,7 @@ export const Form = () => {
       });
     } catch (error) {
       console.log(error);
-      snackbar.enqueueSnackbar("Falha ao salvar Gênero", {
+      enqueueSnackbar("Falha ao salvar Gênero", {
         variant: "error",
       });
     }
