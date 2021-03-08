@@ -10,6 +10,7 @@ import {
 import React, {
   MutableRefObject,
   RefAttributes,
+  useCallback,
   useImperativeHandle,
   useRef,
 } from "react";
@@ -43,23 +44,26 @@ const CastMemberField = React.forwardRef<
     setCastMembers
   );
   const autoCompleteHttp = useHttpHandler();
-  const fetchOptions = (searchText) => {
-    if (!castMembers) {
-      return Promise.resolve();
-    }
-    return autoCompleteHttp(
-      httpCastMember.list({
-        queryParams: {
-          search: searchText,
-          all: "",
-        },
-      })
-    )
-      .then((data) => {
-        return data.data;
-      })
-      .catch((error) => console.log(error));
-  };
+  const fetchOptions = useCallback(
+    (searchText) => {
+      if (!castMembers) {
+        return Promise.resolve();
+      }
+      return autoCompleteHttp(
+        httpCastMember.list({
+          queryParams: {
+            search: searchText,
+            all: "",
+          },
+        })
+      )
+        .then((data) => {
+          return data.data;
+        })
+        .catch((error) => console.log(error));
+    },
+    [autoCompleteHttp, castMembers]
+  );
   useImperativeHandle(ref, () => {
     return {
       clear: () => {
