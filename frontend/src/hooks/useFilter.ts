@@ -1,4 +1,12 @@
-import { Dispatch, Reducer, useMemo, useReducer, useState } from "react";
+import {
+  Dispatch,
+  Reducer,
+  useCallback,
+  useEffect,
+  useMemo,
+  useReducer,
+  useState,
+} from "react";
 import {
   Actions as FilterActions,
   State as FilterState,
@@ -100,57 +108,6 @@ export class FilterManager {
     return page <= 0 ? page : page - 1;
   }
 
-  replaceHistory() {
-    this.history.replace({
-      pathname: this.history.location.pathname,
-      search: "?" + new URLSearchParams(this.formatSearchParams() as any),
-      state: this.debouncedFilterState,
-    });
-  }
-
-  pushHistory() {
-    const newLocation = {
-      pathname: this.history.location.pathname,
-      search: "?" + new URLSearchParams(this.formatSearchParams() as any),
-      state: {
-        ...this.state,
-        search:
-          typeof this.debouncedFilterState.search === "string"
-            ? this.debouncedFilterState.search
-            : "",
-      },
-    };
-    const oldState = this.history.location.state;
-    const nextState = this.debouncedFilterState;
-    if (!isEqual(oldState, nextState)) {
-      this.history.push(newLocation);
-    }
-  }
-
-  private formatSearchParams() {
-    const search =
-      typeof this.debouncedFilterState.search === "string"
-        ? this.debouncedFilterState.search
-        : "";
-    return {
-      ...(search && search !== "" && { search: search }),
-      ...(this.debouncedFilterState.pagination.per_page !== 15 && {
-        per_page: this.debouncedFilterState.pagination.per_page,
-      }),
-      ...(this.debouncedFilterState.pagination.page > 1 && {
-        page: this.debouncedFilterState.pagination.page,
-      }),
-      ...(this.debouncedFilterState.order &&
-        this.debouncedFilterState.order.sort &&
-        this.debouncedFilterState.order.dir && {
-          sort: this.debouncedFilterState.order.sort,
-          dir: this.debouncedFilterState.order.dir,
-        }),
-      ...(this.extraFilter &&
-        this.extraFilter.formatSearchParams(this.debouncedFilterState)),
-    };
-  }
-
   changeExtraFilter(data) {
     this.dispatch(Creators.updateExtraFilter(data));
   }
@@ -161,6 +118,7 @@ const useFilter = (options: useFilterOptions) => {
   console.log(i);
   const history = useHistory();
   const location = useLocation();
+  const { pathname: pathnameLocation, search: searchLocation, state: stateLocation } = location;
   const { columns, rowsPerPage, extraFilter } = options;
   const schema = useMemo(() => {
     return yup.object().shape({
@@ -208,9 +166,9 @@ const useFilter = (options: useFilterOptions) => {
       }),
     });
   }, [extraFilter, columns, rowsPerPage]);
-
+  const filterManager = new FilterManager({ ...options, history, schema });
   const stateFromURL = useMemo(() => {
-    const queryParams = new URLSearchParams(location.search.substr(1));
+    const queryParams = new URLSearchParams(searchLocation.substr(1));
     return schema.cast({
       search: queryParams.get("search"),
       pagination: {
@@ -225,8 +183,7 @@ const useFilter = (options: useFilterOptions) => {
         extraFilter: extraFilter.getStateFromURL(queryParams),
       }),
     });
-  }, [extraFilter, location, schema]);
-  const filterManager = new FilterManager({ ...options, history, schema });
+  }, [extraFilter, schema, searchLocation]);
   const INITIAL_STATE = stateFromURL;
   const [totalRecords, setTotalRecords] = useState(0);
   const [filterState, dispatch] = useReducer<
@@ -237,6 +194,75 @@ const useFilter = (options: useFilterOptions) => {
   filterManager.state = filterState;
   filterManager.debouncedFilterState = debouncedFilterState;
   filterManager.dispatch = dispatch as any;
+
+  const formatSearchParams = useCallback((state, extraFilter) => {
+    const search = typeof state.search === "string" ? state.search : "";
+    return {
+      ...(search && search !== "" && { search: search }),
+      ...(state.pagination.per_page !== 15 && {
+        per_page: state.pagination.per_page,
+      }),
+      ...(state.pagination.page > 1 && {
+        page: state.pagination.page,
+      }),
+      ...(state.order &&
+        state.order.sort &&
+        state.order.dir && {
+          sort: state.order.sort,
+          dir: state.order.dir,
+        }),
+      ...(extraFilter && extraFilter.formatSearchParams(state)),
+    };
+  }, []);
+
+  useEffect(() => {
+    history.replace({
+      pathname: pathnameLocation,
+      search:
+        "?" +
+        new URLSearchParams(
+          formatSearchParams(stateFromURL, extraFilter) as any
+        ),
+      state: stateFromURL,
+    });
+  }, [
+    history,
+    pathnameLocation,
+    stateFromURL,
+    extraFilter,
+    formatSearchParams,
+  ]);
+
+  useEffect(() => {
+    const newLocation = {
+      pathname: pathnameLocation,
+      search:
+        "?" +
+        new URLSearchParams(
+          formatSearchParams(stateFromURL, extraFilter) as any
+        ),
+      state: {
+        ...stateFromURL,
+        search:
+          typeof debouncedFilterState.search === "string"
+            ? debouncedFilterState.search
+            : "",
+      },
+    };
+    const oldState = stateLocation;
+    const nextState = debouncedFilterState;
+    if (!isEqual(oldState, nextState)) {
+      history.push(newLocation);
+    }
+  }, [
+    debouncedFilterState,
+    extraFilter,
+    stateLocation,
+    formatSearchParams,
+    history,
+    pathnameLocation,
+    stateFromURL,
+  ]);
 
   return {
     filterManager,

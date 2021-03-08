@@ -166,14 +166,14 @@ export const Table = () => {
   ]);
 
   useEffect(() => {
-    filterManager.replaceHistory();
+    // filterManager.replaceHistory();
     //eslint-disable-next-line
   }, []);
 
   useEffect(() => {
     canLoad.current = true;
     getData();
-    filterManager.pushHistory();
+    // filterManager.pushHistory();
     return () => {
       canLoad.current = false;
     };

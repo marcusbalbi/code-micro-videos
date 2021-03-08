@@ -222,7 +222,7 @@ export const Table = () => {
   ]);
 
   useEffect(() => {
-    filterManager.replaceHistory();
+    // filterManager.replaceHistory();
     //eslint-disable-next-line
   }, []);
 
@@ -266,7 +266,7 @@ export const Table = () => {
   useEffect(() => {
     canLoad.current = true;
     getData();
-    filterManager.pushHistory();
+    // filterManager.pushHistory();
     return () => {
       canLoad.current = false;
     };
