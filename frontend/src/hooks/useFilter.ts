@@ -4,11 +4,11 @@ import {
   State as FilterState,
 } from "../store/filter/types";
 import reducer, { Creators } from "../store/filter/index";
+import { useHistory, useLocation } from "react-router";
 import { History } from "history";
 import { MUIDataTableColumn } from "mui-datatables";
 import { isEqual } from "lodash";
 import { useDebounce } from "use-debounce";
-import { useHistory } from "react-router";
 import yup from "../util/vendor/yup";
 export interface FilterManagerOptions {
   rowsPerPage: number;
@@ -151,26 +151,6 @@ export class FilterManager {
     };
   }
 
-  getStateFromURL() {
-    const queryParams = new URLSearchParams(
-      this.history.location.search.substr(1)
-    );
-    return this.schema.cast({
-      search: queryParams.get("search"),
-      pagination: {
-        page: queryParams.get("page"),
-        per_page: queryParams.get("per_page"),
-      },
-      order: {
-        sort: queryParams.get("sort"),
-        dir: queryParams.get("dir"),
-      },
-      ...(this.extraFilter && {
-        extraFilter: this.extraFilter.getStateFromURL(queryParams),
-      }),
-    });
-  }
-
   changeExtraFilter(data) {
     this.dispatch(Creators.updateExtraFilter(data));
   }
@@ -180,6 +160,7 @@ const useFilter = (options: useFilterOptions) => {
   i++;
   console.log(i);
   const history = useHistory();
+  const location = useLocation();
   const { columns, rowsPerPage, extraFilter } = options;
   const schema = useMemo(() => {
     return yup.object().shape({
@@ -227,8 +208,26 @@ const useFilter = (options: useFilterOptions) => {
       }),
     });
   }, [extraFilter, columns, rowsPerPage]);
+
+  const stateFromURL = useMemo(() => {
+    const queryParams = new URLSearchParams(location.search.substr(1));
+    return schema.cast({
+      search: queryParams.get("search"),
+      pagination: {
+        page: queryParams.get("page"),
+        per_page: queryParams.get("per_page"),
+      },
+      order: {
+        sort: queryParams.get("sort"),
+        dir: queryParams.get("dir"),
+      },
+      ...(extraFilter && {
+        extraFilter: extraFilter.getStateFromURL(queryParams),
+      }),
+    });
+  }, [extraFilter, location, schema]);
   const filterManager = new FilterManager({ ...options, history, schema });
-  const INITIAL_STATE = filterManager.getStateFromURL();
+  const INITIAL_STATE = stateFromURL;
   const [totalRecords, setTotalRecords] = useState(0);
   const [filterState, dispatch] = useReducer<
     Reducer<FilterState, FilterActions>
