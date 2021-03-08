@@ -105,8 +105,8 @@ const AsyncAutocomplete = React.forwardRef<
     return () => {
       isSubscribed = false;
     };
-    //eslint-disable-next-line
-  }, [debouncedSearchText, open, freeSolo]);
+    // eslint-disable-next-line
+  }, [debouncedSearchText, open, freeSolo]); // fetchOptions was causing a bug on effect
   useImperativeHandle(ref, () => {
     return {
       clear: () => {

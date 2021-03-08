@@ -1,3 +1,4 @@
+/*eslint-disable no-template-curly-in-string */
 import * as yup from "yup";
 
 yup.setLocale({
@@ -6,7 +7,6 @@ yup.setLocale({
       return `O Campo ${field.label} é Obrigatório`;
     },
     default: "Não é válido",
-    //eslint-disable-next-line
     notType: "${path} é Inválido",
   },
   string: {
