@@ -1,4 +1,4 @@
-import { Dispatch, Reducer, useReducer, useState } from "react";
+import { Dispatch, Reducer, useMemo, useReducer, useState } from "react";
 import {
   Actions as FilterActions,
   State as FilterState,
@@ -17,6 +17,7 @@ export interface FilterManagerOptions {
   history: History;
   columns: MUIDataTableColumn[];
   extraFilter?: ExtraFilter;
+  schema: any;
 }
 
 export interface ExtraFilter {
@@ -26,7 +27,7 @@ export interface ExtraFilter {
 }
 
 export interface useFilterOptions
-  extends Omit<FilterManagerOptions, "history"> {}
+  extends Omit<FilterManagerOptions, "history" | "schema"> {}
 
 export class FilterManager {
   schema;
@@ -47,6 +48,7 @@ export class FilterManager {
       history,
       columns,
       extraFilter,
+      schema,
     } = options;
     this.rowsPerPage = rowsPerPage;
     this.rowsPerPageOptions = rowsPerPageOptions;
@@ -54,7 +56,7 @@ export class FilterManager {
     this.history = history;
     this.columns = columns;
     this.extraFilter = extraFilter ? extraFilter : undefined;
-    this.createValidationSchema();
+    this.schema = schema;
   }
 
   private resetTablePagination() {
@@ -95,7 +97,7 @@ export class FilterManager {
     // MUIDataTable Count page with 0, pass to prop with -1
     const page = this.debouncedFilterState.pagination.page;
 
-    return page <= 0 ? page : page -1;
+    return page <= 0 ? page : page - 1;
   }
 
   replaceHistory() {
@@ -144,7 +146,8 @@ export class FilterManager {
           sort: this.debouncedFilterState.order.sort,
           dir: this.debouncedFilterState.order.dir,
         }),
-      ...(this.extraFilter && this.extraFilter.formatSearchParams(this.debouncedFilterState)),
+      ...(this.extraFilter &&
+        this.extraFilter.formatSearchParams(this.debouncedFilterState)),
     };
   }
 
@@ -168,8 +171,18 @@ export class FilterManager {
     });
   }
 
-  private createValidationSchema() {
-    this.schema = yup.object().shape({
+  changeExtraFilter(data) {
+    this.dispatch(Creators.updateExtraFilter(data));
+  }
+}
+let i = 0;
+const useFilter = (options: useFilterOptions) => {
+  i++;
+  console.log(i);
+  const history = useHistory();
+  const { columns, rowsPerPage, extraFilter } = options;
+  const schema = useMemo(() => {
+    return yup.object().shape({
       search: yup
         .string()
         .transform((value) => (!value ? undefined : value))
@@ -184,14 +197,14 @@ export class FilterManager {
         per_page: yup
           .number()
           .transform((value) => (isNaN(value) ? undefined : value))
-          .default(this.rowsPerPage),
+          .default(rowsPerPage),
       }),
       order: yup.object().shape({
         sort: yup
           .string()
           .nullable()
           .transform((value) => {
-            const columnsName = this.columns
+            const columnsName = columns
               .filter((column) => {
                 return !column.options || column.options.sort !== false;
               })
@@ -209,25 +222,18 @@ export class FilterManager {
           })
           .default(null),
       }),
-      ...(this.extraFilter && {
-        extraFilter: this.extraFilter.createValidationSchema(),
+      ...(extraFilter && {
+        extraFilter: extraFilter.createValidationSchema(),
       }),
     });
-  }
-
-  changeExtraFilter (data) {
-    this.dispatch(Creators.updateExtraFilter(data))
-  }
-}
-
-const useFilter = (options: useFilterOptions) => {
-  const history = useHistory();
-  const filterManager = new FilterManager({ ...options, history });
+  }, [extraFilter, columns, rowsPerPage]);
+  const filterManager = new FilterManager({ ...options, history, schema });
   const INITIAL_STATE = filterManager.getStateFromURL();
   const [totalRecords, setTotalRecords] = useState(0);
   const [filterState, dispatch] = useReducer<
     Reducer<FilterState, FilterActions>
   >(reducer, INITIAL_STATE);
+
   const [debouncedFilterState] = useDebounce(filterState, options.debounceTime);
   filterManager.state = filterState;
   filterManager.debouncedFilterState = debouncedFilterState;
