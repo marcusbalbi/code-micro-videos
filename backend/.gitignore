@@ -16,3 +16,6 @@ yarn-error.log
 .vscode/
 .history/
 .devcontainer/
+
+public/admin-frontend
+resources/views/admin-frontend
