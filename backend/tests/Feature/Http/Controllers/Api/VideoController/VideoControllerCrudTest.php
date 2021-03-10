@@ -3,6 +3,7 @@
 namespace Tests\Feature\Http\Controllers\Api;
 
 use App\Http\Resources\VideoResource;
+use App\Models\CastMember;
 use App\Models\Category;
 use App\Models\Genre;
 use App\Models\Video;
@@ -45,6 +46,16 @@ class VideoControllerCrudTest extends BaseVideoControllerTestCase
                 'id',
                 'name',
                 'is_active',
+                'created_at',
+                'updated_at',
+                'deleted_at',
+            ]
+        ],
+        'cast_members' => [
+            '*' => [
+                'id',
+                'name',
+                'type',
                 'created_at',
                 'updated_at',
                 'deleted_at',
@@ -194,12 +205,14 @@ class VideoControllerCrudTest extends BaseVideoControllerTestCase
 
         $categories = factory(Category::class, 3)->create();
         $genres = factory(Genre::class, 2)->create();
+        $castmembers = factory(CastMember::class, 2)->create();
         $genres[0]->categories()->sync($categories->pluck('id')->toArray());
         $genres[1]->categories()->sync($categories->pluck('id')->toArray());
 
         $extra = [
             'categories_id' => $categories->pluck('id')->toArray(),
             'genres_id' => $genres->pluck('id')->toArray(),
+            'cast_members_id' => $castmembers->pluck('id')->toArray(),
         ];
 
         $data = [
@@ -227,21 +240,25 @@ class VideoControllerCrudTest extends BaseVideoControllerTestCase
             $this->assertIfFilesUrlExists($video, $response);
             $video->load('categories');
             $video->load('genres');
+            $video->load('castMembers');
             $this->assertEqualsCanonicalizing($video->categories->pluck("id")->toArray(), $extra['categories_id']);
             $this->assertEqualsCanonicalizing($video->genres->pluck("id")->toArray(), $extra['genres_id']);
+            $this->assertEqualsCanonicalizing($video->castMembers->pluck("id")->toArray(), $extra['cast_members_id']);
 
             $video = Video::find($this->video->id);
             $response = $this->assertUpdate($value['send_data'], $value['test_data'] + ['deleted_at' => null]);
             $response->assertJsonStructure([
                 'data' => $this->fieldsSerialized
             ]);
-            $video = Video::find($response->json('data.id'));
+            $video = Video::with(['categories', 'genres', 'castMembers'])->find($response->json('data.id'));
             $this->assertResource($response, new VideoResource($video));
             $this->assertIfFilesUrlExists($video, $response);
             $video->load('categories');
             $video->load('genres');
+            $video->load('castMembers');
             $this->assertEqualsCanonicalizing($video->categories->pluck("id")->toArray(), $extra['categories_id']);
             $this->assertEqualsCanonicalizing($video->genres->pluck("id")->toArray(), $extra['genres_id']);
+            $this->assertEqualsCanonicalizing($video->castMembers->pluck("id")->toArray(), $extra['cast_members_id']);
         }
     }
 
