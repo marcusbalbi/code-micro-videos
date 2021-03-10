@@ -35,7 +35,11 @@ class BasicCrudControllerTest extends TestCase
             'name' => 'testname',
             'description' => 'testdescription',
         ]);
-        $resource = $this->controller->index();
+        $request = $this->mock(Request::class);
+        $request->shouldReceive('get')->once()->andReturn(10);
+        // $request->shouldReceive('all')->any()->andReturn([]);
+        $request->shouldReceive('has')->once()->andReturn(false);
+        $resource = $this->controller->index($request);
         $serialized = $resource->response()->getData(true);
 
         $this->assertEquals([$category->toArray()], $serialized['data']);
@@ -104,7 +108,11 @@ class BasicCrudControllerTest extends TestCase
             'name' => 'testname',
             'description' => 'testdescription',
         ]);
-        $resource = $this->controller->show($category->id);
+        $request = $this->mock(Request::class);
+        $request->shouldReceive('get')->once()->andReturn("");
+        // $request->shouldReceive('all')->any()->andReturn([]);
+        // $request->shouldReceive('has')->once()->andReturn(false);
+        $resource = $this->controller->show($category->id, $request);
         $serialized = $resource->response()->getData(true);
         $this->assertEquals(
             $category->toArray(),
@@ -120,6 +128,7 @@ class BasicCrudControllerTest extends TestCase
         ]);
         $request = $this->mock(Request::class);
         $request->shouldReceive('all')->once()->andReturn(['name' => 'test_changed', 'description' => 'new_desc']);
+        $request->shouldReceive('isMethod')->once()->andReturn(true);
 
         $resource = $this->controller->update($request, $category->id);
         $serialized = $resource->response()->getData(true);

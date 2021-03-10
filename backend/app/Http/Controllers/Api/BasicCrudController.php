@@ -67,8 +67,7 @@ abstract class BasicCrudController extends Controller
     {
         $obj = $this->findOrFail($id);
         $relations = explode(",", $request->get("with", ""));
-
-        if ($request->get("with")) {
+        if (count($relations) > 1) {
             $obj->load($relations);
         }
         $resource = $this->resource();
