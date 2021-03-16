@@ -8,7 +8,6 @@ trait TestProd
 {
     protected function skilTestIfNotProd($message = '')
     {
-        // dd($this->isTestingProd());
         if (!$this->isTestingProd()) {
             $this->markTestSkipped($message);
         }
@@ -16,6 +15,6 @@ trait TestProd
 
     protected function isTestingProd()
     {
-        return env('TESTING_PROD') !== false;
+        return env('TESTING_PROD', false) !== false;
     }
 }

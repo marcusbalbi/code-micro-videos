@@ -320,10 +320,11 @@ class VideoControllerCrudTest extends BaseVideoControllerTestCase
         $genres->each(function ($genre) use ($category_id) {
             $genre->categories()->sync($category_id);
         });
-
+        $cast_member_id = factory(CastMember::class)->create()->id;
         $extra = [
             'categories_id' => [$category_id],
-            'genres_id' => [$genres_id[0]]
+            'genres_id' => [$genres_id[0]],
+            'cast_members_id' => [$cast_member_id],
         ];
 
         $response = $this->json('POST', $this->routeStore(), $this->sendData + $extra);
@@ -334,7 +335,8 @@ class VideoControllerCrudTest extends BaseVideoControllerTestCase
 
         $extra = [
             'categories_id' => [$category_id],
-            'genres_id' => [$genres_id[1], $genres_id[2]]
+            'genres_id' => [$genres_id[1], $genres_id[2]],
+            'cast_members_id' => [$cast_member_id],
         ];
         $response = $this->json('PUT', route('videos.update', ['video' => $response->json('data.id')]), $this->sendData + $extra);
 
@@ -357,21 +359,23 @@ class VideoControllerCrudTest extends BaseVideoControllerTestCase
         $categories_id = factory(Category::class, 3)->create()->pluck('id')->toArray();
         $genre = factory(Genre::class)->create();
         $genre->categories()->sync($categories_id);
-
+        $cast_member_id = factory(CastMember::class)->create()->id;
         $extra = [
             'categories_id' => [$categories_id[0]],
-            'genres_id' => [$genre->id]
+            'genres_id' => [$genre->id],
+            'cast_members_id' => [$cast_member_id],
         ];
 
         $response = $this->json('POST', $this->routeStore(), $this->sendData + $extra);
         $this->assertDatabaseHas('category_video', [
             'video_id' => $response->json('data.id'),
-            'category_id' => $categories_id[0]
+            'category_id' => $categories_id[0],
         ]);
 
         $extra = [
             'categories_id' => [$categories_id[1], $categories_id[2]],
-            'genres_id' => [$genre->id]
+            'genres_id' => [$genre->id],
+            'cast_members_id' => [$cast_member_id],
         ];
         $response = $this->json('PUT', route('videos.update', ['video' => $response->json('data.id')]), $this->sendData + $extra);
         $this->assertDatabaseMissing('category_video', [

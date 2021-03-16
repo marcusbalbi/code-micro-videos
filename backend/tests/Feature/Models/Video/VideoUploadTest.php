@@ -7,9 +7,11 @@ use App\Models\Video;
 use Illuminate\Database\Events\TransactionCommitted;
 use Illuminate\Http\UploadedFile;
 use Tests\Exceptions\TestException;
+use Tests\Traits\TestProd;
 
 class VideoUploadTest extends BaseVideoTestCase
 {
+    use TestProd;
 
     public function testCreateWithFiles()
     {
@@ -113,6 +115,7 @@ class VideoUploadTest extends BaseVideoTestCase
 
     public function testFilesUrlWithGcsDrive()
     {
+        $this->skilTestIfNotProd("Não testar config gcp se nao estiver em ambiente de produção");
         $fileFields = [];
         foreach (Video::$fileFields as $field) {
             $fileFields[$field] = "$field.test";

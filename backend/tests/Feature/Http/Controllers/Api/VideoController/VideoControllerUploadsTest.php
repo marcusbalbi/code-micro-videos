@@ -2,6 +2,7 @@
 
 namespace Tests\Feature\Http\Controllers\Api;
 
+use App\Models\CastMember;
 use App\Models\Category;
 use App\Models\Genre;
 use App\Models\Video;
@@ -62,6 +63,7 @@ class VideoControllerUploadsTest extends BaseVideoControllerTestCase
         \Storage::fake();
         $files = $this->getFiles();
         $categories = factory(Category::class, 3)->create();
+        $cast_member_id = factory(CastMember::class)->create()->id;
         $genres = factory(Genre::class, 2)->create();
         $genres[0]->categories()->sync($categories->pluck('id')->toArray());
         $genres[1]->categories()->sync($categories->pluck('id')->toArray());
@@ -69,6 +71,7 @@ class VideoControllerUploadsTest extends BaseVideoControllerTestCase
         $response = $this->json('POST', $this->routeStore(), $this->sendData + [
             'categories_id' => $categories->pluck('id')->toArray(),
             'genres_id' => $genres->pluck('id')->toArray(),
+            'cast_members_id' => [$cast_member_id],
         ] + $files);
         $response->assertStatus(201);
         $this->assertFilesOnPersist($response, $files);
@@ -82,10 +85,11 @@ class VideoControllerUploadsTest extends BaseVideoControllerTestCase
         $genres = factory(Genre::class, 2)->create();
         $genres[0]->categories()->sync($categories->pluck('id')->toArray());
         $genres[1]->categories()->sync($categories->pluck('id')->toArray());
-
+        $cast_member_id = factory(CastMember::class)->create()->id;
         $response = $this->json('PUT', $this->routeUpdate(), $this->sendData + [
             'categories_id' => $categories->pluck('id')->toArray(),
             'genres_id' => $genres->pluck('id')->toArray(),
+            'cast_members_id' => [$cast_member_id],
         ] + $files);
 
         $response->assertStatus(200);
@@ -99,6 +103,7 @@ class VideoControllerUploadsTest extends BaseVideoControllerTestCase
         $response = $this->json('PUT', $this->routeUpdate(), $this->sendData + [
             'categories_id' => $categories->pluck('id')->toArray(),
             'genres_id' => $genres->pluck('id')->toArray(),
+            'cast_members_id' => [$cast_member_id],
         ] + $newFiles);
         $response->assertStatus(200);
         $this->assertFilesOnPersist($response, Arr::except($files, ['thumb_file', 'video_file']) + $newFiles);

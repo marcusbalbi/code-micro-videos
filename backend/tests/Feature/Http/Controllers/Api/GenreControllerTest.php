@@ -25,17 +25,17 @@ class GenreControllerTest extends TestCase
         'created_at',
         'updated_at',
         'deleted_at',
-        'categories' => [
-            '*' => [
-                'id',
-                'name',
-                'description',
-                'is_active',
-                'created_at',
-                'updated_at',
-                'deleted_at',
-            ]
-        ]
+        // 'categories' => [
+        //     '*' => [
+        //         'id',
+        //         'name',
+        //         'description',
+        //         'is_active',
+        //         'created_at',
+        //         'updated_at',
+        //         'deleted_at',
+        //     ]
+        // ]
     ];
 
     protected function setUp(): void
@@ -46,7 +46,8 @@ class GenreControllerTest extends TestCase
 
     public function testIndex()
     {
-        $response = $this->get(route('genres.index'));
+        $route = route('genres.index');
+        $response = $this->get($route);
         $response->assertStatus(200)
             ->assertJsonStructure([
                 'data' => [
@@ -59,9 +60,13 @@ class GenreControllerTest extends TestCase
         $this->assertResource($response, GenreResource::collection(collect([$this->genre])));
     }
 
+    //TODO create test to test withCategories property
+
     public function testShow()
     {
-        $response = $this->get(route('genres.show', ['genre' => $this->genre->id]));
+        $route = route('genres.show', ['genre' => $this->genre->id]);
+
+        $response = $this->get($route);
 
         $response->assertStatus(200)
             ->assertJsonStructure([
@@ -253,12 +258,16 @@ class GenreControllerTest extends TestCase
 
     protected function routeStore()
     {
-        return route('genres.store');
+        $route = route('genres.store');
+
+        return  $route;
     }
 
     protected function routeUpdate()
     {
-        return route('genres.update', ['genre' => $this->genre->id]);
+        $route = route('genres.update', ['genre' => $this->genre->id]);
+
+        return $route;
     }
 
     protected function model()
