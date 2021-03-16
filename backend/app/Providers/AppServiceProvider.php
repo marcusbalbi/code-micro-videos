@@ -26,6 +26,8 @@ class AppServiceProvider extends ServiceProvider
     public function boot()
     {
         \View::addExtension('html', 'blade');
-        Category::observe(CategoryObserver::class);
+        if (env("APP_ENV") !== "testing") {
+            Category::observe(CategoryObserver::class);
+        }
     }
 }
