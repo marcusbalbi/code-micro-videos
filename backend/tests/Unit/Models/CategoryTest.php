@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use EloquentFilter\Filterable;
 
 class CategoryTest extends TestCase
 {
@@ -34,7 +35,8 @@ class CategoryTest extends TestCase
     {
         $traits = [
             SoftDeletes::class,
-            Uuid::class
+            Uuid::class,
+            Filterable::class,
         ];
         $useTraits = array_keys(class_uses(Category::class));
         $this->assertEquals($useTraits, $traits);

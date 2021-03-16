@@ -3,6 +3,8 @@
 namespace App\Observers;
 
 use App\Models\Category;
+use Bschmitt\Amqp\Facades\Amqp;
+use Bschmitt\Amqp\Message;
 
 class CategoryObserver
 {
@@ -14,7 +16,8 @@ class CategoryObserver
      */
     public function created(Category $category)
     {
-        //
+        $message = new Message($category->toJson());
+        Amqp::publish("model.category.created", $message);
     }
 
     /**

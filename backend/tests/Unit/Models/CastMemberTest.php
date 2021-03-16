@@ -6,7 +6,7 @@ use Tests\TestCase;
 use \App\Models\CastMember;
 use App\Models\Traits\Uuid;
 use Illuminate\Database\Eloquent\SoftDeletes;
-
+use EloquentFilter\Filterable;
 class CastMemberTest extends TestCase
 {
     // use DatabaseMigrations;
@@ -30,7 +30,8 @@ class CastMemberTest extends TestCase
     {
         $traits = [
             SoftDeletes::class,
-            Uuid::class
+            Uuid::class,
+            Filterable::class,
         ];
         $useTraits = array_keys(class_uses(CastMember::class));
         $this->assertEquals($useTraits, $traits);
