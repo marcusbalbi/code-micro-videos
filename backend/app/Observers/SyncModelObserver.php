@@ -4,6 +4,7 @@ namespace App\Observers;
 
 use Bschmitt\Amqp\Facades\Amqp;
 use Bschmitt\Amqp\Message;
+use Exception;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
 use ReflectionClass;
@@ -16,7 +17,16 @@ class SyncModelObserver
         $data = $model->toArray();
         $action = __FUNCTION__;
         $routingKey = "model.{$modelName}.{$action}";
-        $this->publish($routingKey, $data);
+        try {
+            $this->publish($routingKey, $data);
+        } catch (Exception $e) {
+            $this->reportException([
+                "modelName" => $modelName,
+                "id" => $model->id,
+                "action" => $action,
+                "exception" => $e
+            ]);
+        }
     }
 
     public function updated(Model $model)
@@ -25,17 +35,37 @@ class SyncModelObserver
         $data = $model->toArray();
         $action = __FUNCTION__;
         $routingKey = "model.{$modelName}.{$action}";
-        $this->publish($routingKey, $data);
+        try {
+            $this->publish($routingKey, $data);
+        } catch (Exception $e) {
+            $this->reportException([
+                "modelName" => $modelName,
+                "id" => $model->id,
+                "action" => $action,
+                "exception" => $e
+            ]);
+        }
     }
 
     public function deleted(Model $model)
     {
         $modelName = $this->getModelName($model);
-        $data = ["id" => $model->id];
+        $data = $model->toArray();
         $action = __FUNCTION__;
         $routingKey = "model.{$modelName}.{$action}";
-        $this->publish($routingKey, $data);
+        try {
+            $this->publish($routingKey, $data);
+        } catch (Exception $e) {
+            $this->reportException([
+                "modelName" => $modelName,
+                "id" => $model->id,
+                "action" => $action,
+                "exception" => $e
+            ]);
+        }
     }
+
+
 
     public function restored(Model $model)
     {
@@ -63,5 +93,17 @@ class SyncModelObserver
             'exchange' =>'amq.topic'
         ]);
 
+    }
+
+    protected function reportException(array $params)
+    {
+        list(
+            "modelName" => $modelName,
+            "id" => $id,
+            "action" => $action,
+            "exception" => $exception
+        ) = $params;
+        $myException = new Exception("The Model {$modelName} with ID {$id} not sync on {$action}", 0, $exception);
+        report($myException);
     }
 }
