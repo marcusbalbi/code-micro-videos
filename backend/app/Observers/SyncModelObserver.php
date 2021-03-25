@@ -65,6 +65,9 @@ class SyncModelObserver
         }
     }
 
+    public function belongsToManyAttached($relation, $model, $ids) {
+
+    }
 
 
     public function restored(Model $model)
