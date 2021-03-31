@@ -8,10 +8,10 @@ use App\Models\Genre;
 use App\Observers\SyncModelObserver;
 use Illuminate\Support\ServiceProvider;
 
-class AppServiceProvider extends ServiceProvider
+class SyncServiceProvider extends ServiceProvider
 {
     /**
-     * Register any application services.
+     * Register services.
      *
      * @return void
      */
@@ -21,12 +21,16 @@ class AppServiceProvider extends ServiceProvider
     }
 
     /**
-     * Bootstrap any application services.
+     * Bootstrap services.
      *
      * @return void
      */
     public function boot()
     {
-        \View::addExtension('html', 'blade');
+        if (env("SYNC_RABBITMQ_ENABLED") === true) {
+            Category::observe(SyncModelObserver::class);
+            Genre::observe(SyncModelObserver::class);
+            CastMember::observe(SyncModelObserver::class);
+        }
     }
 }
