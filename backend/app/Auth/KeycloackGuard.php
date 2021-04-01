@@ -2,13 +2,19 @@
 
 namespace App\Auth;
 
+use BadMethodCallException;
+use Illuminate\Auth\GuardHelpers;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Contracts\Auth\Guard;
 use Illuminate\Http\Request;
+use Illuminate\Support\Traits\Macroable;
 use Tymon\JWTAuth\JWT;
 
 class KeycloackGuard implements Guard
 {
+    use GuardHelpers, Macroable {
+        __cal as macroCall;
+    }
 
     private $jwt;
 
@@ -19,25 +25,6 @@ class KeycloackGuard implements Guard
         $this->jwt = $jwt;
         $this->request = $request;
     }
-    /**
-     * Determine if the current user is authenticated.
-     *
-     * @return bool
-     */
-    public function check()
-    {
-
-    }
-
-    /**
-     * Determine if the current user is a guest.
-     *
-     * @return bool
-     */
-    public function guest()
-    {
-
-    }
 
     /**
      * Get the currently authenticated user.
@@ -46,38 +33,51 @@ class KeycloackGuard implements Guard
      */
     public function user()
     {
+        if ($this->user !== null) {
+            return $this->user;
+        }
 
-    }
-
-    /**
-     * Get the ID for the currently authenticated user.
-     *
-     * @return int|string|null
-     */
-    public function id()
-    {
-
+        if (
+            $this->jwt->setRequest($this->request)->getToken() &&
+            ($payload = $this->jwt->check(true)) &&
+            $this->validateSubject()
+        ) {
+            return $this->user = $this->provider->retrieveById($payload['sub']);
+        }
     }
 
     /**
      * Validate a user's credentials.
      *
      * @param  array  $credentials
+     *
      * @return bool
      */
     public function validate(array $credentials = [])
     {
-
+        throw new \Exception("Not Implemented");
     }
 
     /**
-     * Set the current user.
+     * Magically call the JWT instance.
      *
-     * @param  \Illuminate\Contracts\Auth\Authenticatable  $user
-     * @return void
+     * @param  string  $method
+     * @param  array  $parameters
+     *
+     * @throws \BadMethodCallException
+     *
+     * @return mixed
      */
-    public function setUser(Authenticatable $user)
+    public function __call($method, $parameters)
     {
+        if (method_exists($this->jwt, $method)) {
+            return call_user_func_array([$this->jwt, $method], $parameters);
+        }
 
+        if (static::hasMacro($method)) {
+            return $this->macroCall($method, $parameters);
+        }
+
+        throw new BadMethodCallException("Method [$method] does not exist.");
     }
 }
