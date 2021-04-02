@@ -21,7 +21,6 @@ abstract class BasicCrudController extends Controller
 
     public function index(Request $request)
     {
-
         $perPage = (int)$request->get('per_page', $this->defaultPerPage);
         $hasFilter = in_array(
             Filterable::class,

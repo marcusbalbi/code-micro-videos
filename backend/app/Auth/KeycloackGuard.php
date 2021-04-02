@@ -14,7 +14,7 @@ use Tymon\JWTAuth\JWT;
 class KeycloackGuard implements Guard
 {
     use GuardHelpers, Macroable {
-        __cal as macroCall;
+        __call as macroCall;
     }
 
     private $jwt;
@@ -39,7 +39,7 @@ class KeycloackGuard implements Guard
         }
 
         if (
-            $token = $this->jwt->setRequest($this->request)->getToken() &&
+            ($token = $this->jwt->setRequest($this->request)->getToken()) &&
             ($payload = $this->jwt->check(true))
         ) {
             return $this->user = new User(
