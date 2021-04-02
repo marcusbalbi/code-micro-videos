@@ -2,6 +2,7 @@
 
 namespace App\Auth;
 
+use App\Models\User;
 use BadMethodCallException;
 use Illuminate\Auth\GuardHelpers;
 use Illuminate\Contracts\Auth\Authenticatable;
@@ -38,11 +39,15 @@ class KeycloackGuard implements Guard
         }
 
         if (
-            $this->jwt->setRequest($this->request)->getToken() &&
-            ($payload = $this->jwt->check(true)) &&
-            $this->validateSubject()
+            $token = $this->jwt->setRequest($this->request)->getToken() &&
+            ($payload = $this->jwt->check(true))
         ) {
-            return $this->user = $this->provider->retrieveById($payload['sub']);
+            return $this->user = new User(
+                $payload["sub"],
+                $payload["name"],
+                $payload["email"],
+                $token
+            );
         }
     }
 
