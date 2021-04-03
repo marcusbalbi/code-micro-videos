@@ -14,6 +14,7 @@ import httpCategory from "../../util/http/http-category";
 import parseISO from "date-fns/parseISO";
 import useFilter from "../../hooks/useFilter";
 import { useSnackbar } from "notistack";
+import { useKeycloak } from "@react-keycloak/web";
 
 const debounceTime = 300;
 const debounceTimeSearchText = 300;
@@ -112,6 +113,8 @@ function localTheme(theme: Theme) {
 }
 
 export const Table = () => {
+  const keycloak = useKeycloak();
+  console.log(keycloak)
   const canLoad = useRef(true);
   const [categories, setCategories] = useState<Category[]>([]);
   const loading = useContext(LoadingContext);
