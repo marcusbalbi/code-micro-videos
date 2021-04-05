@@ -13,6 +13,7 @@ import VideoListPage from "../pages/video/VideoListPage";
 export interface MyRouteProps extends RouteProps {
   label: string;
   name: string;
+  auth?: boolean;
 }
 
 const routes: Array<MyRouteProps> = [
@@ -22,6 +23,7 @@ const routes: Array<MyRouteProps> = [
     path: "/",
     component: Dashboard,
     exact: true,
+    auth: true,
   },
   {
     name: "categories.list",
@@ -29,6 +31,7 @@ const routes: Array<MyRouteProps> = [
     path: "/categories",
     component: CategoryListPage,
     exact: true,
+    auth: true,
   },
   {
     name: "categories.create",
@@ -36,6 +39,7 @@ const routes: Array<MyRouteProps> = [
     path: "/categories/create",
     component: CategoryFormPage,
     exact: true,
+    auth: true,
   },
   {
     name: "categories.edit",
@@ -43,6 +47,7 @@ const routes: Array<MyRouteProps> = [
     path: "/categories/:id/edit",
     component: CategoryFormPage,
     exact: true,
+    auth: true,
   },
   {
     name: "cast_members.list",
@@ -50,6 +55,7 @@ const routes: Array<MyRouteProps> = [
     path: "/cast-members",
     component: CastMemberListPage,
     exact: true,
+    auth: true,
   },
   {
     name: "cast_members.create",
@@ -57,6 +63,7 @@ const routes: Array<MyRouteProps> = [
     path: "/cast-members/create",
     component: CastMemberFormPage,
     exact: true,
+    auth: true,
   },
   {
     name: "cast_members.edit",
@@ -64,6 +71,7 @@ const routes: Array<MyRouteProps> = [
     path: "/cast-members/:id/edit",
     component: CastMemberFormPage,
     exact: true,
+    auth: true,
   },
   {
     name: "genres.list",
@@ -71,6 +79,7 @@ const routes: Array<MyRouteProps> = [
     path: "/genres",
     component: GenreListPage,
     exact: true,
+    auth: true,
   },
   {
     name: "genres.create",
@@ -78,6 +87,7 @@ const routes: Array<MyRouteProps> = [
     path: "/genres/create",
     component: GenreFormPage,
     exact: true,
+    auth: true,
   },
   {
     name: "genres.edit",
@@ -85,6 +95,7 @@ const routes: Array<MyRouteProps> = [
     path: "/genres/:id/edit",
     component: GenreFormPage,
     exact: true,
+    auth: true,
   },
   {
     name: "videos.list",
@@ -92,6 +103,7 @@ const routes: Array<MyRouteProps> = [
     path: "/videos",
     component: VideoListPage,
     exact: true,
+    auth: true,
   },
   {
     name: "videos.create",
@@ -99,6 +111,7 @@ const routes: Array<MyRouteProps> = [
     path: "/videos/create",
     component: VideoFormPage,
     exact: true,
+    auth: true,
   },
   {
     name: "videos.edit",
@@ -106,6 +119,7 @@ const routes: Array<MyRouteProps> = [
     path: "/videos/:id/edit",
     component: VideoFormPage,
     exact: true,
+    auth: true,
   },
   {
     name: "uploads",
@@ -113,6 +127,7 @@ const routes: Array<MyRouteProps> = [
     path: "/uploads",
     component: UploadPage,
     exact: true,
+    auth: true,
   },
 ];
 
