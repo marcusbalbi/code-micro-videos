@@ -10,12 +10,19 @@ interface PrivateRouteProps extends RouteProps {
 export const PrivateRoute: React.FC<PrivateRouteProps> = (props) => {
   const {component: Component, ...rest} = props;
   const { keycloak } = useKeycloak();
-  const render = useCallback((props) => {
-    if (keycloak.authenticated) {
-      return <Component {...props} />;
-    }
-    return <Redirect to={{ pathname: "/login", state: { from: props.location } }} />
-  }, [])
+  const render = useCallback(
+    (props) => {
+      if (keycloak.authenticated) {
+        return <Component {...props} />;
+      }
+      return (
+        <Redirect
+          to={{ pathname: "/login", state: { from: props.location } }}
+        />
+      );
+    },
+    [keycloak.authenticated, Component]
+  );
   return <Route {...rest} render={render} />;
 };
 

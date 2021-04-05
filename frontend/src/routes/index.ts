@@ -5,6 +5,7 @@ import CategoryListPage from "../pages/category/CategoryListPage";
 import { Dashboard } from "../pages/Dashboard";
 import GenreFormPage from "../pages/genre/GenreFormPage";
 import GenreListPage from "../pages/genre/GenreListPage";
+import Login from "../pages/Login";
 import { RouteProps } from "react-router-dom";
 import UploadPage from "../pages/uploads";
 import VideoFormPage from "../pages/video/VideoFormPage";
@@ -17,6 +18,14 @@ export interface MyRouteProps extends RouteProps {
 }
 
 const routes: Array<MyRouteProps> = [
+  {
+    name: "login",
+    label: "Login",
+    path: "/login",
+    component: Login,
+    exact: true,
+    auth: false,
+  },
   {
     name: "dashboard",
     label: "Dashboard",
