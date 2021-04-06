@@ -8,6 +8,7 @@ import {
 import LoginButton from "./LoginButton";
 import { Menu } from "./Menu";
 import React from "react";
+import UserAccountMenu from "./UserAccountMenu";
 
 import logo from "../../static/img/logo.png";
 
@@ -40,6 +41,7 @@ export const Navbar: React.FC = () => {
           <img className={classes.logo} src={logo} alt="Logo" />
         </Typography>
         <LoginButton />
+        <UserAccountMenu />
       </Toolbar>
     </AppBar>
   );

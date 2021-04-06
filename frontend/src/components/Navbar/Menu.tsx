@@ -1,4 +1,10 @@
-import { IconButton, MenuItem, Menu as MuiMenu } from "@material-ui/core";
+import {
+  Divider,
+  IconButton,
+  MenuItem,
+  Link as MuiLink,
+  Menu as MuiMenu,
+} from "@material-ui/core";
 import React, { useState } from "react";
 import routes, { MyRouteProps } from "../../routes";
 import { Link } from "react-router-dom";
@@ -70,6 +76,17 @@ export const Menu = () => {
             </MenuItem>
           );
         })}
+        <Divider />
+        <MenuItem
+          component={MuiLink}
+          href={"https://"}
+          rel="noopner"
+          target="_blank"
+          color={"textPrimary"}
+          onClick={handleOnClose}
+        >
+          Usuários
+        </MenuItem>
       </MuiMenu>
     </React.Fragment>
   );
