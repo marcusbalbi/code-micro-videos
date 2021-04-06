@@ -1,10 +1,32 @@
 import axios, { AxiosRequestConfig, AxiosResponse } from "axios";
+import { keycloak } from "../auth";
 
 export const httpVideo = axios.create({
   baseURL: process.env.REACT_APP_MICRO_VIDEO_API_URL,
 });
 
 const instances = [httpVideo];
+httpVideo.interceptors.request.use(authInterceptors);
+
+function authInterceptors(request: AxiosRequestConfig): AxiosRequestConfig | Promise<AxiosRequestConfig> {
+  if (keycloak?.token) {
+    request.headers["Authorization"] = `Bearer ${keycloak.token}`
+    return request;
+  }
+  return new Promise((resolve, reject) => {
+    keycloak.onAuthSuccess = () => {
+      request.headers["Authorization"] = `Bearer ${keycloak.token}`;
+      resolve(request)
+    }
+    keycloak.onAuthError = () => {
+      reject(request)
+    }
+  })
+}
+
+function addToken(request: AxiosRequestConfig) {
+  request.headers["Authorization"] = `Bearer ${keycloak.token}`;
+}
 
 export const addGlobalRequestInterceptor = (
   onFulfilled?: (
