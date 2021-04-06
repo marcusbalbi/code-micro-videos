@@ -1,5 +1,6 @@
 import { Redirect, useLocation } from "react-router";
 import React from "react";
+import Waiting from "../components/Waiting";
 import { useKeycloak } from "@react-keycloak/web";
 
 interface LoginProps {}
@@ -18,7 +19,7 @@ export const Login = (props: LoginProps) => {
     redirectUri: `${window.location.origin}${process.env.REACT_APP_BASENAME}${from.pathname}`
   });
 
-  return <div>Carregando...</div>;;
+  return <Waiting />
 }
 
 export default Login;
