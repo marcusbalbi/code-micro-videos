@@ -3,6 +3,7 @@ import React, { useState } from "react";
 import routes, { MyRouteProps } from "../../routes";
 import { Link } from "react-router-dom";
 import { Menu as MenuIcon } from "@material-ui/icons";
+import { useKeycloak } from "@react-keycloak/web";
 
 const listRoutes = {
   dashboard: "Dashboard",
@@ -17,6 +18,7 @@ const menuRoutes = routes.filter((route) =>
 );
 
 export const Menu = () => {
+  const {keycloak, initialized} = useKeycloak();
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
 
@@ -27,6 +29,11 @@ export const Menu = () => {
   const handleOnClose = () => {
     setAnchorEl(null);
   };
+
+  if (!initialized || !keycloak.authenticated) {
+    return null;
+  }
+
   return (
     <React.Fragment>
       <IconButton

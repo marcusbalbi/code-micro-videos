@@ -1,11 +1,11 @@
 import {
   AppBar,
-  Button,
   Theme,
   Toolbar,
   Typography,
   makeStyles,
 } from "@material-ui/core";
+import LoginButton from "./LoginButton";
 import { Menu } from "./Menu";
 import React from "react";
 
@@ -39,7 +39,7 @@ export const Navbar: React.FC = () => {
         <Typography className={classes.title}>
           <img className={classes.logo} src={logo} alt="Logo" />
         </Typography>
-        <Button color="inherit">Login</Button>
+        <LoginButton />
       </Toolbar>
     </AppBar>
   );
