@@ -6,10 +6,10 @@ import {
 } from "@material-ui/core";
 import React, { useState } from "react";
 import AccountBox from "@material-ui/icons/AccountBox";
-import { useKeycloak } from "@react-keycloak/web";
+import { useHasRealmHome } from "../../hooks/useHasRole";
 
 const UserAccountMenu = () => {
-  const { keycloak, initialized } = useKeycloak();
+  const hasCatalogAdmin = useHasRealmHome("catalog-admin");
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
 
@@ -21,7 +21,7 @@ const UserAccountMenu = () => {
     setAnchorEl(null);
   };
 
-  if (!initialized || !keycloak.authenticated) {
+  if (!hasCatalogAdmin) {
     return null;
   }
 
