@@ -15,12 +15,15 @@ class User implements Authenticatable
 
     protected $token;
 
-    public function __construct(string $id, string $name, string $email, string $token)
+    protected $roles;
+
+    public function __construct(string $id, string $name, string $email, string $token, array $roles)
     {
         $this->id = $id;
         $this->name  = $name;
         $this->email = $email;
         $this->token = $token;
+        $this->roles = $roles;
     }
 
     /**
@@ -82,6 +85,16 @@ class User implements Authenticatable
     public function getRememberTokenName()
     {
         throw new Exception("not implemented");
+    }
+
+    public function getRoles()
+    {
+        return $this->roles;
+    }
+
+    public function hasRole($role)
+    {
+        return in_array($role, $this->roles);
     }
 
 }
